@@ -1,0 +1,3557 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>翔け！エスキーテニス ESCI TENNIS</title>
+<style>
+:root{
+  --ai:#0d1f33;        /* 藍 */
+  --ai2:#132a44;       /* 濃紺 */
+  --ai3:#1c3a5c;
+  --hinoki:#e0bd8c;    /* 檜 */
+  --hinoki-d:#c39a67;
+  --kinari:#f2ece1;    /* 生成り */
+  --shu:#e2472a;       /* 朱 */
+  --take:#7fae72;      /* 若竹 */
+  --sumi:#0a1622;
+  --maru:"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","M PLUS Rounded 1c","Zen Maru Gothic","Rounded Mplus 1c","Yu Gothic Medium",var(--gothic);
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Shippori Mincho",serif;
+  --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(1100px 620px at 50% -8%, #1b3a5b 0%, transparent 62%),
+    var(--ai);
+  color:var(--kinari);
+  font-family:var(--gothic);
+  -webkit-font-smoothing:antialiased;
+  padding:18px 14px 40px;
+}
+.frame{max-width:952px;margin:0 auto}
+
+/* ── ヘッダー ───────────────────────── */
+header{display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.eyebrow{
+  font-family:var(--mincho);font-size:11px;letter-spacing:.42em;color:#7fa3c4;
+  border-left:3px solid var(--shu);padding-left:9px;line-height:1.7
+}
+h1{
+  font-family:var(--maru);font-weight:600;margin:2px 0 0;
+  font-size:clamp(23px,4.7vw,38px);letter-spacing:.1em;line-height:1.08
+}
+h1 .en{
+  display:block;font-size:11px;letter-spacing:.5em;color:#6f93b4;
+  font-family:var(--gothic);margin-top:9px;font-weight:400
+}
+.origin{
+  margin-left:auto;text-align:right;font-size:11px;line-height:1.85;color:#82a5c5;
+  font-family:var(--mincho);letter-spacing:.06em
+}
+.origin b{color:var(--kinari);font-weight:600}
+
+/* ── スコアボード（昭和の体育館めくり式） ── */
+.board{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;
+  background:linear-gradient(#0a1a2c,#081522);
+  border:1px solid #274863;border-radius:3px;padding:10px 12px;margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
+}
+.side{display:flex;align-items:center;gap:12px}
+.side.right{flex-direction:row-reverse;text-align:right}
+.who{font-family:var(--mincho);font-size:13px;letter-spacing:.16em;line-height:1.5}
+.who small{display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.22em;color:#7d9fbf}
+.pts{
+  font-family:var(--mincho);font-size:44px;line-height:.86;font-weight:600;
+  min-width:1.5ch;text-align:center;font-variant-numeric:tabular-nums
+}
+.feathers{display:flex;gap:4px;margin-top:5px;justify-content:inherit}
+.fx{width:9px;height:15px;opacity:.2}
+.fx.on{opacity:1}
+.mid{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 14px;border-left:1px solid #1e3b56;border-right:1px solid #1e3b56;min-width:104px
+}
+.setno{font-family:var(--mincho);font-size:15px;letter-spacing:.14em}
+.setno b{color:var(--shu)}
+.mid small{font-size:9.5px;letter-spacing:.2em;color:#7d9fbf;margin-top:4px}
+.srv{
+  font-size:9.5px;letter-spacing:.16em;color:var(--sumi);background:var(--shu);
+  padding:2px 7px;border-radius:2px;font-weight:700;visibility:hidden;margin-top:4px
+}
+.srv.on{visibility:visible}
+
+/* ── 舞台 ───────────────────────────── */
+.stage{position:relative;border:1px solid #274863;border-radius:3px;overflow:hidden;background:#071220}
+canvas{display:block;width:100%;height:auto;touch-action:none}
+.veil{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:14px;padding:22px;
+  background:rgba(6,16,28,.9);backdrop-filter:blur(3px)
+}
+.veil.hide{display:none}
+.veil h2{font-family:var(--mincho);font-size:clamp(21px,4.4vw,31px);margin:0;letter-spacing:.1em;font-weight:600}
+.veil p{margin:0;font-size:13px;line-height:1.95;color:#b9cfe3;max-width:44ch}
+.veil .sub{font-size:11.5px;color:#87a8c6;letter-spacing:.05em}
+.choices{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.btn{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.1em;
+  background:transparent;color:var(--kinari);border:1px solid #4b7098;
+  padding:10px 20px;border-radius:2px;cursor:pointer;transition:.15s
+}
+.btn:hover,.btn:focus-visible{background:#17324e;border-color:var(--kinari)}
+.btn.on{background:var(--shu);border-color:var(--shu);color:#150806;font-weight:700}
+.btn.go{background:var(--kinari);color:var(--sumi);border-color:var(--kinari);font-weight:700;padding:11px 34px}
+.btn.go:hover{background:#fff}
+.pick{display:flex;flex-direction:column;gap:7px;align-items:center}
+.pick>span{font-size:10px;letter-spacing:.26em;color:#7fa3c4}
+
+/* 実況テロップ */
+.call{
+  position:absolute;left:0;right:0;top:34%;text-align:center;pointer-events:none;
+  opacity:0;transition:opacity .18s
+}
+.call.on{opacity:1}
+.call .big{
+  font-family:var(--mincho);font-size:clamp(26px,5.6vw,42px);font-weight:600;letter-spacing:.14em;
+  text-shadow:0 3px 20px #05101c,0 0 3px #05101c
+}
+.call .why{
+  display:inline-block;margin-top:9px;font-size:12px;letter-spacing:.12em;
+  background:rgba(6,16,28,.88);padding:5px 15px;border-radius:2px;border:1px solid #35597d
+}
+/* 反則予告バッジ */
+.warn{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:11px;
+  font-size:11px;letter-spacing:.1em;background:rgba(226,71,42,.94);color:#fff;
+  padding:5px 14px;border-radius:2px;opacity:0;transition:.2s;font-weight:700
+}
+.warn.on{opacity:1}
+
+/* ── 操作パッド ─────────────────────── */
+.pad{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;flex-wrap:wrap;
+  user-select:none;-webkit-user-select:none
+}
+.dpad{
+  display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px;
+  touch-action:none;user-select:none;-webkit-user-select:none;padding:7px;margin:-7px
+}
+.key{
+  background:#13293f;border:1px solid #35597d;border-radius:3px;color:var(--kinari);
+  font-size:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:.08s;pointer-events:none
+}
+.key:active,.key.dn{background:var(--ai3);border-color:var(--kinari);transform:translateY(1px)}
+.key.empty{background:transparent;border:none;cursor:default}
+.hit{
+  width:126px;height:126px;border-radius:50%;background:var(--shu);border:none;color:#160705;
+  font-family:var(--mincho);font-size:22px;font-weight:700;letter-spacing:.14em;cursor:pointer;
+  user-select:none;-webkit-user-select:none;touch-action:none;
+  box-shadow:0 5px 0 #972d19;transition:.06s
+}
+.hit:active,.hit.dn{transform:translateY(4px);box-shadow:0 1px 0 #972d19}
+.hit small{display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.18em;font-weight:400;margin-top:3px;opacity:.75}
+.rotate{display:none;margin:9px 0 0;font-size:11px;letter-spacing:.06em;color:#8dafcd;text-align:center}
+.rotate::before{content:"⟳ ";color:var(--shu)}
+.tips{font-size:11px;line-height:2;color:#8dafcd;flex:1;min-width:172px}
+.tips b{color:var(--kinari);font-weight:600}
+.toggles{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.tg{
+  font-size:10.5px;letter-spacing:.08em;background:transparent;border:1px solid #35597d;
+  color:#9dbdd8;padding:5px 11px;border-radius:2px;cursor:pointer
+}
+.tg.on{background:#1c3a5c;color:var(--kinari);border-color:#5d84ab}
+
+/* ── ルール ─────────────────────────── */
+details{
+  margin-top:20px;border-top:1px solid #23425f;padding-top:14px
+}
+summary{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.16em;cursor:pointer;color:#bad3e8;
+  list-style:none;display:flex;align-items:center;gap:9px
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"─";color:var(--shu)}
+details[open] summary::before{content:"│"}
+.rulewrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:16px;margin-top:14px}
+.card{background:rgba(255,255,255,.028);border-left:2px solid var(--shu);padding:12px 15px;border-radius:2px}
+.card h3{font-family:var(--mincho);font-size:13.5px;margin:0 0 8px;letter-spacing:.1em;font-weight:600}
+.card ul{margin:0;padding-left:1.1em;font-size:12px;line-height:2;color:#b6cee2}
+.card li::marker{color:#4e7ba3}
+footer{margin-top:22px;font-size:10.5px;line-height:2.1;color:#6f93b4;border-top:1px solid #1b3651;padding-top:12px}
+footer a{color:#9dbdd8}
+/* 横向きの携帯：コートを最大化し、操作は左右の余白に重ねる */
+@media (orientation:landscape) and (max-height:560px){
+  body{padding:5px 8px 6px}
+  header,details,.tips{display:none}
+  .board{padding:4px 12px;margin-bottom:5px}
+  .pts{font-size:23px} .who{font-size:11px} .who small{display:none}
+  .feathers{margin-top:2px} .setno{font-size:12px} .mid small{display:none}
+  .srv{margin-top:2px;font-size:8.5px}
+  .stage{max-width:min(100%,calc((100dvh - 92px) * 1.607));margin:0 auto}
+  .pad{
+    position:fixed;inset:0;margin:0;padding:0 14px 14px;pointer-events:none;
+    align-items:flex-end;justify-content:space-between;flex-wrap:nowrap;z-index:5
+  }
+  .dpad{pointer-events:auto;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px}
+  .hit{pointer-events:auto;width:94px;height:94px;font-size:17px}
+  .hit small{font-size:8px}
+}
+@media (max-width:600px){
+  body{padding:12px 8px 26px}
+  .dpad{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px)}
+  .hit{width:104px;height:104px;font-size:19px}
+  .pts{font-size:34px}
+  .mid{min-width:82px;padding:0 8px}
+  .pad{justify-content:center}
+  .tips{order:3;text-align:center}
+}
+@media (max-width:600px) and (orientation:portrait){ .rotate{display:block} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="frame">
+
+<header>
+  <div>
+    <div class="eyebrow">広島発祥・一九四八年</div>
+    <h1>翔け！エスキーテニス<span class="en">ESCI TENNIS</span></h1>
+  </div>
+  <div class="origin">
+    Education, Science and Culture Institute<br>
+    コート <b>8m × 4m</b> ネット <b>55cm</b><br>
+    木製ラケット・羽根つきスポンジボール
+  </div>
+</header>
+
+<div class="board">
+  <div class="side">
+    <div class="pts" id="pP">0</div>
+    <div>
+      <div class="who">あなた<small>NEAR SIDE</small></div>
+      <div class="feathers" id="fP"></div>
+      <div class="srv" id="sP">サービス</div>
+    </div>
+  </div>
+  <div class="mid">
+    <div class="setno">第<b id="setNo">1</b>セット</div>
+    <small id="fmt">11点先取</small>
+  </div>
+  <div class="side right">
+    <div class="pts" id="pA">0</div>
+    <div>
+      <div class="who">対戦相手<small>FAR SIDE</small></div>
+      <div class="feathers" id="fA"></div>
+      <div class="srv" id="sA">サービス</div>
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+  <canvas id="cv" width="900" height="560"></canvas>
+  <div class="call" id="call"><div class="big" id="callBig"></div><div><span class="why" id="callWhy"></span></div></div>
+  <div class="warn" id="warn">次はノーバウンドで打てません（連続ノーバウンド禁止）</div>
+
+  <div class="veil" id="veil">
+    <h2 id="vTitle">羽根つきから生まれた競技</h2>
+    <p id="vText">被爆後の広島で、復興を願う人々によって考案された球技です。テニスの８分の１のコートで、羽根のついたスポンジボールを木製ラケットで打ち合います。速さより読み。老若男女を問わず一緒に楽しめます。</p>
+    <div class="pick" id="vPick">
+      <span>対戦相手の強さ</span>
+      <div class="choices">
+        <button class="btn" data-lv="0">初級</button>
+        <button class="btn on" data-lv="1">中級</button>
+        <button class="btn" data-lv="2">上級</button>
+      </div>
+    </div>
+    <div class="choices"><button class="btn go" id="vGo">試合開始</button></div>
+    <p class="sub" id="vHint">矢印キーで移動、スペースで打つ。スマートフォンは下のボタンで操作できます。</p>
+  </div>
+</div>
+
+<p class="rotate">画面を横向きにするとコートが大きくなります</p>
+
+<div class="pad">
+  <div class="dpad" id="dpad">
+    <div class="key empty"></div><div class="key" data-k="up">▲</div><div class="key empty"></div>
+    <div class="key" data-k="left">◀</div><div class="key empty"></div><div class="key" data-k="right">▶</div>
+    <div class="key empty"></div><div class="key" data-k="down">▼</div><div class="key empty"></div>
+  </div>
+  <div class="tips">
+    <b>移動</b> 矢印キー／▲▼◀▶<br>
+    <b>打つ</b> スペース／打つボタン<br>
+    <b>コース</b> 打つ瞬間に ◀▶ を押した方向へ<br>
+    <b>球種</b> ▲＝速いドライブ ▼＝ロブ<br>
+    <b>ボレー</b> ネット際で落とす前に打つと決め球
+    <div class="toggles">
+      <button class="tg on" id="tgGuide">着地点ガイド</button>
+      <button class="tg on" id="tgSound">効果音</button>
+      <button class="tg" id="tgPause">一時停止</button>
+    </div>
+  </div>
+  <button class="hit" data-k="hit">打つ<small>SPACE</small></button>
+</div>
+
+<details>
+  <summary>競技規則のあらまし（このゲームに実装したもの）</summary>
+  <div class="rulewrap">
+    <div class="card">
+      <h3>サービス</h3>
+      <ul>
+        <li>サーバーもレシーバーも、ベースラインの後ろ（コートの外）の所定位置につく</li>
+        <li>レシーブ所定位置はサーバーの対角</li>
+        <li>肩より低い位置からボールを自然に落とす</li>
+        <li>ワンバウンド後、ツーバウンドする前に打つ</li>
+        <li>跳び上がって打つことはできない</li>
+        <li>センターラインで分けた対角の半面へ直接入れる</li>
+        <li>ネットインはやり直し（レット）</li>
+        <li>やり直しは二回まで</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>ラリー</h3>
+      <ul>
+        <li>ノーバウンド〜ツーバウンド前に打ち返す</li>
+        <li>ネット際で落とす前に打つと鋭い決め球になる</li>
+        <li><b>ただし同じ人がノーバウンドを連続して打てない</b>（エスキー独自）</li>
+        <li>サービスのレシーブはワンバウンド後に打つ</li>
+        <li>ネットに触れると相手の得点</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>得点</h3>
+      <ul>
+        <li>11点先取でそのセットの勝ち</li>
+        <li>10点以上で並べばジュース、以後二点差で決着</li>
+        <li>両者の得点の和が5点ごとにサービス交替</li>
+        <li>三セット制、二セット先取で勝利</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>用具</h3>
+      <ul>
+        <li>ラケット：木製、グリップ込み38cm</li>
+        <li>ボール：直径4cm・20g以内、羽根つき</li>
+        <li>弾み：2mから落として70〜90cm</li>
+        <li>コート：8m×4m（テニスの八分の一）</li>
+        <li>シングルスのラインは縦の一本線のみ</li>
+      </ul>
+    </div>
+  </div>
+</details>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ══ 諸元 ══════════════════════════════════════════ */
+const HALF_W=2.0, HALF_L=4.0, NET_H=0.55, NET_X=2.2;
+const G=9.8, DRAG=0.12, REST=0.63, FRIC=0.72;
+const REACH=0.62, PSPEED=3.55;
+const W=900, H=560;
+const CAM={y:9.4, z:3.6, f:620}, HORIZON=14;
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+
+/* ══ 投影 ══════════════════════════════════════════ */
+function pj(x,y,z){
+  const d=Math.max(0.6, CAM.y-y), s=CAM.f/d;
+  return {x:W/2+x*s, y:HORIZON+(CAM.z-z)*s, s:s};
+}
+
+/* ══ 弾道計算 ══════════════════════════════════════ */
+function simTraj(p,v,maxT){
+  maxT=maxT||5;
+  let x=p.x,y=p.y,z=p.z,vx=v.x,vy=v.y,vz=v.z,py=y,zNet=null;
+  const dt=1/240;
+  for(let t=0;t<maxT;t+=dt){
+    const sp=Math.hypot(vx,vy,vz), k=DRAG*sp;
+    vx-=k*vx*dt; vy-=k*vy*dt; vz-=(k*vz+G)*dt;
+    const nz=z+vz*dt, ny=y+vy*dt;
+    if((py>0&&ny<=0)||(py<0&&ny>=0)) zNet=z;
+    x+=vx*dt; py=y; y=ny;
+    if(nz<=0&&vz<0) return {x:x,y:y,t:t+dt,zNet:zNet};
+    z=nz;
+  }
+  return null;
+}
+function solveShot(p,tx,ty,T){
+  let v={x:(tx-p.x)/T, y:(ty-p.y)/T, z:(-p.z)/T+0.5*G*T};
+  for(let i=0;i<14;i++){
+    const r=simTraj(p,v);
+    if(!r){ v.z*=0.85; continue; }
+    v.x+=(tx-r.x)/T; v.y+=(ty-r.y)/T; v.z+=(T-r.t)*G*0.55;
+  }
+  return v;
+}
+/* ネットを越えない解ならば山なりに直す */
+function shotOver(p,tx,ty,T){
+  for(let i=0;i<5;i++){
+    const v=solveShot(p,tx,ty,T), r=simTraj(p,v);
+    if(!r || r.zNet===null || r.zNet>NET_H+0.09) return v;
+    T+=0.14;
+  }
+  return solveShot(p,tx,ty,T);
+}
+
+/* ══ 状態 ══════════════════════════════════════════ */
+const S={
+  phase:'title',          // title / serve / drop / rally / dead / interval / over
+  level:1, guide:true, sound:true, paused:false,
+  pts:{P:0,A:0}, sets:{P:0,A:0}, setNo:1,
+  server:'P', firstServer:'P',
+  serveTries:0,
+  t:0, timer:0,
+  msgT:0,
+  ball:{x:0,y:3,z:0,vx:0,vy:0,vz:0,live:false,tr:[]},
+  bounces:0, hitBy:null, wasServe:false, receiveOk:false,
+  volley:{P:false,A:false},
+  P:{x:1.0,y:4.3,sw:0,swDir:0,lock:true},
+  A:{x:-1.0,y:-4.3,sw:0,swDir:0},
+  ai:{tx:0,ty:-2.6,err:0,react:0,plan:null}, fx:0,
+  land:null, netFlash:0, shake:0
+};
+const LV=[
+  {name:'初級', spd:2.55, err:0.85, wild:0.34, vol:0.10, T:1.06},
+  {name:'中級', spd:3.20, err:0.50, wild:0.20, vol:0.28, T:0.90},
+  {name:'上級', spd:3.95, err:0.27, wild:0.09, vol:0.46, T:0.79}
+];
+
+/* ══ 音 ════════════════════════════════════════════ */
+let AC=null;
+function beep(f,d,type,vol){
+  if(!S.sound) return;
+  try{
+    if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||'triangle'; o.frequency.value=f;
+    o.frequency.exponentialRampToValueAtTime(f*0.55, AC.currentTime+d);
+    g.gain.value=vol||0.09;
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+d);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+const sHit=()=>beep(360,0.09,'triangle',0.13);
+const sTap=()=>beep(700,0.05,'square',0.05);
+const sBnc=()=>beep(190,0.07,'sine',0.07);
+const sNet=()=>beep(120,0.16,'sawtooth',0.07);
+const sWin=()=>{beep(560,0.11);setTimeout(()=>beep(760,0.16),95);};
+const sLos=()=>{beep(300,0.13);setTimeout(()=>beep(200,0.2),95);};
+
+/* ══ 入力 ══════════════════════════════════════════ */
+const K={up:false,down:false,left:false,right:false,hit:false};
+let hitEdge=false;
+const KMAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
+  KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',Space:'hit',Enter:'hit'};
+addEventListener('keydown',e=>{
+  const k=KMAP[e.code]; if(!k) return;
+  e.preventDefault();
+  if(k==='hit'&&!K.hit) hitEdge=true;
+  K[k]=true; paint(k,true);
+},{passive:false});
+addEventListener('keyup',e=>{
+  const k=KMAP[e.code]; if(!k) return;
+  e.preventDefault(); K[k]=false; paint(k,false);
+},{passive:false});
+function paint(k,on){
+  document.querySelectorAll('[data-k="'+k+'"]').forEach(el=>el.classList.toggle('dn',on));
+}
+/* 打つボタン */
+document.querySelectorAll('[data-k="hit"]').forEach(el=>{
+  const dn=e=>{e.preventDefault(); if(!K.hit) hitEdge=true; K.hit=true; el.classList.add('dn');
+    try{el.setPointerCapture(e.pointerId);}catch(_){}};
+  const up=e=>{e.preventDefault(); K.hit=false; el.classList.remove('dn');};
+  el.addEventListener('pointerdown',dn); el.addEventListener('pointerup',up);
+  el.addEventListener('pointercancel',up);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+});
+/* 十字：指を置いたまま滑らせて向きを変えられる。斜めも出る */
+(function(){
+  const pad=document.getElementById('dpad'); if(!pad) return;
+  const DIRS=['up','down','left','right'];
+  let id=null;
+  function apply(e){
+    const r=pad.getBoundingClientRect();
+    const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
+    const dead=r.width*0.155;
+    K.left=dx<-dead; K.right=dx>dead; K.up=dy<-dead; K.down=dy>dead;
+    DIRS.forEach(k=>paint(k,K[k]));
+  }
+  function clear(){ id=null; DIRS.forEach(k=>{K[k]=false; paint(k,false);}); }
+  pad.addEventListener('pointerdown',e=>{
+    e.preventDefault(); id=e.pointerId;
+    try{pad.setPointerCapture(e.pointerId);}catch(_){}
+    apply(e);
+  });
+  pad.addEventListener('pointermove',e=>{ if(e.pointerId!==id) return; e.preventDefault(); apply(e); });
+  pad.addEventListener('pointerup',e=>{ if(e.pointerId===id) clear(); });
+  pad.addEventListener('pointercancel',e=>{ if(e.pointerId===id) clear(); });
+  pad.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+
+/* ══ 画面表示 ══════════════════════════════════════ */
+const $=id=>document.getElementById(id);
+function feathers(el,n){
+  el.innerHTML='';
+  for(let i=0;i<2;i++){
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 9 15'); s.setAttribute('class','fx'+(i<n?' on':''));
+    s.innerHTML='<circle cx="4.5" cy="12" r="2.6" fill="#e2472a"/>'+
+      '<path d="M4.5 10 L1.6 2 M4.5 10 L4.5 0.6 M4.5 10 L7.4 2" stroke="#f2ece1" stroke-width="1.1" stroke-linecap="round" fill="none"/>';
+    el.appendChild(s);
+  }
+}
+function board(){
+  $('pP').textContent=S.pts.P; $('pA').textContent=S.pts.A;
+  $('setNo').textContent=S.setNo;
+  feathers($('fP'),S.sets.P); feathers($('fA'),S.sets.A);
+  $('sP').classList.toggle('on',S.server==='P');
+  $('sA').classList.toggle('on',S.server==='A');
+  const d=S.pts.P>=10&&S.pts.A>=10;
+  $('fmt').textContent = d ? (S.pts.P===S.pts.A?'ジュース':'アドバンテージ') : '11点先取';
+}
+function say(big,why,ms){
+  $('callBig').textContent=big; $('callWhy').textContent=why||'';
+  $('callWhy').style.display=why?'':'none';
+  $('call').classList.add('on'); S.msgT=ms||1500;
+}
+
+/* ══ 試合の進行 ════════════════════════════════════ */
+function newRally(){
+  S.serveTries=0; setupServe();
+}
+function serveSide(){
+  if(S.pts.P>=10&&S.pts.A>=10) return (S.pts.P===S.pts.A)?1:-1;
+  return ((S.pts.P+S.pts.A)%5)%2===0 ? 1 : -1;
+}
+function setupServe(){
+  const sd=serveSide();
+  S.phase='serve'; S.timer=0;
+  S.ball.live=false; S.ball.tr.length=0;
+  S.bounces=0; S.hitBy=null; S.wasServe=true; S.receiveOk=false;
+  S.volley.P=false; S.volley.A=false; S.land=null;
+  /* サーバー・レシーバーとも両者コートの外（ベースラインの後ろ）の所定位置 */
+  S.P.x=sd*1.00; S.P.y=4.34; S.P.lock=false;
+  S.A.x=-sd*1.00; S.A.y=-4.34;
+  if(S.server==='P'){ S.ball.x=S.P.x; S.ball.y=S.P.y-0.16; S.ball.z=1.16; }
+  else{ S.ball.x=S.A.x; S.ball.y=S.A.y+0.16; S.ball.z=1.16; }
+  S.ball.vx=S.ball.vy=S.ball.vz=0;
+  if(S.lastServer && S.lastServer!==S.server){
+    say('サービス交替', S.server==='P'?'あなたのサービスです':'相手のサービスです',1300);
+  }
+  S.lastServer=S.server;
+  board();
+}
+function dropServe(){
+  S.phase='drop'; S.ball.live=true; S.timer=0;
+  S.ball.vx=0; S.ball.vy=0; S.ball.vz=0;
+  sTap();
+}
+function hitServe(who,quality){
+  const sd = (who===S.server) ? serveSide() : 1;
+  const from = who==='P'?S.P:S.A;
+  const sgn = who==='P'?-1:1;                 // 進行方向
+  const bx = who==='P'? -Math.sign(from.x||sd) : -Math.sign(from.x||sd);
+  // 対角のサービスコートへ
+  let tx = bx*0.98, ty = sgn*1.95;
+  const e=(1-quality);
+  if(who==='P'){
+    if(K.left) tx-=0.42; if(K.right) tx+=0.42;
+    tx += (Math.random()*2-1)*e*1.1;
+    ty += sgn*((Math.random()*2-1)*e*1.1);
+  }else{
+    const L=LV[S.level];
+    tx += (Math.random()*2-1)*L.err*0.5;
+    ty += sgn*(Math.random()*2-1)*L.err*0.5;
+    if(Math.random()<L.wild*0.35) ty += sgn*1.5;   // まれにフォールト
+  }
+  const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+  const v=shotOver(p,tx,ty,0.95+(1-quality)*0.1);
+  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
+  S.hitBy=who; S.bounces=0; S.wasServe=true; S.receiveOk=false;
+  S.volley[who]=false;
+  from.sw=0.26; from.swDir=Math.sign(v.x)||1;
+  S.phase='rally'; sHit(); S.shake=2.5;
+  updLand();
+}
+function hitRally(who,quality){
+  const from = who==='P'?S.P:S.A;
+  const other = who==='P'?'A':'P';
+  const sgn = who==='P'?-1:1;
+  const isVolley = S.bounces===0;
+
+  /* エスキー独自：ノーバウンド連続禁止 */
+  if(isVolley && S.volley[who]){
+    point(other,'連続ノーバウンド','同じ人がノーバウンドを続けて打つことはできません');
+    return;
+  }
+  /* サービスのレシーブはワンバウンド後 */
+  if(isVolley && S.wasServe && !S.receiveOk){
+    point(other,'ノーバウンド','サービスはワンバウンドさせてから打ちます');
+    return;
+  }
+  S.volley[who]=isVolley;
+
+  let tx=0, ty=sgn*2.55, T=0.86, flaw=0, putaway=false;
+  if(who==='P'){
+    const atNet = S.P.y<1.60;
+    if(K.left) tx=-1.30; else if(K.right) tx=1.30; else tx=(Math.random()*2-1)*0.45;
+    if(K.up){ ty=sgn*3.20; T=0.70; }
+    else if(K.down){ ty=sgn*3.35; T=1.28; }
+    let e=(1-quality)*1.45;
+    if(isVolley && atNet && !K.down){        /* ネット際のボレー：角度をつけて決めにいく */
+      putaway=true;
+      T=0.50+Math.max(0,S.P.y-0.55)*0.09;
+      ty=sgn*(1.45+Math.random()*0.95);
+      if(K.up){ ty=sgn*3.05; T=0.63; }       /* 深く突き刺す */
+      if(K.left) tx=-1.62; else if(K.right) tx=1.62;
+      e*=0.55;                                /* 距離が近いぶん正確 */
+    }
+    tx+=(Math.random()*2-1)*e; ty+=sgn*(Math.random()*2-1)*e;
+    if(quality<0.40 && Math.random()<(putaway?0.24:0.42)) flaw=2;
+  }else{
+    const L=LV[S.level];
+    const away=-Math.sign(S.P.x)||(Math.random()<0.5?1:-1);
+    tx=away*(0.72+Math.random()*1.16);
+    ty=sgn*(2.0+Math.random()*1.72);
+    T=L.T+(Math.random()*0.18-0.09);
+    if(S.A.y>-1.7 && isVolley){ T=L.T-0.16; tx=away*(1.25+Math.random()*0.72); }  /* 詰めてのボレー */
+    else if(Math.random()<0.16){ ty=sgn*(0.85+Math.random()*0.5); T=L.T+0.14; }   /* 前に落とす */
+    tx+=(Math.random()*2-1)*L.err*0.85;
+    ty+=sgn*(Math.random()*2-1)*L.err*1.05;
+    const w=Math.random();                               /* アンフォーストエラー */
+    if(w<L.wild*0.40){ flaw=1; ty=sgn*(4.35+Math.random()*0.85); }
+    else if(w<L.wild*0.74){ flaw=2; }
+    else if(w<L.wild){ flaw=3; tx=(Math.sign(tx)||1)*(2.30+Math.random()*0.5); }
+  }
+  tx=Math.max(-2.9,Math.min(2.9,tx));
+  const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+  const v = flaw===2 ? solveShot(p,tx,ty,T) : shotOver(p,tx,ty,T);
+  if(flaw===2) v.z*=0.52;                                /* ネットを越えない */
+  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
+  S.hitBy=who; S.bounces=0; S.wasServe=false; S.receiveOk=false;
+  from.sw=0.24; from.swDir=Math.sign(v.x)||1;
+  if(putaway){ beep(520,0.10,'square',0.14); S.shake=5.0; S.fx=0.45; }
+  else { sHit(); S.shake=isVolley?3.5:2.2; }
+  updLand();
+}
+function updLand(){
+  const r=simTraj({x:S.ball.x,y:S.ball.y,z:S.ball.z},{x:S.ball.vx,y:S.ball.vy,z:S.ball.vz});
+  S.land = r ? {x:r.x,y:r.y} : null;
+  S.ai.plan = r ? {x:r.x,y:r.y,t:r.t} : null;
+  S.ai.err = (Math.random()*2-1)*LV[S.level].err*0.55;
+  S.ai.react = 0.10+Math.random()*0.13;
+}
+function point(who,label,why){
+  if(S.phase==='dead') return;
+  S.phase='dead'; S.ball.live=false; S.timer=0; S.land=null; S.retry=false;
+  S.pts[who]++;
+  const win = who==='P';
+  say(win?'ポイント':'失点', (label?label+' ':'')+(why||''), 1750);
+  win?sWin():sLos();
+  const a=S.pts[who], b=S.pts[who==='P'?'A':'P'];
+  if(a>=11 && a-b>=2){                 /* 11点先取・ジュースは二点差 */
+    S.sets[who]++;
+    S.pending = (S.sets[who]>=2) ? {kind:'match',who:who} : {kind:'set',who:who};
+  }else{
+    S.pending=null;
+    if(S.pts.P>=10 && S.pts.A>=10){
+      S.server = who;                  /* ジュース中は得点した方がサービス */
+    }else{
+      const sum=S.pts.P+S.pts.A;
+      if(sum%5===0 && sum>0) S.server = S.server==='P'?'A':'P';  /* 和が5点ごとに交替 */
+    }
+  }
+  board();
+}
+function letCall(){
+  S.phase='dead'; S.ball.live=false; S.timer=-0.35; S.land=null;
+  say('レット','ネットイン サービスをやり直します',1400); sNet();
+  S.retry=true;
+}
+function faultRetry(){
+  S.serveTries++;
+  if(S.serveTries>2){
+    point(S.server==='P'?'A':'P','サービス失敗','やり直しは二回までです');
+    return;
+  }
+  S.phase='dead'; S.ball.live=false; S.timer=-0.3;
+  say('やり直し','ツーバウンドする前に打ちます（あと'+(3-S.serveTries)+'回）',1400);
+  S.retry=true;
+}
+function finish(who){
+  S.phase='over';
+  const v=$('veil');
+  $('vTitle').textContent = who==='P' ? 'あなたの勝ち' : '相手の勝ち';
+  $('vText').textContent  = '第'+S.setNo+'セットまでで '+S.sets.P+' 対 '+S.sets.A+
+    '。速さより読み。落としどころを一つ変えるだけで、次の一本は変わります。';
+  $('vPick').style.display=''; $('vGo').textContent='もう一度';
+  $('vHint').textContent='強さを変えて挑戦できます。';
+  v.classList.remove('hide');
+}
+
+/* ══ 更新 ══════════════════════════════════════════ */
+const ZONE={y0:4.06, y1:4.88, x0:0.10, x1:1.92};   /* サービス／レシーブ所定位置 */
+function movePlayer(dt){
+  const p=S.P;
+  if(p.lock) return;
+  let dx=(K.right?1:0)-(K.left?1:0), dy=(K.down?1:0)-(K.up?1:0);
+  if(dx||dy){ const m=Math.hypot(dx,dy); dx/=m; dy/=m; }
+  p.x+=dx*PSPEED*dt; p.y+=dy*PSPEED*dt;
+  if(S.phase==='serve'||S.phase==='drop'){
+    const sd=serveSide();
+    p.y=Math.max(ZONE.y0,Math.min(ZONE.y1,p.y));
+    p.x = sd>0 ? Math.max(ZONE.x0,Math.min(ZONE.x1,p.x))
+               : Math.max(-ZONE.x1,Math.min(-ZONE.x0,p.x));
+    if(S.server==='P'&&S.phase==='serve'){ S.ball.x=p.x; S.ball.y=p.y-0.16; }
+  }else{
+    p.x=Math.max(-2.85,Math.min(2.85,p.x));
+    p.y=Math.max(0.50,Math.min(4.95,p.y));
+  }
+}
+function moveAI(dt){
+  const a=S.A, L=LV[S.level];
+  let tx=0, ty=-2.55;
+  const b=S.ball;
+  if(b.live && (b.vy<0 || b.y<0) && S.ai.plan && S.hitBy!=='A'){
+    if(S.ai.react>0){ S.ai.react-=dt; }
+    else{
+      tx=S.ai.plan.x+S.ai.err; ty=S.ai.plan.y+S.ai.err*0.55;
+      /* ネット前に落ちる球はやや前で構える */
+      if(ty>-1.2) ty=Math.min(ty,-0.85);
+      if(!S.volley.A && Math.random()<0.002+L.vol*0.004 && b.y<-0.4 && b.z>0.5) ty=Math.max(ty,-1.25);
+    }
+  }
+  tx=Math.max(-2.6,Math.min(2.6,tx)); ty=Math.max(-4.85,Math.min(-0.52,ty));
+  S.ai.tx=tx; S.ai.ty=ty;
+  const dx=tx-a.x, dy=ty-a.y, d=Math.hypot(dx,dy);
+  if(d>0.02){
+    const st=Math.min(d, L.spd*dt);
+    a.x+=dx/d*st; a.y+=dy/d*st;
+  }
+}
+function reachQuality(p,b){
+  const d=Math.hypot(b.x-p.x, b.y-p.y);
+  if(d>REACH || b.z>1.92 || b.z<0.015) return -1;
+  const zq = b.z<0.28 ? b.z/0.28 : (b.z>1.35 ? Math.max(0,(1.92-b.z)/0.57) : 1);
+  const dq = 1-Math.pow(d/REACH,1.7);
+  return Math.max(0.12, Math.min(1, 0.42+0.58*dq*Math.max(0.35,zq)));
+}
+function tryPlayerHit(){
+  const b=S.ball;
+  if(!b.live) return;
+  if(S.phase==='serve'){ dropServe(); return; }
+  if(S.phase==='drop' && S.server==='P'){
+    if(S.bounces===1 && b.z>0.03){
+      const q=Math.max(0.30, 1-Math.abs(b.z-0.36)/0.55);
+      hitServe('P',Math.min(1,q));
+    }else{ S.P.sw=0.24; }
+    return;
+  }
+  if(S.phase!=='rally') return;
+  if(S.hitBy==='P') return;                 // 相手が打つまで再打球不可
+  if(b.y<0.06) return;                      // 自分のサイドのみ
+  const q=reachQuality(S.P,b);
+  S.P.sw=Math.max(S.P.sw,0.20);
+  if(q<0) return;
+  hitRally('P',q);
+}
+function tryAIHit(){
+  const b=S.ball, L=LV[S.level];
+  if(!b.live || S.phase!=='rally' || S.hitBy==='A' || b.y>-0.06) return;
+  const q=reachQuality(S.A,b);
+  if(q<0) return;
+  if(S.bounces===0){
+    if(S.volley.A) return;                                     // 連続禁止を守る
+    if(S.wasServe && !S.receiveOk) return;                     // レシーブは待つ
+    if(!(b.z>0.42 && b.z<1.65 && S.A.y>-2.1 && Math.random()<L.vol)) return;
+  }
+  hitRally('A',Math.min(1,q*(0.72+L.spd*0.07)));
+}
+function physics(dt){
+  const b=S.ball;
+  if(!b.live) return;
+  const py=b.y;
+  const sp=Math.hypot(b.vx,b.vy,b.vz), k=DRAG*sp;
+  b.vx-=k*b.vx*dt; b.vy-=k*b.vy*dt; b.vz-=(k*b.vz+G)*dt;
+  const nx=b.x+b.vx*dt, ny=b.y+b.vy*dt, nz=b.z+b.vz*dt;
+
+  /* ネット */
+  if((py>0&&ny<=0)||(py<0&&ny>=0)){
+    if(Math.abs(nx)<=NET_X){
+      const zc=b.z+b.vz*dt*0.5;
+      if(zc<NET_H){
+        if(zc>NET_H-0.075){                      /* ネットイン */
+          b.x=nx; b.z=NET_H+0.03; b.y=py>0?-0.03:0.03;
+          b.vx*=0.45; b.vy*=0.38; b.vz=Math.abs(b.vz)*0.18+0.55;
+          S.netFlash=0.3; sNet();
+          if(S.wasServe){ letCall(); return; }
+          updLand(); return;
+        }else{                                    /* ネットに掛かった */
+          b.z=Math.max(0.04,zc); b.y=py>0?0.05:-0.05;
+          b.vy*=-0.18; b.vx*=0.3; b.vz*=0.2;
+          S.netFlash=0.45; sNet();
+          const loser=S.hitBy||'P';
+          point(loser==='P'?'A':'P','ネット','ボールがネットを越えませんでした');
+          return;
+        }
+      }
+    }
+  }
+  b.x=nx; b.y=ny; b.z=nz;
+
+  /* バウンド */
+  if(b.z<=0 && b.vz<0){
+    b.z=0;
+    const inX=Math.abs(b.x)<=HALF_W+0.02, inY=Math.abs(b.y)<=HALF_L+0.02;
+    const inCourt=inX&&inY;
+    sBnc();
+    b.vz=-b.vz*REST; b.vx*=FRIC; b.vy*=FRIC;
+    if(b.vz<0.35){ b.vz*=0.5; }
+    S.bounces++;
+
+    if(S.phase==='drop') return;   /* トスの弾みは判定しない */
+
+    if(S.wasServe && S.hitBy && S.bounces===1){
+      /* サービスの落下地点判定 */
+      const sd=serveSide();
+      const wantX = (S.hitBy==='P') ? -Math.sign(sd) : Math.sign(sd);
+      const okBox = inCourt &&
+        ((S.hitBy==='P') ? (b.y<0) : (b.y>0)) &&
+        (Math.sign(b.x)===wantX || Math.abs(b.x)<0.05);
+      if(!okBox){
+        point(S.hitBy==='P'?'A':'P','サービスフォールト','対角の半面に入りませんでした');
+        return;
+      }
+      S.receiveOk=true;
+      return;
+    }
+    if(S.bounces===1){
+      if(!inCourt){
+        point(S.hitBy==='P'?'A':'P','アウト','コートの外に落ちました');
+        return;
+      }
+      return;
+    }
+    if(S.bounces>=2){
+      const loser = b.y>0 ? 'P' : 'A';
+      point(loser==='P'?'A':'P','ツーバウンド', loser==='P'?'返球できませんでした':'相手が返せませんでした');
+      return;
+    }
+  }
+
+  /* 転がって止まったら決着（保険） */
+  if(b.z<0.02 && Math.abs(b.vz)<0.2 && S.bounces>=1 && Math.hypot(b.vx,b.vy)<0.4 && S.phase==='rally'){
+    const loser = b.y>0?'P':'A';
+    point(loser==='P'?'A':'P','ツーバウンド','');
+  }
+
+  b.tr.push({x:b.x,y:b.y,z:b.z});
+  if(b.tr.length>16) b.tr.shift();
+}
+
+/* ══ 描画 ══════════════════════════════════════════ */
+function line(a,b,c,d,w,col){
+  const p1=pj(a,b,0), p2=pj(c,d,0);
+  ctx.strokeStyle=col; ctx.lineWidth=w; ctx.beginPath();
+  ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+}
+function drawCourt(){
+  /* 体育館の床 */
+  const g=ctx.createLinearGradient(0,HORIZON,0,H);
+  g.addColorStop(0,'#0b1f33'); g.addColorStop(0.34,'#123049'); g.addColorStop(1,'#1a2c3d');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  /* 奥の暗がり */
+  const g2=ctx.createLinearGradient(0,0,0,220);
+  g2.addColorStop(0,'#061120'); g2.addColorStop(1,'rgba(6,17,32,0)');
+  ctx.fillStyle=g2; ctx.fillRect(0,0,W,220);
+
+  /* 檜のコート面 */
+  const c=[pj(-HALF_W,HALF_L,0),pj(HALF_W,HALF_L,0),pj(HALF_W,-HALF_L,0),pj(-HALF_W,-HALF_L,0)];
+  const wg=ctx.createLinearGradient(0,c[3].y,0,c[0].y);
+  wg.addColorStop(0,'#b98d5d'); wg.addColorStop(0.5,'#d3a973'); wg.addColorStop(1,'#e6c493');
+  ctx.fillStyle=wg; ctx.beginPath();
+  ctx.moveTo(c[0].x,c[0].y); for(let i=1;i<4;i++) ctx.lineTo(c[i].x,c[i].y);
+  ctx.closePath(); ctx.fill();
+
+  /* 板目 */
+  ctx.save(); ctx.clip();
+  ctx.globalAlpha=0.13; ctx.strokeStyle='#6b4626'; ctx.lineWidth=1;
+  for(let i=-9;i<=9;i++){
+    const x=i*0.45, p1=pj(x,HALF_L,0), p2=pj(x,-HALF_L,0);
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* ライン */
+  const LC='rgba(250,247,240,.93)';
+  line(-HALF_W,HALF_L,HALF_W,HALF_L,3.4,LC);
+  line(-HALF_W,-HALF_L,HALF_W,-HALF_L,2.0,LC);
+  line(-HALF_W,HALF_L,-HALF_W,-HALF_L,2.6,LC);
+  line(HALF_W,HALF_L,HALF_W,-HALF_L,2.6,LC);
+  line(0,HALF_L,0,-HALF_L,2.0,LC);   /* シングルスは縦の一本線のみ */
+
+  /* サービス時の所定位置（両者ともコートの外） */
+  if(S.phase==='serve'||S.phase==='drop'){
+    const sd=serveSide();
+    [[sd,ZONE.y0,ZONE.y1],[-sd,-ZONE.y0,-ZONE.y1]].forEach(function(z){
+      const xs=z[0], a=pj(xs*ZONE.x0,z[1],0), b=pj(xs*ZONE.x1,z[1],0),
+            c=pj(xs*ZONE.x1,z[2],0), d=pj(xs*ZONE.x0,z[2],0);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.lineTo(c.x,c.y); ctx.lineTo(d.x,d.y); ctx.closePath();
+      ctx.fillStyle='rgba(226,71,42,.10)'; ctx.fill();
+      ctx.setLineDash([6,5]); ctx.strokeStyle='rgba(226,71,42,.62)'; ctx.lineWidth=1.8;
+      ctx.stroke(); ctx.setLineDash([]);
+    });
+  }
+
+  /* 着地点ガイド */
+  if(S.guide && S.land && S.phase==='rally'){
+    const p=pj(S.land.x,S.land.y,0), r=0.30*p.s;
+    const ok=Math.abs(S.land.x)<=HALF_W&&Math.abs(S.land.y)<=HALF_L;
+    ctx.strokeStyle= ok?'rgba(226,71,42,.9)':'rgba(255,255,255,.5)';
+    ctx.lineWidth=2.2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.ellipse(p.x,p.y,r,r*0.34,0,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+function drawNet(){
+  const L=pj(-NET_X,0,0), R=pj(NET_X,0,0);
+  const Lt=pj(-NET_X,0,NET_H+0.06), Rt=pj(NET_X,0,NET_H+0.06);
+  /* 網 */
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(L.x,L.y); ctx.lineTo(R.x,R.y); ctx.lineTo(Rt.x,Rt.y); ctx.lineTo(Lt.x,Lt.y); ctx.closePath();
+  ctx.fillStyle= S.netFlash>0 ? 'rgba(226,71,42,.35)' : 'rgba(12,26,42,.42)'; ctx.fill();
+  ctx.clip();
+  ctx.strokeStyle='rgba(226,232,240,.30)'; ctx.lineWidth=1;
+  for(let i=0;i<=44;i++){
+    const x=-NET_X+i*(NET_X*2/44), a=pj(x,0,0), b2=pj(x,0,NET_H+0.06);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  }
+  for(let i=0;i<=7;i++){
+    const z=i*(NET_H/7), a=pj(-NET_X,0,z), b2=pj(NET_X,0,z);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  }
+  ctx.restore();
+  /* 白帯 */
+  const b1=pj(-NET_X,0,NET_H), b2=pj(NET_X,0,NET_H);
+  ctx.strokeStyle='#f6f2ea'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.moveTo(b1.x,b1.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  /* 支柱 */
+  [-NET_X,NET_X].forEach(x=>{
+    const a=pj(x,0,0), t=pj(x,0,NET_H+0.13);
+    ctx.strokeStyle='#8ea6bd'; ctx.lineWidth=Math.max(3,0.045*a.s);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(t.x,t.y); ctx.stroke();
+  });
+}
+function drawShadow(x,y,r){
+  const p=pj(x,y,0);
+  ctx.fillStyle='rgba(40,26,12,.30)';
+  ctx.beginPath(); ctx.ellipse(p.x,p.y,r*p.s,r*p.s*0.33,0,0,Math.PI*2); ctx.fill();
+}
+function drawPerson(p,near){
+  const s=pj(p.x,p.y,0).s;
+  drawShadow(p.x,p.y,0.30);
+  const foot=pj(p.x,p.y,0), hip=pj(p.x,p.y,0.86), sho=pj(p.x,p.y,1.42), head=pj(p.x,p.y,1.63);
+  const body = near ? '#e2472a' : '#2f6fa8';
+  const dark = near ? '#a92f18' : '#1d4e79';
+  const skin = '#f0d4b2';
+  /* 脚 */
+  ctx.strokeStyle='#1b2c3e'; ctx.lineWidth=Math.max(3,0.088*s); ctx.lineCap='round';
+  const sp=0.13*s;
+  ctx.beginPath(); ctx.moveTo(hip.x-sp*0.5,hip.y); ctx.lineTo(foot.x-sp,foot.y);
+  ctx.moveTo(hip.x+sp*0.5,hip.y); ctx.lineTo(foot.x+sp,foot.y); ctx.stroke();
+  /* 胴 */
+  ctx.fillStyle=body;
+  ctx.beginPath();
+  ctx.moveTo(sho.x-0.20*s,sho.y); ctx.lineTo(sho.x+0.20*s,sho.y);
+  ctx.lineTo(hip.x+0.15*s,hip.y); ctx.lineTo(hip.x-0.15*s,hip.y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=dark; ctx.fillRect(hip.x-0.15*s,hip.y-0.03*s,0.30*s,0.06*s);
+  /* 頭 */
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.arc(head.x,head.y,0.115*s,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#241a16';
+  ctx.beginPath(); ctx.arc(head.x,head.y-0.028*s,0.118*s,Math.PI*1.06,Math.PI*1.94); ctx.fill();
+  /* 腕とラケット */
+  const t=Math.max(0,p.sw)/0.26;
+  const swing = Math.sin(Math.min(1,1-t)*Math.PI);
+  const dir = p.swDir||1;
+  const rx = p.x + dir*(0.20+0.34*swing);
+  const rz = 0.92 + 0.42*swing;
+  const rp = pj(rx, p.y + (near?-0.12:0.12), rz);
+  ctx.strokeStyle=skin; ctx.lineWidth=Math.max(2.4,0.062*s);
+  ctx.beginPath(); ctx.moveTo(sho.x+dir*0.14*s,sho.y+0.04*s); ctx.lineTo(rp.x,rp.y); ctx.stroke();
+  /* 木製ラケット（グリップ込み38cm） */
+  const rl=0.20*s;
+  ctx.save(); ctx.translate(rp.x,rp.y); ctx.rotate(dir*(0.5-swing*1.5));
+  ctx.fillStyle='#c99a5f'; ctx.strokeStyle='#7b5326'; ctx.lineWidth=Math.max(1,0.012*s);
+  ctx.beginPath(); ctx.ellipse(0,-rl*0.55,rl*0.62,rl*0.86,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#8a5f2e'; ctx.fillRect(-rl*0.10,rl*0.16,rl*0.20,rl*0.62);
+  ctx.restore();
+}
+function drawBall(){
+  const b=S.ball;
+  if(!b.live && S.phase!=='serve' && S.phase!=='drop') return;
+  drawShadow(b.x,b.y,0.075+b.z*0.022);
+  /* 軌跡 */
+  for(let i=0;i<b.tr.length;i++){
+    const q=b.tr[i], p=pj(q.x,q.y,q.z), a=(i/b.tr.length)*0.30;
+    ctx.fillStyle='rgba(255,240,225,'+a.toFixed(3)+')';
+    ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(1,0.02*p.s),0,Math.PI*2); ctx.fill();
+  }
+  const p=pj(b.x,b.y,b.z), r=Math.max(3.2,0.045*p.s);
+  /* 羽根 */
+  const ang=Math.atan2(-b.vz,Math.hypot(b.vx,b.vy))*0.5;
+  ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(ang);
+  ctx.strokeStyle='rgba(245,238,226,.92)'; ctx.lineWidth=Math.max(1.1,r*0.28); ctx.lineCap='round';
+  for(let i=-1;i<=1;i++){
+    ctx.beginPath(); ctx.moveTo(0,-r*0.3); ctx.lineTo(i*r*1.5,-r*2.5); ctx.stroke();
+  }
+  ctx.restore();
+  /* 球体 */
+  const gg=ctx.createRadialGradient(p.x-r*0.35,p.y-r*0.4,r*0.15,p.x,p.y,r);
+  gg.addColorStop(0,'#ffffff'); gg.addColorStop(1,'#d9cfbe');
+  ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(90,70,48,.55)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.stroke();
+}
+function drawServeGauge(){
+  if(S.phase!=='drop'||S.server!=='P') return;
+  const b=S.ball;
+  const p=pj(S.P.x,S.P.y,0);
+  const w=150,hh=11,x=Math.max(8,Math.min(W-w-8,p.x-w/2)),y=Math.min(H-42,p.y+14);
+  ctx.fillStyle='rgba(6,16,28,.88)'; ctx.fillRect(x-3,y-3,w+6,hh+6);
+  ctx.strokeStyle='#35597d'; ctx.lineWidth=1; ctx.strokeRect(x-3,y-3,w+6,hh+6);
+  const live=S.bounces===1;
+  ctx.fillStyle= live ? '#7fae72' : '#2c4763';
+  ctx.fillRect(x,y,w*(live?1:Math.min(0.96,b.z/1.16)),hh);
+  ctx.fillStyle= live?'#f2ece1':'#9dbdd8'; ctx.font='600 12px system-ui'; ctx.textAlign='center';
+  ctx.fillText(live?'いま打つ':'ワンバウンドを待つ', x+w/2, y+hh+16);
+  ctx.textAlign='left';
+}
+function draw(){
+  ctx.save();
+  if(S.shake>0){ ctx.translate((Math.random()-0.5)*S.shake,(Math.random()-0.5)*S.shake); }
+  drawCourt();
+  drawPerson(S.A,false);
+  if(S.ball.y<=0) drawBall();
+  drawNet();
+  if(S.ball.y>0) drawBall();
+  drawPerson(S.P,true);
+  drawServeGauge();
+  if(S.fx>0){
+    const q=pj(S.P.x,S.P.y,1.95);
+    ctx.globalAlpha=Math.min(1,S.fx*2.6);
+    ctx.fillStyle='#e2472a'; ctx.font='700 20px system-ui'; ctx.textAlign='center';
+    ctx.fillText('ボレー', q.x, q.y-(0.45-S.fx)*46);
+    ctx.textAlign='left'; ctx.globalAlpha=1;
+  }
+  ctx.restore();
+
+  /* サービス案内 */
+  if(S.phase==='serve'){
+    ctx.fillStyle='rgba(6,16,28,.86)';
+    const msg = S.server==='P' ? 'スペース／打つボタンでトス' : '相手のサービスです';
+    ctx.font='600 15px system-ui'; const w=ctx.measureText(msg).width+30;
+    ctx.fillRect(W/2-w/2,H-46,w,28);
+    ctx.fillStyle='#f2ece1'; ctx.textAlign='center';
+    ctx.fillText(msg,W/2,H-27); ctx.textAlign='left';
+  }
+}
+
+/* ══ ループ ════════════════════════════════════════ */
+let last=0, acc=0;
+function frame(ts){
+  requestAnimationFrame(frame);
+  if(!last) last=ts;
+  let dt=(ts-last)/1000; last=ts;
+  if(dt>0.25) dt=0.25;
+  if(S.phase==='title'||S.phase==='over'||S.paused){ hitEdge=false; draw(); return; }
+  acc+=dt;
+  const step=1/120;
+  while(acc>=step){ tick(step); acc-=step; }
+  hitEdge=false;
+  draw();
+  /* テロップ */
+  if(S.msgT>0){ S.msgT-=dt*1000; if(S.msgT<=0) $('call').classList.remove('on'); }
+  $('warn').classList.toggle('on', S.phase==='rally' && S.volley.P && S.hitBy==='A');
+  if(S.netFlash>0) S.netFlash-=dt;
+  if(S.shake>0) S.shake=Math.max(0,S.shake-dt*22);
+  if(S.fx>0) S.fx=Math.max(0,S.fx-dt);
+}
+function tick(dt){
+  S.t+=dt; S.timer+=dt;
+  if(S.P.sw>0) S.P.sw-=dt;
+  if(S.A.sw>0) S.A.sw-=dt;
+
+  if(S.phase==='serve'){
+    S.P.lock=false;
+    movePlayer(dt);
+    if(S.server==='P'){
+      if(hitEdge){ dropServe(); }
+    }else{
+      if(S.timer>0.75) dropServe();
+    }
+    return;
+  }
+  if(S.phase==='drop'){
+    S.P.lock = (S.server==='P');   /* サーバーは打ち終わるまで動けない */
+    physics(dt);
+    movePlayer(dt);
+    if(S.server==='P'){
+      const canHit = S.bounces===1 && S.ball.z>0.03;
+      if((hitEdge||S.P.sw>0.02) && canHit){
+        const q=Math.max(0.30,1-Math.abs(S.ball.z-0.36)/0.55);
+        S.P.sw=0.24; hitServe('P',Math.min(1,q));
+      }else if(hitEdge){ S.P.sw=0.24; }   /* 早押しは少しの間受け付ける */
+    }else{
+      if(S.bounces===1 && S.ball.z>0.24 && S.ball.vz<0){
+        S.A.sw=0.24; hitServe('A',0.78+Math.random()*0.2);
+      }
+    }
+    if(S.bounces>=2 && S.phase==='drop'){ faultRetry(); }
+    return;
+  }
+  if(S.phase==='rally'){
+    S.P.lock=false;
+    movePlayer(dt); moveAI(dt); physics(dt);
+    if(S.phase!=='rally') return;
+    if(hitEdge) tryPlayerHit();
+    else if(S.P.sw>0.02 && S.hitBy!=='P'){       /* 振り抜き中の当たり判定 */
+      const b=S.ball;
+      if(b.y>0.06){ const q=reachQuality(S.P,b); if(q>=0) hitRally('P',q); }
+    }
+    tryAIHit();
+    return;
+  }
+  if(S.phase==='dead'){
+    moveAI(dt); movePlayer(dt);
+    if(S.timer>1.55){
+      if(S.pending){
+        const pd=S.pending; S.pending=null;
+        if(pd.kind==='match'){ finish(pd.who); return; }
+        S.setNo++; S.pts.P=0; S.pts.A=0;
+        S.server = (S.setNo===2) ? (S.firstServer==='P'?'A':'P') : pd.who;
+        board();
+        say('第'+S.setNo+'セット','サイドチェンジ サービスは'+(S.server==='P'?'あなた':'相手'),2300);
+        S.phase='interval'; S.timer=0; return;
+      }
+      if(S.retry){ S.retry=false; setupServe(); } else newRally();
+    }
+    return;
+  }
+  if(S.phase==='interval'){
+    if(S.timer>2.3){ S.serveTries=0; setupServe(); }
+    return;
+  }
+}
+
+/* ══ 開始・設定 ════════════════════════════════════ */
+document.querySelectorAll('[data-lv]').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('[data-lv]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); S.level=+b.dataset.lv;
+    S.guide = S.level===0 ? true : S.guide;
+    $('tgGuide').classList.toggle('on',S.guide);
+  };
+});
+$('vGo').onclick=()=>{
+  $('veil').classList.add('hide');
+  S.pts.P=0;S.pts.A=0;S.sets.P=0;S.sets.A=0;S.setNo=1;
+  S.server = Math.random()<0.5?'P':'A'; S.firstServer=S.server;
+  S.retry=false;
+  board(); setupServe();
+  say('第1セット', S.server==='P'?'あなたのサービスです':'相手のサービスです',1600);
+  if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+};
+$('tgGuide').onclick=e=>{ S.guide=!S.guide; e.target.classList.toggle('on',S.guide); };
+$('tgSound').onclick=e=>{ S.sound=!S.sound; e.target.classList.toggle('on',S.sound); };
+$('tgPause').onclick=e=>{ S.paused=!S.paused; e.target.classList.toggle('on',S.paused);
+  e.target.textContent=S.paused?'再開':'一時停止'; };
+
+board(); feathers($('fP'),0); feathers($('fA'),0);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
+EOFcat << 'EOF' > index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>翔け！エスキーテニス ESCI TENNIS</title>
+<style>
+:root{
+  --ai:#0d1f33;        /* 藍 */
+  --ai2:#132a44;       /* 濃紺 */
+  --ai3:#1c3a5c;
+  --hinoki:#e0bd8c;    /* 檜 */
+  --hinoki-d:#c39a67;
+  --kinari:#f2ece1;    /* 生成り */
+  --shu:#e2472a;       /* 朱 */
+  --take:#7fae72;      /* 若竹 */
+  --sumi:#0a1622;
+  --maru:"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","M PLUS Rounded 1c","Zen Maru Gothic","Rounded Mplus 1c","Yu Gothic Medium",var(--gothic);
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Shippori Mincho",serif;
+  --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(1100px 620px at 50% -8%, #1b3a5b 0%, transparent 62%),
+    var(--ai);
+  color:var(--kinari);
+  font-family:var(--gothic);
+  -webkit-font-smoothing:antialiased;
+  padding:18px 14px 40px;
+}
+.frame{max-width:952px;margin:0 auto}
+
+/* ── ヘッダー ───────────────────────── */
+header{display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.eyebrow{
+  font-family:var(--mincho);font-size:11px;letter-spacing:.42em;color:#7fa3c4;
+  border-left:3px solid var(--shu);padding-left:9px;line-height:1.7
+}
+h1{
+  font-family:var(--maru);font-weight:600;margin:2px 0 0;
+  font-size:clamp(23px,4.7vw,38px);letter-spacing:.1em;line-height:1.08
+}
+h1 .en{
+  display:block;font-size:11px;letter-spacing:.5em;color:#6f93b4;
+  font-family:var(--gothic);margin-top:9px;font-weight:400
+}
+.origin{
+  margin-left:auto;text-align:right;font-size:11px;line-height:1.85;color:#82a5c5;
+  font-family:var(--mincho);letter-spacing:.06em
+}
+.origin b{color:var(--kinari);font-weight:600}
+
+/* ── スコアボード（昭和の体育館めくり式） ── */
+.board{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;
+  background:linear-gradient(#0a1a2c,#081522);
+  border:1px solid #274863;border-radius:3px;padding:10px 12px;margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
+}
+.side{display:flex;align-items:center;gap:12px}
+.side.right{flex-direction:row-reverse;text-align:right}
+.who{font-family:var(--mincho);font-size:13px;letter-spacing:.16em;line-height:1.5}
+.who small{display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.22em;color:#7d9fbf}
+.pts{
+  font-family:var(--mincho);font-size:44px;line-height:.86;font-weight:600;
+  min-width:1.5ch;text-align:center;font-variant-numeric:tabular-nums
+}
+.feathers{display:flex;gap:4px;margin-top:5px;justify-content:inherit}
+.fx{width:9px;height:15px;opacity:.2}
+.fx.on{opacity:1}
+.mid{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 14px;border-left:1px solid #1e3b56;border-right:1px solid #1e3b56;min-width:104px
+}
+.setno{font-family:var(--mincho);font-size:15px;letter-spacing:.14em}
+.setno b{color:var(--shu)}
+.mid small{font-size:9.5px;letter-spacing:.2em;color:#7d9fbf;margin-top:4px}
+.srv{
+  font-size:9.5px;letter-spacing:.16em;color:var(--sumi);background:var(--shu);
+  padding:2px 7px;border-radius:2px;font-weight:700;visibility:hidden;margin-top:4px
+}
+.srv.on{visibility:visible}
+
+/* ── 舞台 ───────────────────────────── */
+.stage{position:relative;border:1px solid #274863;border-radius:3px;overflow:hidden;background:#071220}
+canvas{display:block;width:100%;height:auto;touch-action:none}
+.veil{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:14px;padding:22px;
+  background:rgba(6,16,28,.9);backdrop-filter:blur(3px)
+}
+.veil.hide{display:none}
+.veil h2{font-family:var(--mincho);font-size:clamp(21px,4.4vw,31px);margin:0;letter-spacing:.1em;font-weight:600}
+.veil p{margin:0;font-size:13px;line-height:1.95;color:#b9cfe3;max-width:44ch}
+.veil .sub{font-size:11.5px;color:#87a8c6;letter-spacing:.05em}
+.choices{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.btn{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.1em;
+  background:transparent;color:var(--kinari);border:1px solid #4b7098;
+  padding:10px 20px;border-radius:2px;cursor:pointer;transition:.15s
+}
+.btn:hover,.btn:focus-visible{background:#17324e;border-color:var(--kinari)}
+.btn.on{background:var(--shu);border-color:var(--shu);color:#150806;font-weight:700}
+.btn.go{background:var(--kinari);color:var(--sumi);border-color:var(--kinari);font-weight:700;padding:11px 34px}
+.btn.go:hover{background:#fff}
+.pick{display:flex;flex-direction:column;gap:7px;align-items:center}
+.pick>span{font-size:10px;letter-spacing:.26em;color:#7fa3c4}
+
+/* 実況テロップ */
+.call{
+  position:absolute;left:0;right:0;top:34%;text-align:center;pointer-events:none;
+  opacity:0;transition:opacity .18s
+}
+.call.on{opacity:1}
+.call .big{
+  font-family:var(--mincho);font-size:clamp(26px,5.6vw,42px);font-weight:600;letter-spacing:.14em;
+  text-shadow:0 3px 20px #05101c,0 0 3px #05101c
+}
+.call .why{
+  display:inline-block;margin-top:9px;font-size:12px;letter-spacing:.12em;
+  background:rgba(6,16,28,.88);padding:5px 15px;border-radius:2px;border:1px solid #35597d
+}
+/* 反則予告バッジ */
+.warn{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:11px;
+  font-size:11px;letter-spacing:.1em;background:rgba(226,71,42,.94);color:#fff;
+  padding:5px 14px;border-radius:2px;opacity:0;transition:.2s;font-weight:700
+}
+.warn.on{opacity:1}
+
+/* ── 操作パッド ─────────────────────── */
+.pad{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;flex-wrap:wrap;
+  user-select:none;-webkit-user-select:none
+}
+.dpad{
+  display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px;
+  touch-action:none;user-select:none;-webkit-user-select:none;padding:7px;margin:-7px
+}
+.key{
+  background:#13293f;border:1px solid #35597d;border-radius:3px;color:var(--kinari);
+  font-size:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:.08s;pointer-events:none
+}
+.key:active,.key.dn{background:var(--ai3);border-color:var(--kinari);transform:translateY(1px)}
+.key.empty{background:transparent;border:none;cursor:default}
+.hit{
+  width:126px;height:126px;border-radius:50%;background:var(--shu);border:none;color:#160705;
+  font-family:var(--mincho);font-size:22px;font-weight:700;letter-spacing:.14em;cursor:pointer;
+  user-select:none;-webkit-user-select:none;touch-action:none;
+  box-shadow:0 5px 0 #972d19;transition:.06s
+}
+.hit:active,.hit.dn{transform:translateY(4px);box-shadow:0 1px 0 #972d19}
+.hit small{display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.18em;font-weight:400;margin-top:3px;opacity:.75}
+.rotate{display:none;margin:9px 0 0;font-size:11px;letter-spacing:.06em;color:#8dafcd;text-align:center}
+.rotate::before{content:"⟳ ";color:var(--shu)}
+.tips{font-size:11px;line-height:2;color:#8dafcd;flex:1;min-width:172px}
+.tips b{color:var(--kinari);font-weight:600}
+.toggles{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.tg{
+  font-size:10.5px;letter-spacing:.08em;background:transparent;border:1px solid #35597d;
+  color:#9dbdd8;padding:5px 11px;border-radius:2px;cursor:pointer
+}
+.tg.on{background:#1c3a5c;color:var(--kinari);border-color:#5d84ab}
+
+/* ── ルール ─────────────────────────── */
+details{
+  margin-top:20px;border-top:1px solid #23425f;padding-top:14px
+}
+summary{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.16em;cursor:pointer;color:#bad3e8;
+  list-style:none;display:flex;align-items:center;gap:9px
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"─";color:var(--shu)}
+details[open] summary::before{content:"│"}
+.rulewrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:16px;margin-top:14px}
+.card{background:rgba(255,255,255,.028);border-left:2px solid var(--shu);padding:12px 15px;border-radius:2px}
+.card h3{font-family:var(--mincho);font-size:13.5px;margin:0 0 8px;letter-spacing:.1em;font-weight:600}
+.card ul{margin:0;padding-left:1.1em;font-size:12px;line-height:2;color:#b6cee2}
+.card li::marker{color:#4e7ba3}
+footer{margin-top:22px;font-size:10.5px;line-height:2.1;color:#6f93b4;border-top:1px solid #1b3651;padding-top:12px}
+footer a{color:#9dbdd8}
+/* 横向きの携帯：コートを最大化し、操作は左右の余白に重ねる */
+@media (orientation:landscape) and (max-height:560px){
+  body{padding:5px 8px 6px}
+  header,details,.tips{display:none}
+  .board{padding:4px 12px;margin-bottom:5px}
+  .pts{font-size:23px} .who{font-size:11px} .who small{display:none}
+  .feathers{margin-top:2px} .setno{font-size:12px} .mid small{display:none}
+  .srv{margin-top:2px;font-size:8.5px}
+  .stage{max-width:min(100%,calc((100dvh - 92px) * 1.607));margin:0 auto}
+  .pad{
+    position:fixed;inset:0;margin:0;padding:0 14px 14px;pointer-events:none;
+    align-items:flex-end;justify-content:space-between;flex-wrap:nowrap;z-index:5
+  }
+  .dpad{pointer-events:auto;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px}
+  .hit{pointer-events:auto;width:94px;height:94px;font-size:17px}
+  .hit small{font-size:8px}
+}
+@media (max-width:600px){
+  body{padding:12px 8px 26px}
+  .dpad{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px)}
+  .hit{width:104px;height:104px;font-size:19px}
+  .pts{font-size:34px}
+  .mid{min-width:82px;padding:0 8px}
+  .pad{justify-content:center}
+  .tips{order:3;text-align:center}
+}
+@media (max-width:600px) and (orientation:portrait){ .rotate{display:block} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="frame">
+
+<header>
+  <div>
+    <div class="eyebrow">広島発祥・一九四八年</div>
+    <h1>翔け！エスキーテニス<span class="en">ESCI TENNIS</span></h1>
+  </div>
+  <div class="origin">
+    Education, Science and Culture Institute<br>
+    コート <b>8m × 4m</b> ネット <b>55cm</b><br>
+    木製ラケット・羽根つきスポンジボール
+  </div>
+</header>
+
+<div class="board">
+  <div class="side">
+    <div class="pts" id="pP">0</div>
+    <div>
+      <div class="who">あなた<small>NEAR SIDE</small></div>
+      <div class="feathers" id="fP"></div>
+      <div class="srv" id="sP">サービス</div>
+    </div>
+  </div>
+  <div class="mid">
+    <div class="setno">第<b id="setNo">1</b>セット</div>
+    <small id="fmt">11点先取</small>
+  </div>
+  <div class="side right">
+    <div class="pts" id="pA">0</div>
+    <div>
+      <div class="who">対戦相手<small>FAR SIDE</small></div>
+      <div class="feathers" id="fA"></div>
+      <div class="srv" id="sA">サービス</div>
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+  <canvas id="cv" width="900" height="560"></canvas>
+  <div class="call" id="call"><div class="big" id="callBig"></div><div><span class="why" id="callWhy"></span></div></div>
+  <div class="warn" id="warn">次はノーバウンドで打てません（連続ノーバウンド禁止）</div>
+
+  <div class="veil" id="veil">
+    <h2 id="vTitle">羽根つきから生まれた競技</h2>
+    <p id="vText">被爆後の広島で、復興を願う人々によって考案された球技です。テニスの８分の１のコートで、羽根のついたスポンジボールを木製ラケットで打ち合います。速さより読み。老若男女を問わず一緒に楽しめます。</p>
+    <div class="pick" id="vPick">
+      <span>対戦相手の強さ</span>
+      <div class="choices">
+        <button class="btn" data-lv="0">初級</button>
+        <button class="btn on" data-lv="1">中級</button>
+        <button class="btn" data-lv="2">上級</button>
+      </div>
+    </div>
+    <div class="choices"><button class="btn go" id="vGo">試合開始</button></div>
+    <p class="sub" id="vHint">矢印キーで移動、スペースで打つ。スマートフォンは下のボタンで操作できます。</p>
+  </div>
+</div>
+
+<p class="rotate">画面を横向きにするとコートが大きくなります</p>
+
+<div class="pad">
+  <div class="dpad" id="dpad">
+    <div class="key empty"></div><div class="key" data-k="up">▲</div><div class="key empty"></div>
+    <div class="key" data-k="left">◀</div><div class="key empty"></div><div class="key" data-k="right">▶</div>
+    <div class="key empty"></div><div class="key" data-k="down">▼</div><div class="key empty"></div>
+  </div>
+  <div class="tips">
+    <b>移動</b> 矢印キー／▲▼◀▶<br>
+    <b>打つ</b> スペース／打つボタン<br>
+    <b>コース</b> 打つ瞬間に ◀▶ を押した方向へ<br>
+    <b>球種</b> ▲＝速いドライブ ▼＝ロブ<br>
+    <b>ボレー</b> ネット際で落とす前に打つと決め球
+    <div class="toggles">
+      <button class="tg on" id="tgGuide">着地点ガイド</button>
+      <button class="tg on" id="tgSound">効果音</button>
+      <button class="tg" id="tgPause">一時停止</button>
+    </div>
+  </div>
+  <button class="hit" data-k="hit">打つ<small>SPACE</small></button>
+</div>
+
+<details>
+  <summary>競技規則のあらまし（このゲームに実装したもの）</summary>
+  <div class="rulewrap">
+    <div class="card">
+      <h3>サービス</h3>
+      <ul>
+        <li>サーバーもレシーバーも、ベースラインの後ろ（コートの外）の所定位置につく</li>
+        <li>レシーブ所定位置はサーバーの対角</li>
+        <li>肩より低い位置からボールを自然に落とす</li>
+        <li>ワンバウンド後、ツーバウンドする前に打つ</li>
+        <li>跳び上がって打つことはできない</li>
+        <li>センターラインで分けた対角の半面へ直接入れる</li>
+        <li>ネットインはやり直し（レット）</li>
+        <li>やり直しは二回まで</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>ラリー</h3>
+      <ul>
+        <li>ノーバウンド〜ツーバウンド前に打ち返す</li>
+        <li>ネット際で落とす前に打つと鋭い決め球になる</li>
+        <li><b>ただし同じ人がノーバウンドを連続して打てない</b>（エスキー独自）</li>
+        <li>サービスのレシーブはワンバウンド後に打つ</li>
+        <li>ネットに触れると相手の得点</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>得点</h3>
+      <ul>
+        <li>11点先取でそのセットの勝ち</li>
+        <li>10点以上で並べばジュース、以後二点差で決着</li>
+        <li>両者の得点の和が5点ごとにサービス交替</li>
+        <li>三セット制、二セット先取で勝利</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>用具</h3>
+      <ul>
+        <li>ラケット：木製、グリップ込み38cm</li>
+        <li>ボール：直径4cm・20g以内、羽根つき</li>
+        <li>弾み：2mから落として70〜90cm</li>
+        <li>コート：8m×4m（テニスの八分の一）</li>
+        <li>シングルスのラインは縦の一本線のみ</li>
+      </ul>
+    </div>
+  </div>
+</details>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ══ 諸元 ══════════════════════════════════════════ */
+const HALF_W=2.0, HALF_L=4.0, NET_H=0.55, NET_X=2.2;
+const G=9.8, DRAG=0.12, REST=0.63, FRIC=0.72;
+const REACH=0.62, PSPEED=3.55;
+const W=900, H=560;
+const CAM={y:9.4, z:3.6, f:620}, HORIZON=14;
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+
+/* ══ 投影 ══════════════════════════════════════════ */
+function pj(x,y,z){
+  const d=Math.max(0.6, CAM.y-y), s=CAM.f/d;
+  return {x:W/2+x*s, y:HORIZON+(CAM.z-z)*s, s:s};
+}
+
+/* ══ 弾道計算 ══════════════════════════════════════ */
+function simTraj(p,v,maxT){
+  maxT=maxT||5;
+  let x=p.x,y=p.y,z=p.z,vx=v.x,vy=v.y,vz=v.z,py=y,zNet=null;
+  const dt=1/240;
+  for(let t=0;t<maxT;t+=dt){
+    const sp=Math.hypot(vx,vy,vz), k=DRAG*sp;
+    vx-=k*vx*dt; vy-=k*vy*dt; vz-=(k*vz+G)*dt;
+    const nz=z+vz*dt, ny=y+vy*dt;
+    if((py>0&&ny<=0)||(py<0&&ny>=0)) zNet=z;
+    x+=vx*dt; py=y; y=ny;
+    if(nz<=0&&vz<0) return {x:x,y:y,t:t+dt,zNet:zNet};
+    z=nz;
+  }
+  return null;
+}
+function solveShot(p,tx,ty,T){
+  let v={x:(tx-p.x)/T, y:(ty-p.y)/T, z:(-p.z)/T+0.5*G*T};
+  for(let i=0;i<14;i++){
+    const r=simTraj(p,v);
+    if(!r){ v.z*=0.85; continue; }
+    v.x+=(tx-r.x)/T; v.y+=(ty-r.y)/T; v.z+=(T-r.t)*G*0.55;
+  }
+  return v;
+}
+/* ネットを越えない解ならば山なりに直す */
+function shotOver(p,tx,ty,T){
+  for(let i=0;i<5;i++){
+    const v=solveShot(p,tx,ty,T), r=simTraj(p,v);
+    if(!r || r.zNet===null || r.zNet>NET_H+0.09) return v;
+    T+=0.14;
+  }
+  return solveShot(p,tx,ty,T);
+}
+
+/* ══ 状態 ══════════════════════════════════════════ */
+const S={
+  phase:'title',          // title / serve / drop / rally / dead / interval / over
+  level:1, guide:true, sound:true, paused:false,
+  pts:{P:0,A:0}, sets:{P:0,A:0}, setNo:1,
+  server:'P', firstServer:'P',
+  serveTries:0,
+  t:0, timer:0,
+  msgT:0,
+  ball:{x:0,y:3,z:0,vx:0,vy:0,vz:0,live:false,tr:[]},
+  bounces:0, hitBy:null, wasServe:false, receiveOk:false,
+  volley:{P:false,A:false},
+  P:{x:1.0,y:4.3,sw:0,swDir:0,lock:true},
+  A:{x:-1.0,y:-4.3,sw:0,swDir:0},
+  ai:{tx:0,ty:-2.6,err:0,react:0,plan:null}, fx:0,
+  land:null, netFlash:0, shake:0
+};
+const LV=[
+  {name:'初級', spd:2.55, err:0.85, wild:0.34, vol:0.10, T:1.06},
+  {name:'中級', spd:3.20, err:0.50, wild:0.20, vol:0.28, T:0.90},
+  {name:'上級', spd:3.95, err:0.27, wild:0.09, vol:0.46, T:0.79}
+];
+
+/* ══ 音 ════════════════════════════════════════════ */
+let AC=null;
+function beep(f,d,type,vol){
+  if(!S.sound) return;
+  try{
+    if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||'triangle'; o.frequency.value=f;
+    o.frequency.exponentialRampToValueAtTime(f*0.55, AC.currentTime+d);
+    g.gain.value=vol||0.09;
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+d);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+const sHit=()=>beep(360,0.09,'triangle',0.13);
+const sTap=()=>beep(700,0.05,'square',0.05);
+const sBnc=()=>beep(190,0.07,'sine',0.07);
+const sNet=()=>beep(120,0.16,'sawtooth',0.07);
+const sWin=()=>{beep(560,0.11);setTimeout(()=>beep(760,0.16),95);};
+const sLos=()=>{beep(300,0.13);setTimeout(()=>beep(200,0.2),95);};
+
+/* ══ 入力 ══════════════════════════════════════════ */
+const K={up:false,down:false,left:false,right:false,hit:false};
+let hitEdge=false;
+const KMAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
+  KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',Space:'hit',Enter:'hit'};
+addEventListener('keydown',e=>{
+  const k=KMAP[e.code]; if(!k) return;
+  e.preventDefault();
+  if(k==='hit'&&!K.hit) hitEdge=true;
+  K[k]=true; paint(k,true);
+},{passive:false});
+addEventListener('keyup',e=>{
+  const k=KMAP[e.code]; if(!k) return;
+  e.preventDefault(); K[k]=false; paint(k,false);
+},{passive:false});
+function paint(k,on){
+  document.querySelectorAll('[data-k="'+k+'"]').forEach(el=>el.classList.toggle('dn',on));
+}
+/* 打つボタン */
+document.querySelectorAll('[data-k="hit"]').forEach(el=>{
+  const dn=e=>{e.preventDefault(); if(!K.hit) hitEdge=true; K.hit=true; el.classList.add('dn');
+    try{el.setPointerCapture(e.pointerId);}catch(_){}};
+  const up=e=>{e.preventDefault(); K.hit=false; el.classList.remove('dn');};
+  el.addEventListener('pointerdown',dn); el.addEventListener('pointerup',up);
+  el.addEventListener('pointercancel',up);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+});
+/* 十字：指を置いたまま滑らせて向きを変えられる。斜めも出る */
+(function(){
+  const pad=document.getElementById('dpad'); if(!pad) return;
+  const DIRS=['up','down','left','right'];
+  let id=null;
+  function apply(e){
+    const r=pad.getBoundingClientRect();
+    const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
+    const dead=r.width*0.155;
+    K.left=dx<-dead; K.right=dx>dead; K.up=dy<-dead; K.down=dy>dead;
+    DIRS.forEach(k=>paint(k,K[k]));
+  }
+  function clear(){ id=null; DIRS.forEach(k=>{K[k]=false; paint(k,false);}); }
+  pad.addEventListener('pointerdown',e=>{
+    e.preventDefault(); id=e.pointerId;
+    try{pad.setPointerCapture(e.pointerId);}catch(_){}
+    apply(e);
+  });
+  pad.addEventListener('pointermove',e=>{ if(e.pointerId!==id) return; e.preventDefault(); apply(e); });
+  pad.addEventListener('pointerup',e=>{ if(e.pointerId===id) clear(); });
+  pad.addEventListener('pointercancel',e=>{ if(e.pointerId===id) clear(); });
+  pad.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+
+/* ══ 画面表示 ══════════════════════════════════════ */
+const $=id=>document.getElementById(id);
+function feathers(el,n){
+  el.innerHTML='';
+  for(let i=0;i<2;i++){
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 9 15'); s.setAttribute('class','fx'+(i<n?' on':''));
+    s.innerHTML='<circle cx="4.5" cy="12" r="2.6" fill="#e2472a"/>'+
+      '<path d="M4.5 10 L1.6 2 M4.5 10 L4.5 0.6 M4.5 10 L7.4 2" stroke="#f2ece1" stroke-width="1.1" stroke-linecap="round" fill="none"/>';
+    el.appendChild(s);
+  }
+}
+function board(){
+  $('pP').textContent=S.pts.P; $('pA').textContent=S.pts.A;
+  $('setNo').textContent=S.setNo;
+  feathers($('fP'),S.sets.P); feathers($('fA'),S.sets.A);
+  $('sP').classList.toggle('on',S.server==='P');
+  $('sA').classList.toggle('on',S.server==='A');
+  const d=S.pts.P>=10&&S.pts.A>=10;
+  $('fmt').textContent = d ? (S.pts.P===S.pts.A?'ジュース':'アドバンテージ') : '11点先取';
+}
+function say(big,why,ms){
+  $('callBig').textContent=big; $('callWhy').textContent=why||'';
+  $('callWhy').style.display=why?'':'none';
+  $('call').classList.add('on'); S.msgT=ms||1500;
+}
+
+/* ══ 試合の進行 ════════════════════════════════════ */
+function newRally(){
+  S.serveTries=0; setupServe();
+}
+function serveSide(){
+  if(S.pts.P>=10&&S.pts.A>=10) return (S.pts.P===S.pts.A)?1:-1;
+  return ((S.pts.P+S.pts.A)%5)%2===0 ? 1 : -1;
+}
+function setupServe(){
+  const sd=serveSide();
+  S.phase='serve'; S.timer=0;
+  S.ball.live=false; S.ball.tr.length=0;
+  S.bounces=0; S.hitBy=null; S.wasServe=true; S.receiveOk=false;
+  S.volley.P=false; S.volley.A=false; S.land=null;
+  /* サーバー・レシーバーとも両者コートの外（ベースラインの後ろ）の所定位置 */
+  S.P.x=sd*1.00; S.P.y=4.34; S.P.lock=false;
+  S.A.x=-sd*1.00; S.A.y=-4.34;
+  if(S.server==='P'){ S.ball.x=S.P.x; S.ball.y=S.P.y-0.16; S.ball.z=1.16; }
+  else{ S.ball.x=S.A.x; S.ball.y=S.A.y+0.16; S.ball.z=1.16; }
+  S.ball.vx=S.ball.vy=S.ball.vz=0;
+  if(S.lastServer && S.lastServer!==S.server){
+    say('サービス交替', S.server==='P'?'あなたのサービスです':'相手のサービスです',1300);
+  }
+  S.lastServer=S.server;
+  board();
+}
+function dropServe(){
+  S.phase='drop'; S.ball.live=true; S.timer=0;
+  S.ball.vx=0; S.ball.vy=0; S.ball.vz=0;
+  sTap();
+}
+function hitServe(who,quality){
+  const sd = (who===S.server) ? serveSide() : 1;
+  const from = who==='P'?S.P:S.A;
+  const sgn = who==='P'?-1:1;                 // 進行方向
+  const bx = who==='P'? -Math.sign(from.x||sd) : -Math.sign(from.x||sd);
+  // 対角のサービスコートへ
+  let tx = bx*0.98, ty = sgn*1.95;
+  const e=(1-quality);
+  if(who==='P'){
+    if(K.left) tx-=0.42; if(K.right) tx+=0.42;
+    tx += (Math.random()*2-1)*e*1.1;
+    ty += sgn*((Math.random()*2-1)*e*1.1);
+  }else{
+    const L=LV[S.level];
+    tx += (Math.random()*2-1)*L.err*0.5;
+    ty += sgn*(Math.random()*2-1)*L.err*0.5;
+    if(Math.random()<L.wild*0.35) ty += sgn*1.5;   // まれにフォールト
+  }
+  const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+  const v=shotOver(p,tx,ty,0.95+(1-quality)*0.1);
+  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
+  S.hitBy=who; S.bounces=0; S.wasServe=true; S.receiveOk=false;
+  S.volley[who]=false;
+  from.sw=0.26; from.swDir=Math.sign(v.x)||1;
+  S.phase='rally'; sHit(); S.shake=2.5;
+  updLand();
+}
+function hitRally(who,quality){
+  const from = who==='P'?S.P:S.A;
+  const other = who==='P'?'A':'P';
+  const sgn = who==='P'?-1:1;
+  const isVolley = S.bounces===0;
+
+  /* エスキー独自：ノーバウンド連続禁止 */
+  if(isVolley && S.volley[who]){
+    point(other,'連続ノーバウンド','同じ人がノーバウンドを続けて打つことはできません');
+    return;
+  }
+  /* サービスのレシーブはワンバウンド後 */
+  if(isVolley && S.wasServe && !S.receiveOk){
+    point(other,'ノーバウンド','サービスはワンバウンドさせてから打ちます');
+    return;
+  }
+  S.volley[who]=isVolley;
+
+  let tx=0, ty=sgn*2.55, T=0.86, flaw=0, putaway=false;
+  if(who==='P'){
+    const atNet = S.P.y<1.60;
+    if(K.left) tx=-1.30; else if(K.right) tx=1.30; else tx=(Math.random()*2-1)*0.45;
+    if(K.up){ ty=sgn*3.20; T=0.70; }
+    else if(K.down){ ty=sgn*3.35; T=1.28; }
+    let e=(1-quality)*1.45;
+    if(isVolley && atNet && !K.down){        /* ネット際のボレー：角度をつけて決めにいく */
+      putaway=true;
+      T=0.50+Math.max(0,S.P.y-0.55)*0.09;
+      ty=sgn*(1.45+Math.random()*0.95);
+      if(K.up){ ty=sgn*3.05; T=0.63; }       /* 深く突き刺す */
+      if(K.left) tx=-1.62; else if(K.right) tx=1.62;
+      e*=0.55;                                /* 距離が近いぶん正確 */
+    }
+    tx+=(Math.random()*2-1)*e; ty+=sgn*(Math.random()*2-1)*e;
+    if(quality<0.40 && Math.random()<(putaway?0.24:0.42)) flaw=2;
+  }else{
+    const L=LV[S.level];
+    const away=-Math.sign(S.P.x)||(Math.random()<0.5?1:-1);
+    tx=away*(0.72+Math.random()*1.16);
+    ty=sgn*(2.0+Math.random()*1.72);
+    T=L.T+(Math.random()*0.18-0.09);
+    if(S.A.y>-1.7 && isVolley){ T=L.T-0.16; tx=away*(1.25+Math.random()*0.72); }  /* 詰めてのボレー */
+    else if(Math.random()<0.16){ ty=sgn*(0.85+Math.random()*0.5); T=L.T+0.14; }   /* 前に落とす */
+    tx+=(Math.random()*2-1)*L.err*0.85;
+    ty+=sgn*(Math.random()*2-1)*L.err*1.05;
+    const w=Math.random();                               /* アンフォーストエラー */
+    if(w<L.wild*0.40){ flaw=1; ty=sgn*(4.35+Math.random()*0.85); }
+    else if(w<L.wild*0.74){ flaw=2; }
+    else if(w<L.wild){ flaw=3; tx=(Math.sign(tx)||1)*(2.30+Math.random()*0.5); }
+  }
+  tx=Math.max(-2.9,Math.min(2.9,tx));
+  const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+  const v = flaw===2 ? solveShot(p,tx,ty,T) : shotOver(p,tx,ty,T);
+  if(flaw===2) v.z*=0.52;                                /* ネットを越えない */
+  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
+  S.hitBy=who; S.bounces=0; S.wasServe=false; S.receiveOk=false;
+  from.sw=0.24; from.swDir=Math.sign(v.x)||1;
+  if(putaway){ beep(520,0.10,'square',0.14); S.shake=5.0; S.fx=0.45; }
+  else { sHit(); S.shake=isVolley?3.5:2.2; }
+  updLand();
+}
+function updLand(){
+  const r=simTraj({x:S.ball.x,y:S.ball.y,z:S.ball.z},{x:S.ball.vx,y:S.ball.vy,z:S.ball.vz});
+  S.land = r ? {x:r.x,y:r.y} : null;
+  S.ai.plan = r ? {x:r.x,y:r.y,t:r.t} : null;
+  S.ai.err = (Math.random()*2-1)*LV[S.level].err*0.55;
+  S.ai.react = 0.10+Math.random()*0.13;
+}
+function point(who,label,why){
+  if(S.phase==='dead') return;
+  S.phase='dead'; S.ball.live=false; S.timer=0; S.land=null; S.retry=false;
+  S.pts[who]++;
+  const win = who==='P';
+  say(win?'ポイント':'失点', (label?label+' ':'')+(why||''), 1750);
+  win?sWin():sLos();
+  const a=S.pts[who], b=S.pts[who==='P'?'A':'P'];
+  if(a>=11 && a-b>=2){                 /* 11点先取・ジュースは二点差 */
+    S.sets[who]++;
+    S.pending = (S.sets[who]>=2) ? {kind:'match',who:who} : {kind:'set',who:who};
+  }else{
+    S.pending=null;
+    if(S.pts.P>=10 && S.pts.A>=10){
+      S.server = who;                  /* ジュース中は得点した方がサービス */
+    }else{
+      const sum=S.pts.P+S.pts.A;
+      if(sum%5===0 && sum>0) S.server = S.server==='P'?'A':'P';  /* 和が5点ごとに交替 */
+    }
+  }
+  board();
+}
+function letCall(){
+  S.phase='dead'; S.ball.live=false; S.timer=-0.35; S.land=null;
+  say('レット','ネットイン サービスをやり直します',1400); sNet();
+  S.retry=true;
+}
+function faultRetry(){
+  S.serveTries++;
+  if(S.serveTries>2){
+    point(S.server==='P'?'A':'P','サービス失敗','やり直しは二回までです');
+    return;
+  }
+  S.phase='dead'; S.ball.live=false; S.timer=-0.3;
+  say('やり直し','ツーバウンドする前に打ちます（あと'+(3-S.serveTries)+'回）',1400);
+  S.retry=true;
+}
+function finish(who){
+  S.phase='over';
+  const v=$('veil');
+  $('vTitle').textContent = who==='P' ? 'あなたの勝ち' : '相手の勝ち';
+  $('vText').textContent  = '第'+S.setNo+'セットまでで '+S.sets.P+' 対 '+S.sets.A+
+    '。速さより読み。落としどころを一つ変えるだけで、次の一本は変わります。';
+  $('vPick').style.display=''; $('vGo').textContent='もう一度';
+  $('vHint').textContent='強さを変えて挑戦できます。';
+  v.classList.remove('hide');
+}
+
+/* ══ 更新 ══════════════════════════════════════════ */
+const ZONE={y0:4.06, y1:4.88, x0:0.10, x1:1.92};   /* サービス／レシーブ所定位置 */
+function movePlayer(dt){
+  const p=S.P;
+  if(p.lock) return;
+  let dx=(K.right?1:0)-(K.left?1:0), dy=(K.down?1:0)-(K.up?1:0);
+  if(dx||dy){ const m=Math.hypot(dx,dy); dx/=m; dy/=m; }
+  p.x+=dx*PSPEED*dt; p.y+=dy*PSPEED*dt;
+  if(S.phase==='serve'||S.phase==='drop'){
+    const sd=serveSide();
+    p.y=Math.max(ZONE.y0,Math.min(ZONE.y1,p.y));
+    p.x = sd>0 ? Math.max(ZONE.x0,Math.min(ZONE.x1,p.x))
+               : Math.max(-ZONE.x1,Math.min(-ZONE.x0,p.x));
+    if(S.server==='P'&&S.phase==='serve'){ S.ball.x=p.x; S.ball.y=p.y-0.16; }
+  }else{
+    p.x=Math.max(-2.85,Math.min(2.85,p.x));
+    p.y=Math.max(0.50,Math.min(4.95,p.y));
+  }
+}
+function moveAI(dt){
+  const a=S.A, L=LV[S.level];
+  let tx=0, ty=-2.55;
+  const b=S.ball;
+  if(b.live && (b.vy<0 || b.y<0) && S.ai.plan && S.hitBy!=='A'){
+    if(S.ai.react>0){ S.ai.react-=dt; }
+    else{
+      tx=S.ai.plan.x+S.ai.err; ty=S.ai.plan.y+S.ai.err*0.55;
+      /* ネット前に落ちる球はやや前で構える */
+      if(ty>-1.2) ty=Math.min(ty,-0.85);
+      if(!S.volley.A && Math.random()<0.002+L.vol*0.004 && b.y<-0.4 && b.z>0.5) ty=Math.max(ty,-1.25);
+    }
+  }
+  tx=Math.max(-2.6,Math.min(2.6,tx)); ty=Math.max(-4.85,Math.min(-0.52,ty));
+  S.ai.tx=tx; S.ai.ty=ty;
+  const dx=tx-a.x, dy=ty-a.y, d=Math.hypot(dx,dy);
+  if(d>0.02){
+    const st=Math.min(d, L.spd*dt);
+    a.x+=dx/d*st; a.y+=dy/d*st;
+  }
+}
+function reachQuality(p,b){
+  const d=Math.hypot(b.x-p.x, b.y-p.y);
+  if(d>REACH || b.z>1.92 || b.z<0.015) return -1;
+  const zq = b.z<0.28 ? b.z/0.28 : (b.z>1.35 ? Math.max(0,(1.92-b.z)/0.57) : 1);
+  const dq = 1-Math.pow(d/REACH,1.7);
+  return Math.max(0.12, Math.min(1, 0.42+0.58*dq*Math.max(0.35,zq)));
+}
+function tryPlayerHit(){
+  const b=S.ball;
+  if(!b.live) return;
+  if(S.phase==='serve'){ dropServe(); return; }
+  if(S.phase==='drop' && S.server==='P'){
+    if(S.bounces===1 && b.z>0.03){
+      const q=Math.max(0.30, 1-Math.abs(b.z-0.36)/0.55);
+      hitServe('P',Math.min(1,q));
+    }else{ S.P.sw=0.24; }
+    return;
+  }
+  if(S.phase!=='rally') return;
+  if(S.hitBy==='P') return;                 // 相手が打つまで再打球不可
+  if(b.y<0.06) return;                      // 自分のサイドのみ
+  const q=reachQuality(S.P,b);
+  S.P.sw=Math.max(S.P.sw,0.20);
+  if(q<0) return;
+  hitRally('P',q);
+}
+function tryAIHit(){
+  const b=S.ball, L=LV[S.level];
+  if(!b.live || S.phase!=='rally' || S.hitBy==='A' || b.y>-0.06) return;
+  const q=reachQuality(S.A,b);
+  if(q<0) return;
+  if(S.bounces===0){
+    if(S.volley.A) return;                                     // 連続禁止を守る
+    if(S.wasServe && !S.receiveOk) return;                     // レシーブは待つ
+    if(!(b.z>0.42 && b.z<1.65 && S.A.y>-2.1 && Math.random()<L.vol)) return;
+  }
+  hitRally('A',Math.min(1,q*(0.72+L.spd*0.07)));
+}
+function physics(dt){
+  const b=S.ball;
+  if(!b.live) return;
+  const py=b.y;
+  const sp=Math.hypot(b.vx,b.vy,b.vz), k=DRAG*sp;
+  b.vx-=k*b.vx*dt; b.vy-=k*b.vy*dt; b.vz-=(k*b.vz+G)*dt;
+  const nx=b.x+b.vx*dt, ny=b.y+b.vy*dt, nz=b.z+b.vz*dt;
+
+  /* ネット */
+  if((py>0&&ny<=0)||(py<0&&ny>=0)){
+    if(Math.abs(nx)<=NET_X){
+      const zc=b.z+b.vz*dt*0.5;
+      if(zc<NET_H){
+        if(zc>NET_H-0.075){                      /* ネットイン */
+          b.x=nx; b.z=NET_H+0.03; b.y=py>0?-0.03:0.03;
+          b.vx*=0.45; b.vy*=0.38; b.vz=Math.abs(b.vz)*0.18+0.55;
+          S.netFlash=0.3; sNet();
+          if(S.wasServe){ letCall(); return; }
+          updLand(); return;
+        }else{                                    /* ネットに掛かった */
+          b.z=Math.max(0.04,zc); b.y=py>0?0.05:-0.05;
+          b.vy*=-0.18; b.vx*=0.3; b.vz*=0.2;
+          S.netFlash=0.45; sNet();
+          const loser=S.hitBy||'P';
+          point(loser==='P'?'A':'P','ネット','ボールがネットを越えませんでした');
+          return;
+        }
+      }
+    }
+  }
+  b.x=nx; b.y=ny; b.z=nz;
+
+  /* バウンド */
+  if(b.z<=0 && b.vz<0){
+    b.z=0;
+    const inX=Math.abs(b.x)<=HALF_W+0.02, inY=Math.abs(b.y)<=HALF_L+0.02;
+    const inCourt=inX&&inY;
+    sBnc();
+    b.vz=-b.vz*REST; b.vx*=FRIC; b.vy*=FRIC;
+    if(b.vz<0.35){ b.vz*=0.5; }
+    S.bounces++;
+
+    if(S.phase==='drop') return;   /* トスの弾みは判定しない */
+
+    if(S.wasServe && S.hitBy && S.bounces===1){
+      /* サービスの落下地点判定 */
+      const sd=serveSide();
+      const wantX = (S.hitBy==='P') ? -Math.sign(sd) : Math.sign(sd);
+      const okBox = inCourt &&
+        ((S.hitBy==='P') ? (b.y<0) : (b.y>0)) &&
+        (Math.sign(b.x)===wantX || Math.abs(b.x)<0.05);
+      if(!okBox){
+        point(S.hitBy==='P'?'A':'P','サービスフォールト','対角の半面に入りませんでした');
+        return;
+      }
+      S.receiveOk=true;
+      return;
+    }
+    if(S.bounces===1){
+      if(!inCourt){
+        point(S.hitBy==='P'?'A':'P','アウト','コートの外に落ちました');
+        return;
+      }
+      return;
+    }
+    if(S.bounces>=2){
+      const loser = b.y>0 ? 'P' : 'A';
+      point(loser==='P'?'A':'P','ツーバウンド', loser==='P'?'返球できませんでした':'相手が返せませんでした');
+      return;
+    }
+  }
+
+  /* 転がって止まったら決着（保険） */
+  if(b.z<0.02 && Math.abs(b.vz)<0.2 && S.bounces>=1 && Math.hypot(b.vx,b.vy)<0.4 && S.phase==='rally'){
+    const loser = b.y>0?'P':'A';
+    point(loser==='P'?'A':'P','ツーバウンド','');
+  }
+
+  b.tr.push({x:b.x,y:b.y,z:b.z});
+  if(b.tr.length>16) b.tr.shift();
+}
+
+/* ══ 描画 ══════════════════════════════════════════ */
+function line(a,b,c,d,w,col){
+  const p1=pj(a,b,0), p2=pj(c,d,0);
+  ctx.strokeStyle=col; ctx.lineWidth=w; ctx.beginPath();
+  ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+}
+function drawCourt(){
+  /* 体育館の床 */
+  const g=ctx.createLinearGradient(0,HORIZON,0,H);
+  g.addColorStop(0,'#0b1f33'); g.addColorStop(0.34,'#123049'); g.addColorStop(1,'#1a2c3d');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  /* 奥の暗がり */
+  const g2=ctx.createLinearGradient(0,0,0,220);
+  g2.addColorStop(0,'#061120'); g2.addColorStop(1,'rgba(6,17,32,0)');
+  ctx.fillStyle=g2; ctx.fillRect(0,0,W,220);
+
+  /* 檜のコート面 */
+  const c=[pj(-HALF_W,HALF_L,0),pj(HALF_W,HALF_L,0),pj(HALF_W,-HALF_L,0),pj(-HALF_W,-HALF_L,0)];
+  const wg=ctx.createLinearGradient(0,c[3].y,0,c[0].y);
+  wg.addColorStop(0,'#b98d5d'); wg.addColorStop(0.5,'#d3a973'); wg.addColorStop(1,'#e6c493');
+  ctx.fillStyle=wg; ctx.beginPath();
+  ctx.moveTo(c[0].x,c[0].y); for(let i=1;i<4;i++) ctx.lineTo(c[i].x,c[i].y);
+  ctx.closePath(); ctx.fill();
+
+  /* 板目 */
+  ctx.save(); ctx.clip();
+  ctx.globalAlpha=0.13; ctx.strokeStyle='#6b4626'; ctx.lineWidth=1;
+  for(let i=-9;i<=9;i++){
+    const x=i*0.45, p1=pj(x,HALF_L,0), p2=pj(x,-HALF_L,0);
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* ライン */
+  const LC='rgba(250,247,240,.93)';
+  line(-HALF_W,HALF_L,HALF_W,HALF_L,3.4,LC);
+  line(-HALF_W,-HALF_L,HALF_W,-HALF_L,2.0,LC);
+  line(-HALF_W,HALF_L,-HALF_W,-HALF_L,2.6,LC);
+  line(HALF_W,HALF_L,HALF_W,-HALF_L,2.6,LC);
+  line(0,HALF_L,0,-HALF_L,2.0,LC);   /* シングルスは縦の一本線のみ */
+
+  /* サービス時の所定位置（両者ともコートの外） */
+  if(S.phase==='serve'||S.phase==='drop'){
+    const sd=serveSide();
+    [[sd,ZONE.y0,ZONE.y1],[-sd,-ZONE.y0,-ZONE.y1]].forEach(function(z){
+      const xs=z[0], a=pj(xs*ZONE.x0,z[1],0), b=pj(xs*ZONE.x1,z[1],0),
+            c=pj(xs*ZONE.x1,z[2],0), d=pj(xs*ZONE.x0,z[2],0);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.lineTo(c.x,c.y); ctx.lineTo(d.x,d.y); ctx.closePath();
+      ctx.fillStyle='rgba(226,71,42,.10)'; ctx.fill();
+      ctx.setLineDash([6,5]); ctx.strokeStyle='rgba(226,71,42,.62)'; ctx.lineWidth=1.8;
+      ctx.stroke(); ctx.setLineDash([]);
+    });
+  }
+
+  /* 着地点ガイド */
+  if(S.guide && S.land && S.phase==='rally'){
+    const p=pj(S.land.x,S.land.y,0), r=0.30*p.s;
+    const ok=Math.abs(S.land.x)<=HALF_W&&Math.abs(S.land.y)<=HALF_L;
+    ctx.strokeStyle= ok?'rgba(226,71,42,.9)':'rgba(255,255,255,.5)';
+    ctx.lineWidth=2.2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.ellipse(p.x,p.y,r,r*0.34,0,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+function drawNet(){
+  const L=pj(-NET_X,0,0), R=pj(NET_X,0,0);
+  const Lt=pj(-NET_X,0,NET_H+0.06), Rt=pj(NET_X,0,NET_H+0.06);
+  /* 網 */
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(L.x,L.y); ctx.lineTo(R.x,R.y); ctx.lineTo(Rt.x,Rt.y); ctx.lineTo(Lt.x,Lt.y); ctx.closePath();
+  ctx.fillStyle= S.netFlash>0 ? 'rgba(226,71,42,.35)' : 'rgba(12,26,42,.42)'; ctx.fill();
+  ctx.clip();
+  ctx.strokeStyle='rgba(226,232,240,.30)'; ctx.lineWidth=1;
+  for(let i=0;i<=44;i++){
+    const x=-NET_X+i*(NET_X*2/44), a=pj(x,0,0), b2=pj(x,0,NET_H+0.06);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  }
+  for(let i=0;i<=7;i++){
+    const z=i*(NET_H/7), a=pj(-NET_X,0,z), b2=pj(NET_X,0,z);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  }
+  ctx.restore();
+  /* 白帯 */
+  const b1=pj(-NET_X,0,NET_H), b2=pj(NET_X,0,NET_H);
+  ctx.strokeStyle='#f6f2ea'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.moveTo(b1.x,b1.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  /* 支柱 */
+  [-NET_X,NET_X].forEach(x=>{
+    const a=pj(x,0,0), t=pj(x,0,NET_H+0.13);
+    ctx.strokeStyle='#8ea6bd'; ctx.lineWidth=Math.max(3,0.045*a.s);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(t.x,t.y); ctx.stroke();
+  });
+}
+function drawShadow(x,y,r){
+  const p=pj(x,y,0);
+  ctx.fillStyle='rgba(40,26,12,.30)';
+  ctx.beginPath(); ctx.ellipse(p.x,p.y,r*p.s,r*p.s*0.33,0,0,Math.PI*2); ctx.fill();
+}
+function drawPerson(p,near){
+  const s=pj(p.x,p.y,0).s;
+  drawShadow(p.x,p.y,0.30);
+  const foot=pj(p.x,p.y,0), hip=pj(p.x,p.y,0.86), sho=pj(p.x,p.y,1.42), head=pj(p.x,p.y,1.63);
+  const body = near ? '#e2472a' : '#2f6fa8';
+  const dark = near ? '#a92f18' : '#1d4e79';
+  const skin = '#f0d4b2';
+  /* 脚 */
+  ctx.strokeStyle='#1b2c3e'; ctx.lineWidth=Math.max(3,0.088*s); ctx.lineCap='round';
+  const sp=0.13*s;
+  ctx.beginPath(); ctx.moveTo(hip.x-sp*0.5,hip.y); ctx.lineTo(foot.x-sp,foot.y);
+  ctx.moveTo(hip.x+sp*0.5,hip.y); ctx.lineTo(foot.x+sp,foot.y); ctx.stroke();
+  /* 胴 */
+  ctx.fillStyle=body;
+  ctx.beginPath();
+  ctx.moveTo(sho.x-0.20*s,sho.y); ctx.lineTo(sho.x+0.20*s,sho.y);
+  ctx.lineTo(hip.x+0.15*s,hip.y); ctx.lineTo(hip.x-0.15*s,hip.y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=dark; ctx.fillRect(hip.x-0.15*s,hip.y-0.03*s,0.30*s,0.06*s);
+  /* 頭 */
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.arc(head.x,head.y,0.115*s,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#241a16';
+  ctx.beginPath(); ctx.arc(head.x,head.y-0.028*s,0.118*s,Math.PI*1.06,Math.PI*1.94); ctx.fill();
+  /* 腕とラケット */
+  const t=Math.max(0,p.sw)/0.26;
+  const swing = Math.sin(Math.min(1,1-t)*Math.PI);
+  const dir = p.swDir||1;
+  const rx = p.x + dir*(0.20+0.34*swing);
+  const rz = 0.92 + 0.42*swing;
+  const rp = pj(rx, p.y + (near?-0.12:0.12), rz);
+  ctx.strokeStyle=skin; ctx.lineWidth=Math.max(2.4,0.062*s);
+  ctx.beginPath(); ctx.moveTo(sho.x+dir*0.14*s,sho.y+0.04*s); ctx.lineTo(rp.x,rp.y); ctx.stroke();
+  /* 木製ラケット（グリップ込み38cm） */
+  const rl=0.20*s;
+  ctx.save(); ctx.translate(rp.x,rp.y); ctx.rotate(dir*(0.5-swing*1.5));
+  ctx.fillStyle='#c99a5f'; ctx.strokeStyle='#7b5326'; ctx.lineWidth=Math.max(1,0.012*s);
+  ctx.beginPath(); ctx.ellipse(0,-rl*0.55,rl*0.62,rl*0.86,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#8a5f2e'; ctx.fillRect(-rl*0.10,rl*0.16,rl*0.20,rl*0.62);
+  ctx.restore();
+}
+function drawBall(){
+  const b=S.ball;
+  if(!b.live && S.phase!=='serve' && S.phase!=='drop') return;
+  drawShadow(b.x,b.y,0.075+b.z*0.022);
+  /* 軌跡 */
+  for(let i=0;i<b.tr.length;i++){
+    const q=b.tr[i], p=pj(q.x,q.y,q.z), a=(i/b.tr.length)*0.30;
+    ctx.fillStyle='rgba(255,240,225,'+a.toFixed(3)+')';
+    ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(1,0.02*p.s),0,Math.PI*2); ctx.fill();
+  }
+  const p=pj(b.x,b.y,b.z), r=Math.max(3.2,0.045*p.s);
+  /* 羽根 */
+  const ang=Math.atan2(-b.vz,Math.hypot(b.vx,b.vy))*0.5;
+  ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(ang);
+  ctx.strokeStyle='rgba(245,238,226,.92)'; ctx.lineWidth=Math.max(1.1,r*0.28); ctx.lineCap='round';
+  for(let i=-1;i<=1;i++){
+    ctx.beginPath(); ctx.moveTo(0,-r*0.3); ctx.lineTo(i*r*1.5,-r*2.5); ctx.stroke();
+  }
+  ctx.restore();
+  /* 球体 */
+  const gg=ctx.createRadialGradient(p.x-r*0.35,p.y-r*0.4,r*0.15,p.x,p.y,r);
+  gg.addColorStop(0,'#ffffff'); gg.addColorStop(1,'#d9cfbe');
+  ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(90,70,48,.55)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.stroke();
+}
+function drawServeGauge(){
+  if(S.phase!=='drop'||S.server!=='P') return;
+  const b=S.ball;
+  const p=pj(S.P.x,S.P.y,0);
+  const w=150,hh=11,x=Math.max(8,Math.min(W-w-8,p.x-w/2)),y=Math.min(H-42,p.y+14);
+  ctx.fillStyle='rgba(6,16,28,.88)'; ctx.fillRect(x-3,y-3,w+6,hh+6);
+  ctx.strokeStyle='#35597d'; ctx.lineWidth=1; ctx.strokeRect(x-3,y-3,w+6,hh+6);
+  const live=S.bounces===1;
+  ctx.fillStyle= live ? '#7fae72' : '#2c4763';
+  ctx.fillRect(x,y,w*(live?1:Math.min(0.96,b.z/1.16)),hh);
+  ctx.fillStyle= live?'#f2ece1':'#9dbdd8'; ctx.font='600 12px system-ui'; ctx.textAlign='center';
+  ctx.fillText(live?'いま打つ':'ワンバウンドを待つ', x+w/2, y+hh+16);
+  ctx.textAlign='left';
+}
+function draw(){
+  ctx.save();
+  if(S.shake>0){ ctx.translate((Math.random()-0.5)*S.shake,(Math.random()-0.5)*S.shake); }
+  drawCourt();
+  drawPerson(S.A,false);
+  if(S.ball.y<=0) drawBall();
+  drawNet();
+  if(S.ball.y>0) drawBall();
+  drawPerson(S.P,true);
+  drawServeGauge();
+  if(S.fx>0){
+    const q=pj(S.P.x,S.P.y,1.95);
+    ctx.globalAlpha=Math.min(1,S.fx*2.6);
+    ctx.fillStyle='#e2472a'; ctx.font='700 20px system-ui'; ctx.textAlign='center';
+    ctx.fillText('ボレー', q.x, q.y-(0.45-S.fx)*46);
+    ctx.textAlign='left'; ctx.globalAlpha=1;
+  }
+  ctx.restore();
+
+  /* サービス案内 */
+  if(S.phase==='serve'){
+    ctx.fillStyle='rgba(6,16,28,.86)';
+    const msg = S.server==='P' ? 'スペース／打つボタンでトス' : '相手のサービスです';
+    ctx.font='600 15px system-ui'; const w=ctx.measureText(msg).width+30;
+    ctx.fillRect(W/2-w/2,H-46,w,28);
+    ctx.fillStyle='#f2ece1'; ctx.textAlign='center';
+    ctx.fillText(msg,W/2,H-27); ctx.textAlign='left';
+  }
+}
+
+/* ══ ループ ════════════════════════════════════════ */
+let last=0, acc=0;
+function frame(ts){
+  requestAnimationFrame(frame);
+  if(!last) last=ts;
+  let dt=(ts-last)/1000; last=ts;
+  if(dt>0.25) dt=0.25;
+  if(S.phase==='title'||S.phase==='over'||S.paused){ hitEdge=false; draw(); return; }
+  acc+=dt;
+  const step=1/120;
+  while(acc>=step){ tick(step); acc-=step; }
+  hitEdge=false;
+  draw();
+  /* テロップ */
+  if(S.msgT>0){ S.msgT-=dt*1000; if(S.msgT<=0) $('call').classList.remove('on'); }
+  $('warn').classList.toggle('on', S.phase==='rally' && S.volley.P && S.hitBy==='A');
+  if(S.netFlash>0) S.netFlash-=dt;
+  if(S.shake>0) S.shake=Math.max(0,S.shake-dt*22);
+  if(S.fx>0) S.fx=Math.max(0,S.fx-dt);
+}
+function tick(dt){
+  S.t+=dt; S.timer+=dt;
+  if(S.P.sw>0) S.P.sw-=dt;
+  if(S.A.sw>0) S.A.sw-=dt;
+
+  if(S.phase==='serve'){
+    S.P.lock=false;
+    movePlayer(dt);
+    if(S.server==='P'){
+      if(hitEdge){ dropServe(); }
+    }else{
+      if(S.timer>0.75) dropServe();
+    }
+    return;
+  }
+  if(S.phase==='drop'){
+    S.P.lock = (S.server==='P');   /* サーバーは打ち終わるまで動けない */
+    physics(dt);
+    movePlayer(dt);
+    if(S.server==='P'){
+      const canHit = S.bounces===1 && S.ball.z>0.03;
+      if((hitEdge||S.P.sw>0.02) && canHit){
+        const q=Math.max(0.30,1-Math.abs(S.ball.z-0.36)/0.55);
+        S.P.sw=0.24; hitServe('P',Math.min(1,q));
+      }else if(hitEdge){ S.P.sw=0.24; }   /* 早押しは少しの間受け付ける */
+    }else{
+      if(S.bounces===1 && S.ball.z>0.24 && S.ball.vz<0){
+        S.A.sw=0.24; hitServe('A',0.78+Math.random()*0.2);
+      }
+    }
+    if(S.bounces>=2 && S.phase==='drop'){ faultRetry(); }
+    return;
+  }
+  if(S.phase==='rally'){
+    S.P.lock=false;
+    movePlayer(dt); moveAI(dt); physics(dt);
+    if(S.phase!=='rally') return;
+    if(hitEdge) tryPlayerHit();
+    else if(S.P.sw>0.02 && S.hitBy!=='P'){       /* 振り抜き中の当たり判定 */
+      const b=S.ball;
+      if(b.y>0.06){ const q=reachQuality(S.P,b); if(q>=0) hitRally('P',q); }
+    }
+    tryAIHit();
+    return;
+  }
+  if(S.phase==='dead'){
+    moveAI(dt); movePlayer(dt);
+    if(S.timer>1.55){
+      if(S.pending){
+        const pd=S.pending; S.pending=null;
+        if(pd.kind==='match'){ finish(pd.who); return; }
+        S.setNo++; S.pts.P=0; S.pts.A=0;
+        S.server = (S.setNo===2) ? (S.firstServer==='P'?'A':'P') : pd.who;
+        board();
+        say('第'+S.setNo+'セット','サイドチェンジ サービスは'+(S.server==='P'?'あなた':'相手'),2300);
+        S.phase='interval'; S.timer=0; return;
+      }
+      if(S.retry){ S.retry=false; setupServe(); } else newRally();
+    }
+    return;
+  }
+  if(S.phase==='interval'){
+    if(S.timer>2.3){ S.serveTries=0; setupServe(); }
+    return;
+  }
+}
+
+/* ══ 開始・設定 ════════════════════════════════════ */
+document.querySelectorAll('[data-lv]').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('[data-lv]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); S.level=+b.dataset.lv;
+    S.guide = S.level===0 ? true : S.guide;
+    $('tgGuide').classList.toggle('on',S.guide);
+  };
+});
+$('vGo').onclick=()=>{
+  $('veil').classList.add('hide');
+  S.pts.P=0;S.pts.A=0;S.sets.P=0;S.sets.A=0;S.setNo=1;
+  S.server = Math.random()<0.5?'P':'A'; S.firstServer=S.server;
+  S.retry=false;
+  board(); setupServe();
+  say('第1セット', S.server==='P'?'あなたのサービスです':'相手のサービスです',1600);
+  if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+};
+$('tgGuide').onclick=e=>{ S.guide=!S.guide; e.target.classList.toggle('on',S.guide); };
+$('tgSound').onclick=e=>{ S.sound=!S.sound; e.target.classList.toggle('on',S.sound); };
+$('tgPause').onclick=e=>{ S.paused=!S.paused; e.target.classList.toggle('on',S.paused);
+  e.target.textContent=S.paused?'再開':'一時停止'; };
+
+board(); feathers($('fP'),0); feathers($('fA'),0);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
+EOFcat << 'EOF' > index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>翔け！エスキーテニス ESCI TENNIS</title>
+<style>
+:root{
+  --ai:#0d1f33;        /* 藍 */
+  --ai2:#132a44;       /* 濃紺 */
+  --ai3:#1c3a5c;
+  --hinoki:#e0bd8c;    /* 檜 */
+  --hinoki-d:#c39a67;
+  --kinari:#f2ece1;    /* 生成り */
+  --shu:#e2472a;       /* 朱 */
+  --take:#7fae72;      /* 若竹 */
+  --sumi:#0a1622;
+  --maru:"Hiragino Maru Gothic ProN","Hiragino Maru Gothic Pro","M PLUS Rounded 1c","Zen Maru Gothic","Rounded Mplus 1c","Yu Gothic Medium",var(--gothic);
+  --mincho:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Shippori Mincho",serif;
+  --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+  background:
+    radial-gradient(1100px 620px at 50% -8%, #1b3a5b 0%, transparent 62%),
+    var(--ai);
+  color:var(--kinari);
+  font-family:var(--gothic);
+  -webkit-font-smoothing:antialiased;
+  padding:18px 14px 40px;
+}
+.frame{max-width:952px;margin:0 auto}
+
+/* ── ヘッダー ───────────────────────── */
+header{display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.eyebrow{
+  font-family:var(--mincho);font-size:11px;letter-spacing:.42em;color:#7fa3c4;
+  border-left:3px solid var(--shu);padding-left:9px;line-height:1.7
+}
+h1{
+  font-family:var(--maru);font-weight:600;margin:2px 0 0;
+  font-size:clamp(23px,4.7vw,38px);letter-spacing:.1em;line-height:1.08
+}
+h1 .en{
+  display:block;font-size:11px;letter-spacing:.5em;color:#6f93b4;
+  font-family:var(--gothic);margin-top:9px;font-weight:400
+}
+.origin{
+  margin-left:auto;text-align:right;font-size:11px;line-height:1.85;color:#82a5c5;
+  font-family:var(--mincho);letter-spacing:.06em
+}
+.origin b{color:var(--kinari);font-weight:600}
+
+/* ── スコアボード（昭和の体育館めくり式） ── */
+.board{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;
+  background:linear-gradient(#0a1a2c,#081522);
+  border:1px solid #274863;border-radius:3px;padding:10px 12px;margin-bottom:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
+}
+.side{display:flex;align-items:center;gap:12px}
+.side.right{flex-direction:row-reverse;text-align:right}
+.who{font-family:var(--mincho);font-size:13px;letter-spacing:.16em;line-height:1.5}
+.who small{display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.22em;color:#7d9fbf}
+.pts{
+  font-family:var(--mincho);font-size:44px;line-height:.86;font-weight:600;
+  min-width:1.5ch;text-align:center;font-variant-numeric:tabular-nums
+}
+.feathers{display:flex;gap:4px;margin-top:5px;justify-content:inherit}
+.fx{width:9px;height:15px;opacity:.2}
+.fx.on{opacity:1}
+.mid{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 14px;border-left:1px solid #1e3b56;border-right:1px solid #1e3b56;min-width:104px
+}
+.setno{font-family:var(--mincho);font-size:15px;letter-spacing:.14em}
+.setno b{color:var(--shu)}
+.mid small{font-size:9.5px;letter-spacing:.2em;color:#7d9fbf;margin-top:4px}
+.srv{
+  font-size:9.5px;letter-spacing:.16em;color:var(--sumi);background:var(--shu);
+  padding:2px 7px;border-radius:2px;font-weight:700;visibility:hidden;margin-top:4px
+}
+.srv.on{visibility:visible}
+
+/* ── 舞台 ───────────────────────────── */
+.stage{position:relative;border:1px solid #274863;border-radius:3px;overflow:hidden;background:#071220}
+canvas{display:block;width:100%;height:auto;touch-action:none}
+.veil{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:14px;padding:22px;
+  background:rgba(6,16,28,.9);backdrop-filter:blur(3px)
+}
+.veil.hide{display:none}
+.veil h2{font-family:var(--mincho);font-size:clamp(21px,4.4vw,31px);margin:0;letter-spacing:.1em;font-weight:600}
+.veil p{margin:0;font-size:13px;line-height:1.95;color:#b9cfe3;max-width:44ch}
+.veil .sub{font-size:11.5px;color:#87a8c6;letter-spacing:.05em}
+.choices{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.btn{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.1em;
+  background:transparent;color:var(--kinari);border:1px solid #4b7098;
+  padding:10px 20px;border-radius:2px;cursor:pointer;transition:.15s
+}
+.btn:hover,.btn:focus-visible{background:#17324e;border-color:var(--kinari)}
+.btn.on{background:var(--shu);border-color:var(--shu);color:#150806;font-weight:700}
+.btn.go{background:var(--kinari);color:var(--sumi);border-color:var(--kinari);font-weight:700;padding:11px 34px}
+.btn.go:hover{background:#fff}
+.pick{display:flex;flex-direction:column;gap:7px;align-items:center}
+.pick>span{font-size:10px;letter-spacing:.26em;color:#7fa3c4}
+
+/* 実況テロップ */
+.call{
+  position:absolute;left:0;right:0;top:34%;text-align:center;pointer-events:none;
+  opacity:0;transition:opacity .18s
+}
+.call.on{opacity:1}
+.call .big{
+  font-family:var(--mincho);font-size:clamp(26px,5.6vw,42px);font-weight:600;letter-spacing:.14em;
+  text-shadow:0 3px 20px #05101c,0 0 3px #05101c
+}
+.call .why{
+  display:inline-block;margin-top:9px;font-size:12px;letter-spacing:.12em;
+  background:rgba(6,16,28,.88);padding:5px 15px;border-radius:2px;border:1px solid #35597d
+}
+/* 反則予告バッジ */
+.warn{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:11px;
+  font-size:11px;letter-spacing:.1em;background:rgba(226,71,42,.94);color:#fff;
+  padding:5px 14px;border-radius:2px;opacity:0;transition:.2s;font-weight:700
+}
+.warn.on{opacity:1}
+
+/* ── 操作パッド ─────────────────────── */
+.pad{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;flex-wrap:wrap;
+  user-select:none;-webkit-user-select:none
+}
+.dpad{
+  display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);gap:5px;
+  touch-action:none;user-select:none;-webkit-user-select:none;padding:7px;margin:-7px
+}
+.key{
+  background:#13293f;border:1px solid #35597d;border-radius:3px;color:var(--kinari);
+  font-size:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:.08s;pointer-events:none
+}
+.key:active,.key.dn{background:var(--ai3);border-color:var(--kinari);transform:translateY(1px)}
+.key.empty{background:transparent;border:none;cursor:default}
+.hit{
+  width:126px;height:126px;border-radius:50%;background:var(--shu);border:none;color:#160705;
+  font-family:var(--mincho);font-size:22px;font-weight:700;letter-spacing:.14em;cursor:pointer;
+  user-select:none;-webkit-user-select:none;touch-action:none;
+  box-shadow:0 5px 0 #972d19;transition:.06s
+}
+.hit:active,.hit.dn{transform:translateY(4px);box-shadow:0 1px 0 #972d19}
+.hit small{display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.18em;font-weight:400;margin-top:3px;opacity:.75}
+.rotate{display:none;margin:9px 0 0;font-size:11px;letter-spacing:.06em;color:#8dafcd;text-align:center}
+.rotate::before{content:"⟳ ";color:var(--shu)}
+.tips{font-size:11px;line-height:2;color:#8dafcd;flex:1;min-width:172px}
+.tips b{color:var(--kinari);font-weight:600}
+.toggles{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.tg{
+  font-size:10.5px;letter-spacing:.08em;background:transparent;border:1px solid #35597d;
+  color:#9dbdd8;padding:5px 11px;border-radius:2px;cursor:pointer
+}
+.tg.on{background:#1c3a5c;color:var(--kinari);border-color:#5d84ab}
+
+/* ── ルール ─────────────────────────── */
+details{
+  margin-top:20px;border-top:1px solid #23425f;padding-top:14px
+}
+summary{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.16em;cursor:pointer;color:#bad3e8;
+  list-style:none;display:flex;align-items:center;gap:9px
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"─";color:var(--shu)}
+details[open] summary::before{content:"│"}
+.rulewrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:16px;margin-top:14px}
+.card{background:rgba(255,255,255,.028);border-left:2px solid var(--shu);padding:12px 15px;border-radius:2px}
+.card h3{font-family:var(--mincho);font-size:13.5px;margin:0 0 8px;letter-spacing:.1em;font-weight:600}
+.card ul{margin:0;padding-left:1.1em;font-size:12px;line-height:2;color:#b6cee2}
+.card li::marker{color:#4e7ba3}
+footer{margin-top:22px;font-size:10.5px;line-height:2.1;color:#6f93b4;border-top:1px solid #1b3651;padding-top:12px}
+footer a{color:#9dbdd8}
+/* 横向きの携帯：コートを最大化し、操作は左右の余白に重ねる */
+@media (orientation:landscape) and (max-height:560px){
+  body{padding:5px 8px 6px}
+  header,details,.tips{display:none}
+  .board{padding:4px 12px;margin-bottom:5px}
+  .pts{font-size:23px} .who{font-size:11px} .who small{display:none}
+  .feathers{margin-top:2px} .setno{font-size:12px} .mid small{display:none}
+  .srv{margin-top:2px;font-size:8.5px}
+  .stage{max-width:min(100%,calc((100dvh - 92px) * 1.607));margin:0 auto}
+  .pad{
+    position:fixed;inset:0;margin:0;padding:0 14px 14px;pointer-events:none;
+    align-items:flex-end;justify-content:space-between;flex-wrap:nowrap;z-index:5
+  }
+  .dpad{pointer-events:auto;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:4px}
+  .hit{pointer-events:auto;width:94px;height:94px;font-size:17px}
+  .hit small{font-size:8px}
+}
+@media (max-width:600px){
+  body{padding:12px 8px 26px}
+  .dpad{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px)}
+  .hit{width:104px;height:104px;font-size:19px}
+  .pts{font-size:34px}
+  .mid{min-width:82px;padding:0 8px}
+  .pad{justify-content:center}
+  .tips{order:3;text-align:center}
+}
+@media (max-width:600px) and (orientation:portrait){ .rotate{display:block} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="frame">
+
+<header>
+  <div>
+    <div class="eyebrow">広島発祥・一九四八年</div>
+    <h1>翔け！エスキーテニス<span class="en">ESCI TENNIS</span></h1>
+  </div>
+  <div class="origin">
+    Education, Science and Culture Institute<br>
+    コート <b>8m × 4m</b> ネット <b>55cm</b><br>
+    木製ラケット・羽根つきスポンジボール
+  </div>
+</header>
+
+<div class="board">
+  <div class="side">
+    <div class="pts" id="pP">0</div>
+    <div>
+      <div class="who">あなた<small>NEAR SIDE</small></div>
+      <div class="feathers" id="fP"></div>
+      <div class="srv" id="sP">サービス</div>
+    </div>
+  </div>
+  <div class="mid">
+    <div class="setno">第<b id="setNo">1</b>セット</div>
+    <small id="fmt">11点先取</small>
+  </div>
+  <div class="side right">
+    <div class="pts" id="pA">0</div>
+    <div>
+      <div class="who">対戦相手<small>FAR SIDE</small></div>
+      <div class="feathers" id="fA"></div>
+      <div class="srv" id="sA">サービス</div>
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+  <canvas id="cv" width="900" height="560"></canvas>
+  <div class="call" id="call"><div class="big" id="callBig"></div><div><span class="why" id="callWhy"></span></div></div>
+  <div class="warn" id="warn">次はノーバウンドで打てません（連続ノーバウンド禁止）</div>
+
+  <div class="veil" id="veil">
+    <h2 id="vTitle">羽根つきから生まれた競技</h2>
+    <p id="vText">被爆後の広島で、復興を願う人々によって考案された球技です。テニスの８分の１のコートで、羽根のついたスポンジボールを木製ラケットで打ち合います。速さより読み。老若男女を問わず一緒に楽しめます。</p>
+    <div class="pick" id="vPick">
+      <span>対戦相手の強さ</span>
+      <div class="choices">
+        <button class="btn" data-lv="0">初級</button>
+        <button class="btn on" data-lv="1">中級</button>
+        <button class="btn" data-lv="2">上級</button>
+      </div>
+    </div>
+    <div class="choices"><button class="btn go" id="vGo">試合開始</button></div>
+    <p class="sub" id="vHint">矢印キーで移動、スペースで打つ。スマートフォンは下のボタンで操作できます。</p>
+  </div>
+</div>
+
+<p class="rotate">画面を横向きにするとコートが大きくなります</p>
+
+<div class="pad">
+  <div class="dpad" id="dpad">
+    <div class="key empty"></div><div class="key" data-k="up">▲</div><div class="key empty"></div>
+    <div class="key" data-k="left">◀</div><div class="key empty"></div><div class="key" data-k="right">▶</div>
+    <div class="key empty"></div><div class="key" data-k="down">▼</div><div class="key empty"></div>
+  </div>
+  <div class="tips">
+    <b>移動</b> 矢印キー／▲▼◀▶<br>
+    <b>打つ</b> スペース／打つボタン<br>
+    <b>コース</b> 打つ瞬間に ◀▶ を押した方向へ<br>
+    <b>球種</b> ▲＝速いドライブ ▼＝ロブ<br>
+    <b>ボレー</b> ネット際で落とす前に打つと決め球
+    <div class="toggles">
+      <button class="tg on" id="tgGuide">着地点ガイド</button>
+      <button class="tg on" id="tgSound">効果音</button>
+      <button class="tg" id="tgPause">一時停止</button>
+    </div>
+  </div>
+  <button class="hit" data-k="hit">打つ<small>SPACE</small></button>
+</div>
+
+<details>
+  <summary>競技規則のあらまし（このゲームに実装したもの）</summary>
+  <div class="rulewrap">
+    <div class="card">
+      <h3>サービス</h3>
+      <ul>
+        <li>サーバーもレシーバーも、ベースラインの後ろ（コートの外）の所定位置につく</li>
+        <li>レシーブ所定位置はサーバーの対角</li>
+        <li>肩より低い位置からボールを自然に落とす</li>
+        <li>ワンバウンド後、ツーバウンドする前に打つ</li>
+        <li>跳び上がって打つことはできない</li>
+        <li>センターラインで分けた対角の半面へ直接入れる</li>
+        <li>ネットインはやり直し（レット）</li>
+        <li>やり直しは二回まで</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>ラリー</h3>
+      <ul>
+        <li>ノーバウンド〜ツーバウンド前に打ち返す</li>
+        <li>ネット際で落とす前に打つと鋭い決め球になる</li>
+        <li><b>ただし同じ人がノーバウンドを連続して打てない</b>（エスキー独自）</li>
+        <li>サービスのレシーブはワンバウンド後に打つ</li>
+        <li>ネットに触れると相手の得点</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>得点</h3>
+      <ul>
+        <li>11点先取でそのセットの勝ち</li>
+        <li>10点以上で並べばジュース、以後二点差で決着</li>
+        <li>両者の得点の和が5点ごとにサービス交替</li>
+        <li>三セット制、二セット先取で勝利</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>用具</h3>
+      <ul>
+        <li>ラケット：木製、グリップ込み38cm</li>
+        <li>ボール：直径4cm・20g以内、羽根つき</li>
+        <li>弾み：2mから落として70〜90cm</li>
+        <li>コート：8m×4m（テニスの八分の一）</li>
+        <li>シングルスのラインは縦の一本線のみ</li>
+      </ul>
+    </div>
+  </div>
+</details>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ══ 諸元 ══════════════════════════════════════════ */
+const HALF_W=2.0, HALF_L=4.0, NET_H=0.55, NET_X=2.2;
+const G=9.8, DRAG=0.12, REST=0.63, FRIC=0.72;
+const REACH=0.62, PSPEED=3.55;
+const W=900, H=560;
+const CAM={y:9.4, z:3.6, f:620}, HORIZON=14;
+
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+
+/* ══ 投影 ══════════════════════════════════════════ */
+function pj(x,y,z){
+  const d=Math.max(0.6, CAM.y-y), s=CAM.f/d;
+  return {x:W/2+x*s, y:HORIZON+(CAM.z-z)*s, s:s};
+}
+
+/* ══ 弾道計算 ══════════════════════════════════════ */
+function simTraj(p,v,maxT){
+  maxT=maxT||5;
+  let x=p.x,y=p.y,z=p.z,vx=v.x,vy=v.y,vz=v.z,py=y,zNet=null;
+  const dt=1/240;
+  for(let t=0;t<maxT;t+=dt){
+    const sp=Math.hypot(vx,vy,vz), k=DRAG*sp;
+    vx-=k*vx*dt; vy-=k*vy*dt; vz-=(k*vz+G)*dt;
+    const nz=z+vz*dt, ny=y+vy*dt;
+    if((py>0&&ny<=0)||(py<0&&ny>=0)) zNet=z;
+    x+=vx*dt; py=y; y=ny;
+    if(nz<=0&&vz<0) return {x:x,y:y,t:t+dt,zNet:zNet};
+    z=nz;
+  }
+  return null;
+}
+function solveShot(p,tx,ty,T){
+  let v={x:(tx-p.x)/T, y:(ty-p.y)/T, z:(-p.z)/T+0.5*G*T};
+  for(let i=0;i<14;i++){
+    const r=simTraj(p,v);
+    if(!r){ v.z*=0.85; continue; }
+    v.x+=(tx-r.x)/T; v.y+=(ty-r.y)/T; v.z+=(T-r.t)*G*0.55;
+  }
+  return v;
+}
+/* ネットを越えない解ならば山なりに直す */
+function shotOver(p,tx,ty,T){
+  for(let i=0;i<5;i++){
+    const v=solveShot(p,tx,ty,T), r=simTraj(p,v);
+    if(!r || r.zNet===null || r.zNet>NET_H+0.09) return v;
+    T+=0.14;
+  }
+  return solveShot(p,tx,ty,T);
+}
+
+/* ══ 状態 ══════════════════════════════════════════ */
+const S={
+  phase:'title',          // title / serve / drop / rally / dead / interval / over
+  level:1, guide:true, sound:true, paused:false,
+  pts:{P:0,A:0}, sets:{P:0,A:0}, setNo:1,
+  server:'P', firstServer:'P',
+  serveTries:0,
+  t:0, timer:0,
+  msgT:0,
+  ball:{x:0,y:3,z:0,vx:0,vy:0,vz:0,live:false,tr:[]},
+  bounces:0, hitBy:null, wasServe:false, receiveOk:false,
+  volley:{P:false,A:false},
+  P:{x:1.0,y:4.3,sw:0,swDir:0,lock:true},
+  A:{x:-1.0,y:-4.3,sw:0,swDir:0},
+  ai:{tx:0,ty:-2.6,err:0,react:0,plan:null}, fx:0,
+  land:null, netFlash:0, shake:0
+};
+const LV=[
+  {name:'初級', spd:2.55, err:0.85, wild:0.34, vol:0.10, T:1.06},
+  {name:'中級', spd:3.20, err:0.50, wild:0.20, vol:0.28, T:0.90},
+  {name:'上級', spd:3.95, err:0.27, wild:0.09, vol:0.46, T:0.79}
+];
+
+/* ══ 音 ════════════════════════════════════════════ */
+let AC=null;
+function beep(f,d,type,vol){
+  if(!S.sound) return;
+  try{
+    if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||'triangle'; o.frequency.value=f;
+    o.frequency.exponentialRampToValueAtTime(f*0.55, AC.currentTime+d);
+    g.gain.value=vol||0.09;
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+d);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+d);
+  }catch(e){}
+}
+const sHit=()=>beep(360,0.09,'triangle',0.13);
+const sTap=()=>beep(700,0.05,'square',0.05);
+const sBnc=()=>beep(190,0.07,'sine',0.07);
+const sNet=()=>beep(120,0.16,'sawtooth',0.07);
+const sWin=()=>{beep(560,0.11);setTimeout(()=>beep(760,0.16),95);};
+const sLos=()=>{beep(300,0.13);setTimeout(()=>beep(200,0.2),95);};
+
+/* ══ 入力 ══════════════════════════════════════════ */
+const K={up:false,down:false,left:false,right:false,hit:false};
+let hitEdge=false;
+const KMAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
+  KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',Space:'hit',Enter:'hit'};
+addEventListener('keydown',e=>{
+  const k=KMAP[e.code]; if(!k) return;
+  e.preventDefault();
+  if(k==='hit'&&!K.hit) hitEdge=true;
+  K[k]=true; paint(k,true);
+},{passive:false});
+addEventListener('keyup',e=>{
+  const k=KMAP[e.code]; if(!k) return;
+  e.preventDefault(); K[k]=false; paint(k,false);
+},{passive:false});
+function paint(k,on){
+  document.querySelectorAll('[data-k="'+k+'"]').forEach(el=>el.classList.toggle('dn',on));
+}
+/* 打つボタン */
+document.querySelectorAll('[data-k="hit"]').forEach(el=>{
+  const dn=e=>{e.preventDefault(); if(!K.hit) hitEdge=true; K.hit=true; el.classList.add('dn');
+    try{el.setPointerCapture(e.pointerId);}catch(_){}};
+  const up=e=>{e.preventDefault(); K.hit=false; el.classList.remove('dn');};
+  el.addEventListener('pointerdown',dn); el.addEventListener('pointerup',up);
+  el.addEventListener('pointercancel',up);
+  el.addEventListener('contextmenu',e=>e.preventDefault());
+});
+/* 十字：指を置いたまま滑らせて向きを変えられる。斜めも出る */
+(function(){
+  const pad=document.getElementById('dpad'); if(!pad) return;
+  const DIRS=['up','down','left','right'];
+  let id=null;
+  function apply(e){
+    const r=pad.getBoundingClientRect();
+    const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
+    const dead=r.width*0.155;
+    K.left=dx<-dead; K.right=dx>dead; K.up=dy<-dead; K.down=dy>dead;
+    DIRS.forEach(k=>paint(k,K[k]));
+  }
+  function clear(){ id=null; DIRS.forEach(k=>{K[k]=false; paint(k,false);}); }
+  pad.addEventListener('pointerdown',e=>{
+    e.preventDefault(); id=e.pointerId;
+    try{pad.setPointerCapture(e.pointerId);}catch(_){}
+    apply(e);
+  });
+  pad.addEventListener('pointermove',e=>{ if(e.pointerId!==id) return; e.preventDefault(); apply(e); });
+  pad.addEventListener('pointerup',e=>{ if(e.pointerId===id) clear(); });
+  pad.addEventListener('pointercancel',e=>{ if(e.pointerId===id) clear(); });
+  pad.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+
+/* ══ 画面表示 ══════════════════════════════════════ */
+const $=id=>document.getElementById(id);
+function feathers(el,n){
+  el.innerHTML='';
+  for(let i=0;i<2;i++){
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 9 15'); s.setAttribute('class','fx'+(i<n?' on':''));
+    s.innerHTML='<circle cx="4.5" cy="12" r="2.6" fill="#e2472a"/>'+
+      '<path d="M4.5 10 L1.6 2 M4.5 10 L4.5 0.6 M4.5 10 L7.4 2" stroke="#f2ece1" stroke-width="1.1" stroke-linecap="round" fill="none"/>';
+    el.appendChild(s);
+  }
+}
+function board(){
+  $('pP').textContent=S.pts.P; $('pA').textContent=S.pts.A;
+  $('setNo').textContent=S.setNo;
+  feathers($('fP'),S.sets.P); feathers($('fA'),S.sets.A);
+  $('sP').classList.toggle('on',S.server==='P');
+  $('sA').classList.toggle('on',S.server==='A');
+  const d=S.pts.P>=10&&S.pts.A>=10;
+  $('fmt').textContent = d ? (S.pts.P===S.pts.A?'ジュース':'アドバンテージ') : '11点先取';
+}
+function say(big,why,ms){
+  $('callBig').textContent=big; $('callWhy').textContent=why||'';
+  $('callWhy').style.display=why?'':'none';
+  $('call').classList.add('on'); S.msgT=ms||1500;
+}
+
+/* ══ 試合の進行 ════════════════════════════════════ */
+function newRally(){
+  S.serveTries=0; setupServe();
+}
+function serveSide(){
+  if(S.pts.P>=10&&S.pts.A>=10) return (S.pts.P===S.pts.A)?1:-1;
+  return ((S.pts.P+S.pts.A)%5)%2===0 ? 1 : -1;
+}
+function setupServe(){
+  const sd=serveSide();
+  S.phase='serve'; S.timer=0;
+  S.ball.live=false; S.ball.tr.length=0;
+  S.bounces=0; S.hitBy=null; S.wasServe=true; S.receiveOk=false;
+  S.volley.P=false; S.volley.A=false; S.land=null;
+  /* サーバー・レシーバーとも両者コートの外（ベースラインの後ろ）の所定位置 */
+  S.P.x=sd*1.00; S.P.y=4.34; S.P.lock=false;
+  S.A.x=-sd*1.00; S.A.y=-4.34;
+  if(S.server==='P'){ S.ball.x=S.P.x; S.ball.y=S.P.y-0.16; S.ball.z=1.16; }
+  else{ S.ball.x=S.A.x; S.ball.y=S.A.y+0.16; S.ball.z=1.16; }
+  S.ball.vx=S.ball.vy=S.ball.vz=0;
+  if(S.lastServer && S.lastServer!==S.server){
+    say('サービス交替', S.server==='P'?'あなたのサービスです':'相手のサービスです',1300);
+  }
+  S.lastServer=S.server;
+  board();
+}
+function dropServe(){
+  S.phase='drop'; S.ball.live=true; S.timer=0;
+  S.ball.vx=0; S.ball.vy=0; S.ball.vz=0;
+  sTap();
+}
+function hitServe(who,quality){
+  const sd = (who===S.server) ? serveSide() : 1;
+  const from = who==='P'?S.P:S.A;
+  const sgn = who==='P'?-1:1;                 // 進行方向
+  const bx = who==='P'? -Math.sign(from.x||sd) : -Math.sign(from.x||sd);
+  // 対角のサービスコートへ
+  let tx = bx*0.98, ty = sgn*1.95;
+  const e=(1-quality);
+  if(who==='P'){
+    if(K.left) tx-=0.42; if(K.right) tx+=0.42;
+    tx += (Math.random()*2-1)*e*1.1;
+    ty += sgn*((Math.random()*2-1)*e*1.1);
+  }else{
+    const L=LV[S.level];
+    tx += (Math.random()*2-1)*L.err*0.5;
+    ty += sgn*(Math.random()*2-1)*L.err*0.5;
+    if(Math.random()<L.wild*0.35) ty += sgn*1.5;   // まれにフォールト
+  }
+  const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+  const v=shotOver(p,tx,ty,0.95+(1-quality)*0.1);
+  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
+  S.hitBy=who; S.bounces=0; S.wasServe=true; S.receiveOk=false;
+  S.volley[who]=false;
+  from.sw=0.26; from.swDir=Math.sign(v.x)||1;
+  S.phase='rally'; sHit(); S.shake=2.5;
+  updLand();
+}
+function hitRally(who,quality){
+  const from = who==='P'?S.P:S.A;
+  const other = who==='P'?'A':'P';
+  const sgn = who==='P'?-1:1;
+  const isVolley = S.bounces===0;
+
+  /* エスキー独自：ノーバウンド連続禁止 */
+  if(isVolley && S.volley[who]){
+    point(other,'連続ノーバウンド','同じ人がノーバウンドを続けて打つことはできません');
+    return;
+  }
+  /* サービスのレシーブはワンバウンド後 */
+  if(isVolley && S.wasServe && !S.receiveOk){
+    point(other,'ノーバウンド','サービスはワンバウンドさせてから打ちます');
+    return;
+  }
+  S.volley[who]=isVolley;
+
+  let tx=0, ty=sgn*2.55, T=0.86, flaw=0, putaway=false;
+  if(who==='P'){
+    const atNet = S.P.y<1.60;
+    if(K.left) tx=-1.30; else if(K.right) tx=1.30; else tx=(Math.random()*2-1)*0.45;
+    if(K.up){ ty=sgn*3.20; T=0.70; }
+    else if(K.down){ ty=sgn*3.35; T=1.28; }
+    let e=(1-quality)*1.45;
+    if(isVolley && atNet && !K.down){        /* ネット際のボレー：角度をつけて決めにいく */
+      putaway=true;
+      T=0.50+Math.max(0,S.P.y-0.55)*0.09;
+      ty=sgn*(1.45+Math.random()*0.95);
+      if(K.up){ ty=sgn*3.05; T=0.63; }       /* 深く突き刺す */
+      if(K.left) tx=-1.62; else if(K.right) tx=1.62;
+      e*=0.55;                                /* 距離が近いぶん正確 */
+    }
+    tx+=(Math.random()*2-1)*e; ty+=sgn*(Math.random()*2-1)*e;
+    if(quality<0.40 && Math.random()<(putaway?0.24:0.42)) flaw=2;
+  }else{
+    const L=LV[S.level];
+    const away=-Math.sign(S.P.x)||(Math.random()<0.5?1:-1);
+    tx=away*(0.72+Math.random()*1.16);
+    ty=sgn*(2.0+Math.random()*1.72);
+    T=L.T+(Math.random()*0.18-0.09);
+    if(S.A.y>-1.7 && isVolley){ T=L.T-0.16; tx=away*(1.25+Math.random()*0.72); }  /* 詰めてのボレー */
+    else if(Math.random()<0.16){ ty=sgn*(0.85+Math.random()*0.5); T=L.T+0.14; }   /* 前に落とす */
+    tx+=(Math.random()*2-1)*L.err*0.85;
+    ty+=sgn*(Math.random()*2-1)*L.err*1.05;
+    const w=Math.random();                               /* アンフォーストエラー */
+    if(w<L.wild*0.40){ flaw=1; ty=sgn*(4.35+Math.random()*0.85); }
+    else if(w<L.wild*0.74){ flaw=2; }
+    else if(w<L.wild){ flaw=3; tx=(Math.sign(tx)||1)*(2.30+Math.random()*0.5); }
+  }
+  tx=Math.max(-2.9,Math.min(2.9,tx));
+  const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+  const v = flaw===2 ? solveShot(p,tx,ty,T) : shotOver(p,tx,ty,T);
+  if(flaw===2) v.z*=0.52;                                /* ネットを越えない */
+  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
+  S.hitBy=who; S.bounces=0; S.wasServe=false; S.receiveOk=false;
+  from.sw=0.24; from.swDir=Math.sign(v.x)||1;
+  if(putaway){ beep(520,0.10,'square',0.14); S.shake=5.0; S.fx=0.45; }
+  else { sHit(); S.shake=isVolley?3.5:2.2; }
+  updLand();
+}
+function updLand(){
+  const r=simTraj({x:S.ball.x,y:S.ball.y,z:S.ball.z},{x:S.ball.vx,y:S.ball.vy,z:S.ball.vz});
+  S.land = r ? {x:r.x,y:r.y} : null;
+  S.ai.plan = r ? {x:r.x,y:r.y,t:r.t} : null;
+  S.ai.err = (Math.random()*2-1)*LV[S.level].err*0.55;
+  S.ai.react = 0.10+Math.random()*0.13;
+}
+function point(who,label,why){
+  if(S.phase==='dead') return;
+  S.phase='dead'; S.ball.live=false; S.timer=0; S.land=null; S.retry=false;
+  S.pts[who]++;
+  const win = who==='P';
+  say(win?'ポイント':'失点', (label?label+' ':'')+(why||''), 1750);
+  win?sWin():sLos();
+  const a=S.pts[who], b=S.pts[who==='P'?'A':'P'];
+  if(a>=11 && a-b>=2){                 /* 11点先取・ジュースは二点差 */
+    S.sets[who]++;
+    S.pending = (S.sets[who]>=2) ? {kind:'match',who:who} : {kind:'set',who:who};
+  }else{
+    S.pending=null;
+    if(S.pts.P>=10 && S.pts.A>=10){
+      S.server = who;                  /* ジュース中は得点した方がサービス */
+    }else{
+      const sum=S.pts.P+S.pts.A;
+      if(sum%5===0 && sum>0) S.server = S.server==='P'?'A':'P';  /* 和が5点ごとに交替 */
+    }
+  }
+  board();
+}
+function letCall(){
+  S.phase='dead'; S.ball.live=false; S.timer=-0.35; S.land=null;
+  say('レット','ネットイン サービスをやり直します',1400); sNet();
+  S.retry=true;
+}
+function faultRetry(){
+  S.serveTries++;
+  if(S.serveTries>2){
+    point(S.server==='P'?'A':'P','サービス失敗','やり直しは二回までです');
+    return;
+  }
+  S.phase='dead'; S.ball.live=false; S.timer=-0.3;
+  say('やり直し','ツーバウンドする前に打ちます（あと'+(3-S.serveTries)+'回）',1400);
+  S.retry=true;
+}
+function finish(who){
+  S.phase='over';
+  const v=$('veil');
+  $('vTitle').textContent = who==='P' ? 'あなたの勝ち' : '相手の勝ち';
+  $('vText').textContent  = '第'+S.setNo+'セットまでで '+S.sets.P+' 対 '+S.sets.A+
+    '。速さより読み。落としどころを一つ変えるだけで、次の一本は変わります。';
+  $('vPick').style.display=''; $('vGo').textContent='もう一度';
+  $('vHint').textContent='強さを変えて挑戦できます。';
+  v.classList.remove('hide');
+}
+
+/* ══ 更新 ══════════════════════════════════════════ */
+const ZONE={y0:4.06, y1:4.88, x0:0.10, x1:1.92};   /* サービス／レシーブ所定位置 */
+function movePlayer(dt){
+  const p=S.P;
+  if(p.lock) return;
+  let dx=(K.right?1:0)-(K.left?1:0), dy=(K.down?1:0)-(K.up?1:0);
+  if(dx||dy){ const m=Math.hypot(dx,dy); dx/=m; dy/=m; }
+  p.x+=dx*PSPEED*dt; p.y+=dy*PSPEED*dt;
+  if(S.phase==='serve'||S.phase==='drop'){
+    const sd=serveSide();
+    p.y=Math.max(ZONE.y0,Math.min(ZONE.y1,p.y));
+    p.x = sd>0 ? Math.max(ZONE.x0,Math.min(ZONE.x1,p.x))
+               : Math.max(-ZONE.x1,Math.min(-ZONE.x0,p.x));
+    if(S.server==='P'&&S.phase==='serve'){ S.ball.x=p.x; S.ball.y=p.y-0.16; }
+  }else{
+    p.x=Math.max(-2.85,Math.min(2.85,p.x));
+    p.y=Math.max(0.50,Math.min(4.95,p.y));
+  }
+}
+function moveAI(dt){
+  const a=S.A, L=LV[S.level];
+  let tx=0, ty=-2.55;
+  const b=S.ball;
+  if(b.live && (b.vy<0 || b.y<0) && S.ai.plan && S.hitBy!=='A'){
+    if(S.ai.react>0){ S.ai.react-=dt; }
+    else{
+      tx=S.ai.plan.x+S.ai.err; ty=S.ai.plan.y+S.ai.err*0.55;
+      /* ネット前に落ちる球はやや前で構える */
+      if(ty>-1.2) ty=Math.min(ty,-0.85);
+      if(!S.volley.A && Math.random()<0.002+L.vol*0.004 && b.y<-0.4 && b.z>0.5) ty=Math.max(ty,-1.25);
+    }
+  }
+  tx=Math.max(-2.6,Math.min(2.6,tx)); ty=Math.max(-4.85,Math.min(-0.52,ty));
+  S.ai.tx=tx; S.ai.ty=ty;
+  const dx=tx-a.x, dy=ty-a.y, d=Math.hypot(dx,dy);
+  if(d>0.02){
+    const st=Math.min(d, L.spd*dt);
+    a.x+=dx/d*st; a.y+=dy/d*st;
+  }
+}
+function reachQuality(p,b){
+  const d=Math.hypot(b.x-p.x, b.y-p.y);
+  if(d>REACH || b.z>1.92 || b.z<0.015) return -1;
+  const zq = b.z<0.28 ? b.z/0.28 : (b.z>1.35 ? Math.max(0,(1.92-b.z)/0.57) : 1);
+  const dq = 1-Math.pow(d/REACH,1.7);
+  return Math.max(0.12, Math.min(1, 0.42+0.58*dq*Math.max(0.35,zq)));
+}
+function tryPlayerHit(){
+  const b=S.ball;
+  if(!b.live) return;
+  if(S.phase==='serve'){ dropServe(); return; }
+  if(S.phase==='drop' && S.server==='P'){
+    if(S.bounces===1 && b.z>0.03){
+      const q=Math.max(0.30, 1-Math.abs(b.z-0.36)/0.55);
+      hitServe('P',Math.min(1,q));
+    }else{ S.P.sw=0.24; }
+    return;
+  }
+  if(S.phase!=='rally') return;
+  if(S.hitBy==='P') return;                 // 相手が打つまで再打球不可
+  if(b.y<0.06) return;                      // 自分のサイドのみ
+  const q=reachQuality(S.P,b);
+  S.P.sw=Math.max(S.P.sw,0.20);
+  if(q<0) return;
+  hitRally('P',q);
+}
+function tryAIHit(){
+  const b=S.ball, L=LV[S.level];
+  if(!b.live || S.phase!=='rally' || S.hitBy==='A' || b.y>-0.06) return;
+  const q=reachQuality(S.A,b);
+  if(q<0) return;
+  if(S.bounces===0){
+    if(S.volley.A) return;                                     // 連続禁止を守る
+    if(S.wasServe && !S.receiveOk) return;                     // レシーブは待つ
+    if(!(b.z>0.42 && b.z<1.65 && S.A.y>-2.1 && Math.random()<L.vol)) return;
+  }
+  hitRally('A',Math.min(1,q*(0.72+L.spd*0.07)));
+}
+function physics(dt){
+  const b=S.ball;
+  if(!b.live) return;
+  const py=b.y;
+  const sp=Math.hypot(b.vx,b.vy,b.vz), k=DRAG*sp;
+  b.vx-=k*b.vx*dt; b.vy-=k*b.vy*dt; b.vz-=(k*b.vz+G)*dt;
+  const nx=b.x+b.vx*dt, ny=b.y+b.vy*dt, nz=b.z+b.vz*dt;
+
+  /* ネット */
+  if((py>0&&ny<=0)||(py<0&&ny>=0)){
+    if(Math.abs(nx)<=NET_X){
+      const zc=b.z+b.vz*dt*0.5;
+      if(zc<NET_H){
+        if(zc>NET_H-0.075){                      /* ネットイン */
+          b.x=nx; b.z=NET_H+0.03; b.y=py>0?-0.03:0.03;
+          b.vx*=0.45; b.vy*=0.38; b.vz=Math.abs(b.vz)*0.18+0.55;
+          S.netFlash=0.3; sNet();
+          if(S.wasServe){ letCall(); return; }
+          updLand(); return;
+        }else{                                    /* ネットに掛かった */
+          b.z=Math.max(0.04,zc); b.y=py>0?0.05:-0.05;
+          b.vy*=-0.18; b.vx*=0.3; b.vz*=0.2;
+          S.netFlash=0.45; sNet();
+          const loser=S.hitBy||'P';
+          point(loser==='P'?'A':'P','ネット','ボールがネットを越えませんでした');
+          return;
+        }
+      }
+    }
+  }
+  b.x=nx; b.y=ny; b.z=nz;
+
+  /* バウンド */
+  if(b.z<=0 && b.vz<0){
+    b.z=0;
+    const inX=Math.abs(b.x)<=HALF_W+0.02, inY=Math.abs(b.y)<=HALF_L+0.02;
+    const inCourt=inX&&inY;
+    sBnc();
+    b.vz=-b.vz*REST; b.vx*=FRIC; b.vy*=FRIC;
+    if(b.vz<0.35){ b.vz*=0.5; }
+    S.bounces++;
+
+    if(S.phase==='drop') return;   /* トスの弾みは判定しない */
+
+    if(S.wasServe && S.hitBy && S.bounces===1){
+      /* サービスの落下地点判定 */
+      const sd=serveSide();
+      const wantX = (S.hitBy==='P') ? -Math.sign(sd) : Math.sign(sd);
+      const okBox = inCourt &&
+        ((S.hitBy==='P') ? (b.y<0) : (b.y>0)) &&
+        (Math.sign(b.x)===wantX || Math.abs(b.x)<0.05);
+      if(!okBox){
+        point(S.hitBy==='P'?'A':'P','サービスフォールト','対角の半面に入りませんでした');
+        return;
+      }
+      S.receiveOk=true;
+      return;
+    }
+    if(S.bounces===1){
+      if(!inCourt){
+        point(S.hitBy==='P'?'A':'P','アウト','コートの外に落ちました');
+        return;
+      }
+      return;
+    }
+    if(S.bounces>=2){
+      const loser = b.y>0 ? 'P' : 'A';
+      point(loser==='P'?'A':'P','ツーバウンド', loser==='P'?'返球できませんでした':'相手が返せませんでした');
+      return;
+    }
+  }
+
+  /* 転がって止まったら決着（保険） */
+  if(b.z<0.02 && Math.abs(b.vz)<0.2 && S.bounces>=1 && Math.hypot(b.vx,b.vy)<0.4 && S.phase==='rally'){
+    const loser = b.y>0?'P':'A';
+    point(loser==='P'?'A':'P','ツーバウンド','');
+  }
+
+  b.tr.push({x:b.x,y:b.y,z:b.z});
+  if(b.tr.length>16) b.tr.shift();
+}
+
+/* ══ 描画 ══════════════════════════════════════════ */
+function line(a,b,c,d,w,col){
+  const p1=pj(a,b,0), p2=pj(c,d,0);
+  ctx.strokeStyle=col; ctx.lineWidth=w; ctx.beginPath();
+  ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+}
+function drawCourt(){
+  /* 体育館の床 */
+  const g=ctx.createLinearGradient(0,HORIZON,0,H);
+  g.addColorStop(0,'#0b1f33'); g.addColorStop(0.34,'#123049'); g.addColorStop(1,'#1a2c3d');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  /* 奥の暗がり */
+  const g2=ctx.createLinearGradient(0,0,0,220);
+  g2.addColorStop(0,'#061120'); g2.addColorStop(1,'rgba(6,17,32,0)');
+  ctx.fillStyle=g2; ctx.fillRect(0,0,W,220);
+
+  /* 檜のコート面 */
+  const c=[pj(-HALF_W,HALF_L,0),pj(HALF_W,HALF_L,0),pj(HALF_W,-HALF_L,0),pj(-HALF_W,-HALF_L,0)];
+  const wg=ctx.createLinearGradient(0,c[3].y,0,c[0].y);
+  wg.addColorStop(0,'#b98d5d'); wg.addColorStop(0.5,'#d3a973'); wg.addColorStop(1,'#e6c493');
+  ctx.fillStyle=wg; ctx.beginPath();
+  ctx.moveTo(c[0].x,c[0].y); for(let i=1;i<4;i++) ctx.lineTo(c[i].x,c[i].y);
+  ctx.closePath(); ctx.fill();
+
+  /* 板目 */
+  ctx.save(); ctx.clip();
+  ctx.globalAlpha=0.13; ctx.strokeStyle='#6b4626'; ctx.lineWidth=1;
+  for(let i=-9;i<=9;i++){
+    const x=i*0.45, p1=pj(x,HALF_L,0), p2=pj(x,-HALF_L,0);
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+  }
+  ctx.restore();
+
+  /* ライン */
+  const LC='rgba(250,247,240,.93)';
+  line(-HALF_W,HALF_L,HALF_W,HALF_L,3.4,LC);
+  line(-HALF_W,-HALF_L,HALF_W,-HALF_L,2.0,LC);
+  line(-HALF_W,HALF_L,-HALF_W,-HALF_L,2.6,LC);
+  line(HALF_W,HALF_L,HALF_W,-HALF_L,2.6,LC);
+  line(0,HALF_L,0,-HALF_L,2.0,LC);   /* シングルスは縦の一本線のみ */
+
+  /* サービス時の所定位置（両者ともコートの外） */
+  if(S.phase==='serve'||S.phase==='drop'){
+    const sd=serveSide();
+    [[sd,ZONE.y0,ZONE.y1],[-sd,-ZONE.y0,-ZONE.y1]].forEach(function(z){
+      const xs=z[0], a=pj(xs*ZONE.x0,z[1],0), b=pj(xs*ZONE.x1,z[1],0),
+            c=pj(xs*ZONE.x1,z[2],0), d=pj(xs*ZONE.x0,z[2],0);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.lineTo(c.x,c.y); ctx.lineTo(d.x,d.y); ctx.closePath();
+      ctx.fillStyle='rgba(226,71,42,.10)'; ctx.fill();
+      ctx.setLineDash([6,5]); ctx.strokeStyle='rgba(226,71,42,.62)'; ctx.lineWidth=1.8;
+      ctx.stroke(); ctx.setLineDash([]);
+    });
+  }
+
+  /* 着地点ガイド */
+  if(S.guide && S.land && S.phase==='rally'){
+    const p=pj(S.land.x,S.land.y,0), r=0.30*p.s;
+    const ok=Math.abs(S.land.x)<=HALF_W&&Math.abs(S.land.y)<=HALF_L;
+    ctx.strokeStyle= ok?'rgba(226,71,42,.9)':'rgba(255,255,255,.5)';
+    ctx.lineWidth=2.2; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.ellipse(p.x,p.y,r,r*0.34,0,0,Math.PI*2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+function drawNet(){
+  const L=pj(-NET_X,0,0), R=pj(NET_X,0,0);
+  const Lt=pj(-NET_X,0,NET_H+0.06), Rt=pj(NET_X,0,NET_H+0.06);
+  /* 網 */
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(L.x,L.y); ctx.lineTo(R.x,R.y); ctx.lineTo(Rt.x,Rt.y); ctx.lineTo(Lt.x,Lt.y); ctx.closePath();
+  ctx.fillStyle= S.netFlash>0 ? 'rgba(226,71,42,.35)' : 'rgba(12,26,42,.42)'; ctx.fill();
+  ctx.clip();
+  ctx.strokeStyle='rgba(226,232,240,.30)'; ctx.lineWidth=1;
+  for(let i=0;i<=44;i++){
+    const x=-NET_X+i*(NET_X*2/44), a=pj(x,0,0), b2=pj(x,0,NET_H+0.06);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  }
+  for(let i=0;i<=7;i++){
+    const z=i*(NET_H/7), a=pj(-NET_X,0,z), b2=pj(NET_X,0,z);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  }
+  ctx.restore();
+  /* 白帯 */
+  const b1=pj(-NET_X,0,NET_H), b2=pj(NET_X,0,NET_H);
+  ctx.strokeStyle='#f6f2ea'; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.moveTo(b1.x,b1.y); ctx.lineTo(b2.x,b2.y); ctx.stroke();
+  /* 支柱 */
+  [-NET_X,NET_X].forEach(x=>{
+    const a=pj(x,0,0), t=pj(x,0,NET_H+0.13);
+    ctx.strokeStyle='#8ea6bd'; ctx.lineWidth=Math.max(3,0.045*a.s);
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(t.x,t.y); ctx.stroke();
+  });
+}
+function drawShadow(x,y,r){
+  const p=pj(x,y,0);
+  ctx.fillStyle='rgba(40,26,12,.30)';
+  ctx.beginPath(); ctx.ellipse(p.x,p.y,r*p.s,r*p.s*0.33,0,0,Math.PI*2); ctx.fill();
+}
+function drawPerson(p,near){
+  const s=pj(p.x,p.y,0).s;
+  drawShadow(p.x,p.y,0.30);
+  const foot=pj(p.x,p.y,0), hip=pj(p.x,p.y,0.86), sho=pj(p.x,p.y,1.42), head=pj(p.x,p.y,1.63);
+  const body = near ? '#e2472a' : '#2f6fa8';
+  const dark = near ? '#a92f18' : '#1d4e79';
+  const skin = '#f0d4b2';
+  /* 脚 */
+  ctx.strokeStyle='#1b2c3e'; ctx.lineWidth=Math.max(3,0.088*s); ctx.lineCap='round';
+  const sp=0.13*s;
+  ctx.beginPath(); ctx.moveTo(hip.x-sp*0.5,hip.y); ctx.lineTo(foot.x-sp,foot.y);
+  ctx.moveTo(hip.x+sp*0.5,hip.y); ctx.lineTo(foot.x+sp,foot.y); ctx.stroke();
+  /* 胴 */
+  ctx.fillStyle=body;
+  ctx.beginPath();
+  ctx.moveTo(sho.x-0.20*s,sho.y); ctx.lineTo(sho.x+0.20*s,sho.y);
+  ctx.lineTo(hip.x+0.15*s,hip.y); ctx.lineTo(hip.x-0.15*s,hip.y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=dark; ctx.fillRect(hip.x-0.15*s,hip.y-0.03*s,0.30*s,0.06*s);
+  /* 頭 */
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.arc(head.x,head.y,0.115*s,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#241a16';
+  ctx.beginPath(); ctx.arc(head.x,head.y-0.028*s,0.118*s,Math.PI*1.06,Math.PI*1.94); ctx.fill();
+  /* 腕とラケット */
+  const t=Math.max(0,p.sw)/0.26;
+  const swing = Math.sin(Math.min(1,1-t)*Math.PI);
+  const dir = p.swDir||1;
+  const rx = p.x + dir*(0.20+0.34*swing);
+  const rz = 0.92 + 0.42*swing;
+  const rp = pj(rx, p.y + (near?-0.12:0.12), rz);
+  ctx.strokeStyle=skin; ctx.lineWidth=Math.max(2.4,0.062*s);
+  ctx.beginPath(); ctx.moveTo(sho.x+dir*0.14*s,sho.y+0.04*s); ctx.lineTo(rp.x,rp.y); ctx.stroke();
+  /* 木製ラケット（グリップ込み38cm） */
+  const rl=0.20*s;
+  ctx.save(); ctx.translate(rp.x,rp.y); ctx.rotate(dir*(0.5-swing*1.5));
+  ctx.fillStyle='#c99a5f'; ctx.strokeStyle='#7b5326'; ctx.lineWidth=Math.max(1,0.012*s);
+  ctx.beginPath(); ctx.ellipse(0,-rl*0.55,rl*0.62,rl*0.86,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#8a5f2e'; ctx.fillRect(-rl*0.10,rl*0.16,rl*0.20,rl*0.62);
+  ctx.restore();
+}
+function drawBall(){
+  const b=S.ball;
+  if(!b.live && S.phase!=='serve' && S.phase!=='drop') return;
+  drawShadow(b.x,b.y,0.075+b.z*0.022);
+  /* 軌跡 */
+  for(let i=0;i<b.tr.length;i++){
+    const q=b.tr[i], p=pj(q.x,q.y,q.z), a=(i/b.tr.length)*0.30;
+    ctx.fillStyle='rgba(255,240,225,'+a.toFixed(3)+')';
+    ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(1,0.02*p.s),0,Math.PI*2); ctx.fill();
+  }
+  const p=pj(b.x,b.y,b.z), r=Math.max(3.2,0.045*p.s);
+  /* 羽根 */
+  const ang=Math.atan2(-b.vz,Math.hypot(b.vx,b.vy))*0.5;
+  ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(ang);
+  ctx.strokeStyle='rgba(245,238,226,.92)'; ctx.lineWidth=Math.max(1.1,r*0.28); ctx.lineCap='round';
+  for(let i=-1;i<=1;i++){
+    ctx.beginPath(); ctx.moveTo(0,-r*0.3); ctx.lineTo(i*r*1.5,-r*2.5); ctx.stroke();
+  }
+  ctx.restore();
+  /* 球体 */
+  const gg=ctx.createRadialGradient(p.x-r*0.35,p.y-r*0.4,r*0.15,p.x,p.y,r);
+  gg.addColorStop(0,'#ffffff'); gg.addColorStop(1,'#d9cfbe');
+  ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(90,70,48,.55)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.stroke();
+}
+function drawServeGauge(){
+  if(S.phase!=='drop'||S.server!=='P') return;
+  const b=S.ball;
+  const p=pj(S.P.x,S.P.y,0);
+  const w=150,hh=11,x=Math.max(8,Math.min(W-w-8,p.x-w/2)),y=Math.min(H-42,p.y+14);
+  ctx.fillStyle='rgba(6,16,28,.88)'; ctx.fillRect(x-3,y-3,w+6,hh+6);
+  ctx.strokeStyle='#35597d'; ctx.lineWidth=1; ctx.strokeRect(x-3,y-3,w+6,hh+6);
+  const live=S.bounces===1;
+  ctx.fillStyle= live ? '#7fae72' : '#2c4763';
+  ctx.fillRect(x,y,w*(live?1:Math.min(0.96,b.z/1.16)),hh);
+  ctx.fillStyle= live?'#f2ece1':'#9dbdd8'; ctx.font='600 12px system-ui'; ctx.textAlign='center';
+  ctx.fillText(live?'いま打つ':'ワンバウンドを待つ', x+w/2, y+hh+16);
+  ctx.textAlign='left';
+}
+function draw(){
+  ctx.save();
+  if(S.shake>0){ ctx.translate((Math.random()-0.5)*S.shake,(Math.random()-0.5)*S.shake); }
+  drawCourt();
+  drawPerson(S.A,false);
+  if(S.ball.y<=0) drawBall();
+  drawNet();
+  if(S.ball.y>0) drawBall();
+  drawPerson(S.P,true);
+  drawServeGauge();
+  if(S.fx>0){
+    const q=pj(S.P.x,S.P.y,1.95);
+    ctx.globalAlpha=Math.min(1,S.fx*2.6);
+    ctx.fillStyle='#e2472a'; ctx.font='700 20px system-ui'; ctx.textAlign='center';
+    ctx.fillText('ボレー', q.x, q.y-(0.45-S.fx)*46);
+    ctx.textAlign='left'; ctx.globalAlpha=1;
+  }
+  ctx.restore();
+
+  /* サービス案内 */
+  if(S.phase==='serve'){
+    ctx.fillStyle='rgba(6,16,28,.86)';
+    const msg = S.server==='P' ? 'スペース／打つボタンでトス' : '相手のサービスです';
+    ctx.font='600 15px system-ui'; const w=ctx.measureText(msg).width+30;
+    ctx.fillRect(W/2-w/2,H-46,w,28);
+    ctx.fillStyle='#f2ece1'; ctx.textAlign='center';
+    ctx.fillText(msg,W/2,H-27); ctx.textAlign='left';
+  }
+}
+
+/* ══ ループ ════════════════════════════════════════ */
+let last=0, acc=0;
+function frame(ts){
+  requestAnimationFrame(frame);
+  if(!last) last=ts;
+  let dt=(ts-last)/1000; last=ts;
+  if(dt>0.25) dt=0.25;
+  if(S.phase==='title'||S.phase==='over'||S.paused){ hitEdge=false; draw(); return; }
+  acc+=dt;
+  const step=1/120;
+  while(acc>=step){ tick(step); acc-=step; }
+  hitEdge=false;
+  draw();
+  /* テロップ */
+  if(S.msgT>0){ S.msgT-=dt*1000; if(S.msgT<=0) $('call').classList.remove('on'); }
+  $('warn').classList.toggle('on', S.phase==='rally' && S.volley.P && S.hitBy==='A');
+  if(S.netFlash>0) S.netFlash-=dt;
+  if(S.shake>0) S.shake=Math.max(0,S.shake-dt*22);
+  if(S.fx>0) S.fx=Math.max(0,S.fx-dt);
+}
+function tick(dt){
+  S.t+=dt; S.timer+=dt;
+  if(S.P.sw>0) S.P.sw-=dt;
+  if(S.A.sw>0) S.A.sw-=dt;
+
+  if(S.phase==='serve'){
+    S.P.lock=false;
+    movePlayer(dt);
+    if(S.server==='P'){
+      if(hitEdge){ dropServe(); }
+    }else{
+      if(S.timer>0.75) dropServe();
+    }
+    return;
+  }
+  if(S.phase==='drop'){
+    S.P.lock = (S.server==='P');   /* サーバーは打ち終わるまで動けない */
+    physics(dt);
+    movePlayer(dt);
+    if(S.server==='P'){
+      const canHit = S.bounces===1 && S.ball.z>0.03;
+      if((hitEdge||S.P.sw>0.02) && canHit){
+        const q=Math.max(0.30,1-Math.abs(S.ball.z-0.36)/0.55);
+        S.P.sw=0.24; hitServe('P',Math.min(1,q));
+      }else if(hitEdge){ S.P.sw=0.24; }   /* 早押しは少しの間受け付ける */
+    }else{
+      if(S.bounces===1 && S.ball.z>0.24 && S.ball.vz<0){
+        S.A.sw=0.24; hitServe('A',0.78+Math.random()*0.2);
+      }
+    }
+    if(S.bounces>=2 && S.phase==='drop'){ faultRetry(); }
+    return;
+  }
+  if(S.phase==='rally'){
+    S.P.lock=false;
+    movePlayer(dt); moveAI(dt); physics(dt);
+    if(S.phase!=='rally') return;
+    if(hitEdge) tryPlayerHit();
+    else if(S.P.sw>0.02 && S.hitBy!=='P'){       /* 振り抜き中の当たり判定 */
+      const b=S.ball;
+      if(b.y>0.06){ const q=reachQuality(S.P,b); if(q>=0) hitRally('P',q); }
+    }
+    tryAIHit();
+    return;
+  }
+  if(S.phase==='dead'){
+    moveAI(dt); movePlayer(dt);
+    if(S.timer>1.55){
+      if(S.pending){
+        const pd=S.pending; S.pending=null;
+        if(pd.kind==='match'){ finish(pd.who); return; }
+        S.setNo++; S.pts.P=0; S.pts.A=0;
+        S.server = (S.setNo===2) ? (S.firstServer==='P'?'A':'P') : pd.who;
+        board();
+        say('第'+S.setNo+'セット','サイドチェンジ サービスは'+(S.server==='P'?'あなた':'相手'),2300);
+        S.phase='interval'; S.timer=0; return;
+      }
+      if(S.retry){ S.retry=false; setupServe(); } else newRally();
+    }
+    return;
+  }
+  if(S.phase==='interval'){
+    if(S.timer>2.3){ S.serveTries=0; setupServe(); }
+    return;
+  }
+}
+
+/* ══ 開始・設定 ════════════════════════════════════ */
+document.querySelectorAll('[data-lv]').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('[data-lv]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); S.level=+b.dataset.lv;
+    S.guide = S.level===0 ? true : S.guide;
+    $('tgGuide').classList.toggle('on',S.guide);
+  };
+});
+$('vGo').onclick=()=>{
+  $('veil').classList.add('hide');
+  S.pts.P=0;S.pts.A=0;S.sets.P=0;S.sets.A=0;S.setNo=1;
+  S.server = Math.random()<0.5?'P':'A'; S.firstServer=S.server;
+  S.retry=false;
+  board(); setupServe();
+  say('第1セット', S.server==='P'?'あなたのサービスです':'相手のサービスです',1600);
+  if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+};
+$('tgGuide').onclick=e=>{ S.guide=!S.guide; e.target.classList.toggle('on',S.guide); };
+$('tgSound').onclick=e=>{ S.sound=!S.sound; e.target.classList.toggle('on',S.sound); };
+$('tgPause').onclick=e=>{ S.paused=!S.paused; e.target.classList.toggle('on',S.paused);
+  e.target.textContent=S.paused?'再開':'一時停止'; };
+
+board(); feathers($('fP'),0); feathers($('fA'),0);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
