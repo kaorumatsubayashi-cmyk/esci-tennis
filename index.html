@@ -507,13 +507,20 @@ document.querySelectorAll('[data-k="hit"]').forEach(el=>{
 })();
 
 /* ══ ゲームパッド ══════════════════════════════════ */
-let padName='', padHitPrev=false;
+let padName='', padHitPrev=false, padOK=true;
 function activePad(){
-  const gs = navigator.getGamepads ? navigator.getGamepads() : [];
+  if(!padOK || !navigator.getGamepads) return null;
+  let gs;
+  try{ gs = navigator.getGamepads(); }
+  catch(e){                       /* 枠内表示などで権限がない場合は諦める */
+    padOK=false; return null;
+  }
+  if(!gs) return null;
   for(let i=0;i<gs.length;i++){ if(gs[i]&&gs[i].connected) return gs[i]; }
   return null;
 }
 function pollPad(){
+  if(!padOK) return;
   const g=activePad();
   if(!g){
     PAD.up=PAD.down=PAD.left=PAD.right=PAD.hit=false; padHitPrev=false;
