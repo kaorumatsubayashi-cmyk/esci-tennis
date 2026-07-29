@@ -160,6 +160,11 @@ canvas{display:block;width:100%;height:auto;touch-action:none}
 .rotate::before{content:"⟳ ";color:var(--shu)}
 .tips{font-size:11px;line-height:2;color:#8dafcd;flex:1;min-width:172px}
 .tips b{color:var(--kinari);font-weight:600}
+.padinfo{
+  display:inline-block;margin-top:8px;font-size:10.5px;letter-spacing:.06em;
+  color:#9ed6a4;background:rgba(127,174,114,.14);border:1px solid #4e7a52;
+  padding:3px 10px;border-radius:2px
+}
 .toggles{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
 .tg{
   font-size:10.5px;letter-spacing:.08em;background:transparent;border:1px solid #35597d;
@@ -287,7 +292,9 @@ footer a{color:#9dbdd8}
     <b>打つ</b>　スペース／打つボタン<br>
     <b>コース</b>　打つ瞬間に ◀▶ を押した方向へ<br>
     <b>球種</b>　▲＝速いドライブ　▼＝ロブ<br>
-    <b>ボレー</b>　ネット際で落とす前に打つと決め球
+    <b>ボレー</b>　ネット際で落とす前に打つと決め球<br>
+    <b>コントローラー</b>　十字／スティックで移動、任意のボタンで打つ
+    <span id="padinfo" class="padinfo" style="display:none"></span>
     <div class="toggles">
       <button class="tg on" id="tgGuide">着地点ガイド</button>
       <button class="tg on" id="tgSound">効果音</button>
@@ -447,28 +454,30 @@ const sWin=()=>{beep(560,0.11);setTimeout(()=>beep(760,0.16),95);};
 const sLos=()=>{beep(300,0.13);setTimeout(()=>beep(200,0.2),95);};
 
 /* ══ 入力 ══════════════════════════════════════════ */
-const K={up:false,down:false,left:false,right:false,hit:false};
+const K ={up:false,down:false,left:false,right:false,hit:false};  /* 合成後 */
+const KB={up:false,down:false,left:false,right:false,hit:false};  /* キー・タッチ */
+const PAD={up:false,down:false,left:false,right:false,hit:false}; /* コントローラー */
 let hitEdge=false;
 const KMAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',
   KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',Space:'hit',Enter:'hit'};
 addEventListener('keydown',e=>{
   const k=KMAP[e.code]; if(!k) return;
   e.preventDefault();
-  if(k==='hit'&&!K.hit) hitEdge=true;
-  K[k]=true; paint(k,true);
+  if(k==='hit'&&!KB.hit) hitEdge=true;
+  KB[k]=true; K[k]=true; paint(k,true);
 },{passive:false});
 addEventListener('keyup',e=>{
   const k=KMAP[e.code]; if(!k) return;
-  e.preventDefault(); K[k]=false; paint(k,false);
+  e.preventDefault(); KB[k]=false;
 },{passive:false});
 function paint(k,on){
   document.querySelectorAll('[data-k="'+k+'"]').forEach(el=>el.classList.toggle('dn',on));
 }
 /* 打つボタン */
 document.querySelectorAll('[data-k="hit"]').forEach(el=>{
-  const dn=e=>{e.preventDefault(); if(!K.hit) hitEdge=true; K.hit=true; el.classList.add('dn');
+  const dn=e=>{e.preventDefault(); if(!KB.hit) hitEdge=true; KB.hit=true; K.hit=true; el.classList.add('dn');
     try{el.setPointerCapture(e.pointerId);}catch(_){}};
-  const up=e=>{e.preventDefault(); K.hit=false; el.classList.remove('dn');};
+  const up=e=>{e.preventDefault(); KB.hit=false; el.classList.remove('dn');};
   el.addEventListener('pointerdown',dn); el.addEventListener('pointerup',up);
   el.addEventListener('pointercancel',up);
   el.addEventListener('contextmenu',e=>e.preventDefault());
@@ -482,10 +491,10 @@ document.querySelectorAll('[data-k="hit"]').forEach(el=>{
     const r=pad.getBoundingClientRect();
     const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
     const dead=r.width*0.155;
-    K.left=dx<-dead; K.right=dx>dead; K.up=dy<-dead; K.down=dy>dead;
-    DIRS.forEach(k=>paint(k,K[k]));
+    KB.left=dx<-dead; KB.right=dx>dead; KB.up=dy<-dead; KB.down=dy>dead;
+    DIRS.forEach(k=>{K[k]=KB[k]; paint(k,K[k]);});
   }
-  function clear(){ id=null; DIRS.forEach(k=>{K[k]=false; paint(k,false);}); }
+  function clear(){ id=null; DIRS.forEach(k=>{KB[k]=false;}); }
   pad.addEventListener('pointerdown',e=>{
     e.preventDefault(); id=e.pointerId;
     try{pad.setPointerCapture(e.pointerId);}catch(_){}
@@ -496,6 +505,49 @@ document.querySelectorAll('[data-k="hit"]').forEach(el=>{
   pad.addEventListener('pointercancel',e=>{ if(e.pointerId===id) clear(); });
   pad.addEventListener('contextmenu',e=>e.preventDefault());
 })();
+
+/* ══ ゲームパッド ══════════════════════════════════ */
+let padName='', padHitPrev=false;
+function activePad(){
+  const gs = navigator.getGamepads ? navigator.getGamepads() : [];
+  for(let i=0;i<gs.length;i++){ if(gs[i]&&gs[i].connected) return gs[i]; }
+  return null;
+}
+function pollPad(){
+  const g=activePad();
+  if(!g){
+    PAD.up=PAD.down=PAD.left=PAD.right=PAD.hit=false; padHitPrev=false;
+    if(padName){ padName=''; showPad(); }
+    return;
+  }
+  if(padName!==g.id){ padName=g.id; showPad(); }
+  const ax=g.axes||[], bt=g.buttons||[];
+  const on=i=>!!(bt[i]&&(bt[i].pressed||bt[i].value>0.5));
+  const DZ=0.38;
+  const lx=+ax[0]||0, ly=+ax[1]||0, hx=+ax[2]||0, hy=+ax[3]||0;
+  PAD.left  = lx<-DZ || hx<-DZ || on(14);
+  PAD.right = lx> DZ || hx> DZ || on(15);
+  PAD.up    = ly<-DZ || hy<-DZ || on(12);
+  PAD.down  = ly> DZ || hy> DZ || on(13);
+  /* 打つ：どのボタンでも受け付ける（配列は機種ごとに違うため） */
+  let hit=false;
+  for(let i=0;i<bt.length;i++){ if(i>=12&&i<=15) continue; if(on(i)){ hit=true; break; } }
+  if(hit && !padHitPrev) hitEdge=true;
+  PAD.hit=hit; padHitPrev=hit;
+}
+function mergeInput(){
+  ['up','down','left','right','hit'].forEach(k=>{
+    const v = KB[k]||PAD[k];
+    if(K[k]!==v){ K[k]=v; paint(k,v); }
+  });
+}
+function showPad(){
+  const el=document.getElementById('padinfo'); if(!el) return;
+  el.textContent = padName ? '🎮 '+padName.replace(/\s*\(.*$/,'').slice(0,26)+' 接続中' : '';
+  el.style.display = padName ? '' : 'none';
+}
+addEventListener('gamepadconnected', ()=>{ pollPad(); });
+addEventListener('gamepaddisconnected', ()=>{ pollPad(); });
 
 /* ══ 画面表示 ══════════════════════════════════════ */
 const $=id=>document.getElementById(id);
@@ -1074,7 +1126,12 @@ function frame(ts){
   if(!last) last=ts;
   let dt=(ts-last)/1000; last=ts;
   if(dt>0.25) dt=0.25;
-  if(S.phase==='title'||S.phase==='over'||S.paused){ hitEdge=false; draw(); return; }
+  pollPad(); mergeInput();
+  if(S.phase==='title'||S.phase==='over'){
+    if(hitEdge){ hitEdge=false; const g=$('vGo'); if(g&&!$('veil').classList.contains('hide')) g.click(); }
+    draw(); return;
+  }
+  if(S.paused){ hitEdge=false; draw(); return; }
   acc+=dt;
   const step=1/120;
   while(acc>=step){ tick(step); acc-=step; }
