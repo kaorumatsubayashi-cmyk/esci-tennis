@@ -1061,19 +1061,33 @@ function drawPerson(p,near){
   /* 腕とラケット */
   const t=Math.max(0,p.sw)/0.26;
   const swing = Math.sin(Math.min(1,1-t)*Math.PI);
-  const dir = p.swDir||1;
-  const rx = p.x + dir*(0.20+0.34*swing);
-  const rz = 0.92 + 0.42*swing;
-  const rp = pj(rx, p.y + (near?-0.12:0.12), rz);
+  const dir = near ? (p.swDir||1) : -1;   /* 相手は右利き＝画面左側 */
+  /* 体から離して構える：横に十分逃がし、奥行きも手前へ出す */
+  const rx = p.x + dir*(0.38+0.30*swing);
+  const rz = 0.95 + 0.40*swing;
+  const ry = p.y + 0.16 + 0.10*swing;
+  const rp = pj(rx, ry, rz);
   ctx.strokeStyle=skin; ctx.lineWidth=Math.max(2.4,0.062*s);
-  ctx.beginPath(); ctx.moveTo(sho.x+dir*0.14*s,sho.y+0.04*s); ctx.lineTo(rp.x,rp.y); ctx.stroke();
-  /* 木製ラケット（グリップ込み38cm） */
-  const rl=0.20*s;
+  const eb=pj(p.x+dir*(0.24+0.14*swing), p.y+0.07, 1.06+0.20*swing);  /* 肘 */
+  ctx.lineJoin='round';
+  ctx.beginPath(); ctx.moveTo(sho.x+dir*0.17*s,sho.y+0.05*s);
+  ctx.lineTo(eb.x,eb.y); ctx.lineTo(rp.x,rp.y); ctx.stroke();
+  /* 木製ラケット（グリップ込み38cm）：原点が手＝グリップを握る */
+  const rl=0.25*rp.s, lw=Math.max(1,0.013*rp.s);
   ctx.save(); ctx.translate(rp.x,rp.y); ctx.rotate(dir*(0.5-swing*1.5));
-  ctx.fillStyle='#c99a5f'; ctx.strokeStyle='#7b5326'; ctx.lineWidth=Math.max(1,0.012*s);
-  ctx.beginPath(); ctx.ellipse(0,-rl*0.55,rl*0.62,rl*0.86,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
-  ctx.fillStyle='#8a5f2e'; ctx.fillRect(-rl*0.10,rl*0.16,rl*0.20,rl*0.62);
+  ctx.strokeStyle='#7b5326'; ctx.lineWidth=lw;
+  /* グリップ（手の上下に伸びる）*/
+  ctx.fillStyle='#8a5f2e';
+  ctx.fillRect(-rl*0.080, -rl*0.32, rl*0.16, rl*0.62);
+  ctx.strokeRect(-rl*0.080, -rl*0.32, rl*0.16, rl*0.62);
+  /* 打面（手より先） */
+  ctx.fillStyle='#c99a5f';
+  ctx.beginPath(); ctx.ellipse(0, -rl*0.90, rl*0.44, rl*0.58, 0, 0, Math.PI*2);
+  ctx.fill(); ctx.stroke();
   ctx.restore();
+  /* 握りこぶし（グリップの上に重ねる） */
+  ctx.fillStyle=skin;
+  ctx.beginPath(); ctx.arc(rp.x, rp.y, Math.max(2,0.055*rp.s), 0, Math.PI*2); ctx.fill();
 }
 function drawBall(){
   const b=S.ball;
