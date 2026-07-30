@@ -95,8 +95,20 @@ canvas{display:block;width:100%;height:auto;touch-action:none}
 }
 .veil.hide{display:none}
 .veil h2{font-family:var(--mincho);font-size:clamp(21px,4.4vw,31px);margin:0;letter-spacing:.1em;font-weight:600}
-.veil p{margin:0;font-size:13px;line-height:1.95;color:#b9cfe3;max-width:44ch}
+.veil p{margin:0;font-size:13px;line-height:1.95;color:#b9cfe3;max-width:480px}
 .veil .sub{font-size:11.5px;color:#87a8c6;letter-spacing:.05em}
+.scorelist{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0}
+.scorelist span{
+  font-family:var(--mincho);font-size:14px;letter-spacing:.08em;font-variant-numeric:tabular-nums;
+  background:rgba(255,255,255,.045);border:1px solid #35597d;padding:7px 14px;border-radius:2px
+}
+.scorelist b{
+  display:block;font-family:var(--gothic);font-size:9.5px;letter-spacing:.18em;
+  color:#7fa3c4;font-weight:400;margin-bottom:3px
+}
+.scorelist span.won{border-color:var(--shu);background:rgba(226,71,42,.13)}
+.scorelist span.tot{border-color:var(--kinari);background:rgba(242,236,225,.1);font-weight:600}
+.scorelist span.tot b{color:var(--kinari)}
 .choices{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
 .btn{
   font-family:var(--mincho);font-size:14px;letter-spacing:.1em;
@@ -225,7 +237,7 @@ footer a{color:#9dbdd8}
 
 <header>
   <div>
-    <div class="eyebrow">広島発祥・一九四八年</div>
+    <div class="eyebrow">2028年、誕生80周年</div>
     <h1>翔け！エスキーテニス<span class="en">ESCI TENNIS</span></h1>
   </div>
   <div class="origin">
@@ -265,7 +277,8 @@ footer a{color:#9dbdd8}
 
   <div class="veil" id="veil">
     <h2 id="vTitle">羽根つきから生まれた競技</h2>
-    <p id="vText">被爆後の広島で、復興を願う人々によって考案された球技です。テニスの８分の１のコートで、羽根のついたスポンジボールを木製ラケットで打ち合います。速さより読み。老若男女を問わず一緒に楽しめます。</p>
+    <div id="vScores" class="scorelist" style="display:none"></div>
+    <p id="vText">被爆後の広島で、復興を願う人々によって考案された球技です。テニスの８分の１のコートで、羽根のついたスポンジボールを木製ラケットで打ち合います。老若男女を問わず一緒に楽しめます。</p>
     <div class="pick" id="vPick">
       <span>対戦相手の強さ</span>
       <div class="choices">
@@ -412,7 +425,7 @@ function shotOver(p,tx,ty,T){
 const S={
   phase:'title',          // title / serve / drop / rally / dead / interval / over
   level:1, guide:true, sound:true, paused:false,
-  pts:{P:0,A:0}, sets:{P:0,A:0}, setNo:1,
+  pts:{P:0,A:0}, sets:{P:0,A:0}, setNo:1, setLog:[],
   server:'P', firstServer:'P',
   serveTries:0,
   t:0, timer:0,
@@ -719,6 +732,7 @@ function point(who,label,why){
   const a=S.pts[who], b=S.pts[who==='P'?'A':'P'];
   if(a>=11 && a-b>=2){                 /* 11点先取・ジュースは二点差 */
     S.sets[who]++;
+    S.setLog.push({p:S.pts.P, a:S.pts.A, win:(who==='P')});
     S.pending = (S.sets[who]>=2) ? {kind:'match',who:who} : {kind:'set',who:who};
   }else{
     S.pending=null;
@@ -750,9 +764,14 @@ function finish(who){
   S.phase='over';
   const v=$('veil');
   $('vTitle').textContent = who==='P' ? 'あなたの勝ち' : '相手の勝ち';
-  $('vText').textContent  = '第'+S.setNo+'セットまでで '+S.sets.P+' 対 '+S.sets.A+
-    '。速さより読み。落としどころを一つ変えるだけで、次の一本は変わります。';
+  const sl=$('vScores');
+  sl.innerHTML = S.setLog.map(function(s,i){
+    return '<span class="'+(s.win?'won':'')+'"><b>第'+(i+1)+'セット</b>'+s.p+' − '+s.a+'</span>';
+  }).join('') + '<span class="tot"><b>セット</b>'+S.sets.P+' − '+S.sets.A+'</span>';
+  sl.style.display='';
+  $('vText').textContent = '落としどころを一つ変えるだけで、次の一本は変わります。';
   $('vPick').style.display=''; $('vGo').textContent='もう一度';
+  $('vGo').addEventListener('click',function(){ $('vScores').style.display='none'; },{once:true});
   $('vHint').textContent='強さを変えて挑戦できます。';
   v.classList.remove('hide');
 }
@@ -1229,7 +1248,7 @@ document.querySelectorAll('[data-lv]').forEach(b=>{
 });
 $('vGo').onclick=()=>{
   $('veil').classList.add('hide');
-  S.pts.P=0;S.pts.A=0;S.sets.P=0;S.sets.A=0;S.setNo=1;
+  S.pts.P=0;S.pts.A=0;S.sets.P=0;S.sets.A=0;S.setNo=1;S.setLog=[];
   S.server = Math.random()<0.5?'P':'A'; S.firstServer=S.server;
   S.retry=false;
   board(); setupServe();
