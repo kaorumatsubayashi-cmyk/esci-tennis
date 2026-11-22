@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- v5d: compact forward preparation + pre-contact forward drive + regulation-compliant bounce -->
+
 <html lang="ja">
 <head>
 <meta charset="utf-8">
@@ -87,12 +89,17 @@ h1 .en{
 
 /* ── 舞台 ───────────────────────────── */
 .stage{position:relative;border:1px solid #274863;border-radius:3px;overflow:hidden;background:#071220}
+.stage.menu{min-height:min(74vh,430px)}
 canvas{display:block;width:100%;height:auto;touch-action:none}
 .veil{
   position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;gap:14px;padding:22px;
-  background:rgba(6,16,28,.9);backdrop-filter:blur(3px)
+  align-items:center;justify-content:flex-start;text-align:center;gap:14px;padding:22px;
+  background:rgba(6,16,28,.94);backdrop-filter:blur(3px);
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch
 }
+/* 上下の自動余白で中央寄せしつつ、収まらないときはスクロールできるようにする */
+.veil::before,.veil::after{content:"";flex:0 0 auto;margin:auto}
+.veil>*{flex:0 0 auto;max-width:100%}
 .veil.hide{display:none}
 .veil h2{font-family:var(--mincho);font-size:clamp(21px,4.4vw,31px);margin:0;letter-spacing:.1em;font-weight:600}
 .veil p{margin:0;font-size:13px;line-height:1.95;color:#b9cfe3;max-width:480px}
@@ -221,12 +228,43 @@ footer a{color:#9dbdd8}
 }
 @media (max-width:600px){
   body{padding:12px 8px 26px}
+  .veil{gap:10px;padding:14px 12px}
+  .veil h2{font-size:19px}
+  .veil p{font-size:12px;line-height:1.8}
+  .veil .sub{font-size:10.5px}
+  .pick>span{font-size:9px;letter-spacing:.18em}
+  .btn{font-size:13px;padding:9px 16px}
+  .btn.go{padding:11px 28px}
+  .scorelist span{font-size:12.5px;padding:5px 10px}
   .dpad{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px)}
   .hit{width:104px;height:104px;font-size:19px}
   .pts{font-size:34px}
   .mid{min-width:82px;padding:0 8px}
   .pad{justify-content:center}
   .tips{order:3;text-align:center}
+}
+/* 狭い画面：スコアボードの折り返しを防ぐ */
+@media (max-width:420px){
+  .board{padding:8px 6px;gap:3px}
+  .pts{font-size:26px;min-width:1.2ch}
+  .side{gap:7px}
+  .who{font-size:11px;letter-spacing:.04em;white-space:nowrap}
+  .who small{font-size:8px;letter-spacing:.06em;white-space:nowrap}
+  .srv{white-space:nowrap;font-size:8px;padding:2px 5px;letter-spacing:.06em}
+  .mid{min-width:66px;padding:0 5px}
+  .setno{font-size:12px}
+  .mid small{font-size:8.5px}
+  .origin{font-size:10px}
+}
+@media (max-width:360px){
+  .board{padding:7px 4px}
+  .pts{font-size:22px}
+  .who{font-size:10px}
+  .who small{display:none}      /* NEAR/FAR SIDE は狭すぎるので省く */
+  .mid{min-width:56px;padding:0 3px}
+  .setno{font-size:11px}
+  .srv{font-size:7.5px;padding:2px 4px}
+  .fx{width:7px;height:12px}
 }
 @media (max-width:600px) and (orientation:portrait){ .rotate{display:block} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -242,7 +280,7 @@ footer a{color:#9dbdd8}
   </div>
   <div class="origin">
     Education, Science and Culture Institute<br>
-    コート <b>8m × 4m</b>　ネット <b>55cm</b><br>
+    コート <b>8m × 3m</b>　ネット <b>55cm</b><br>
     木製ラケット・羽根つきスポンジボール
   </div>
 </header>
@@ -311,13 +349,16 @@ footer a{color:#9dbdd8}
     <b>移動</b>　矢印キー／▲▼◀▶<br>
     <b>打つ</b>　スペース／打つボタン<br>
     <b>コース</b>　打つ瞬間に ◀▶ を押した方向へ<br>
+    <b>サービス</b>　既定はフォア。トスのときに ◀ を押すとバックハンド<br>
     <b>球種</b>　▲＝速いドライブ　▼＝ロブ<br>
+    <b>打ち方</b>　右側の球はフォア、左側の球は片手バックに自動切替<br>
     <b>ボレー</b>　ネット際で落とす前に打つと決め球<br>
     <b>コントローラー</b>　十字／スティックで移動、任意のボタンで打つ
     <div id="tips2p" style="display:none;margin-top:7px;padding-top:7px;border-top:1px solid #23425f">
       <b>1P（手前）</b>　矢印キーで移動、スペースで打つ<br>
       <b>2P（奥）</b>　W A S D で移動、左Shift（またはF）で打つ<br>
-      <span style="color:#7fa3c4">コントローラーを2台つなぐと、1台目が1P、2台目が2Pになります</span>
+      <span style="color:#7fa3c4">コントローラーを2台つなぐと、1台目が1P、2台目が2Pになります。<br>
+      ふたり対戦はキーボードかコントローラーが必要です（画面のボタンは1P用）。</span>
     </div>
     <span id="padinfo" class="padinfo" style="display:none"></span>
     <div class="toggles">
@@ -369,8 +410,8 @@ footer a{color:#9dbdd8}
       <ul>
         <li>ラケット：木製、グリップ込み38cm</li>
         <li>ボール：直径4cm・20g以内、羽根つき</li>
-        <li>弾み：2mから落として70〜90cm</li>
-        <li>コート：8m×4m（テニスの八分の一）</li>
+        <li>弾み：落下高さの40％±5％（2mから約70〜90cm）</li>
+        <li>コート：8m×3m（シングルス）</li>
         <li>シングルスのラインは縦の一本線のみ</li>
       </ul>
     </div>
@@ -384,8 +425,12 @@ footer a{color:#9dbdd8}
 "use strict";
 
 /* ══ 諸元 ══════════════════════════════════════════ */
-const HALF_W=2.0, HALF_L=4.0, NET_H=0.55, NET_X=2.2;
-const G=9.8, DRAG=0.085, REST=0.63, FRIC=0.76;
+const HALF_W=1.5, HALF_L=4.0, NET_H=0.55, NET_X=1.7;   /* シングルス 3m×8m */
+/* 2mから自然落下→空気抵抗込みで約80cmの反発（規則70〜90cm）。
+   FRICは着地後の水平速度のみ。飛行中の減速DRAGは維持する。 */
+/* REST は用具規定「2mから落として70〜90cm弾む」に合わせて実測で決めた値。
+   空気抵抗(DRAG)が効くので理論値0.632では63cmしか跳ねない。0.71で80cm。 */
+const G=9.8, DRAG=0.085, REST=0.71, FRIC=0.76;
 const REACH=0.62, PSPEED=3.55;
 let W=900, H=560;
 const CAM={y:9.4, z:3.6, f:620}, HORIZON=14;
@@ -428,10 +473,31 @@ function simTraj(p,v,maxT){
     const nz=z+vz*dt, ny=y+vy*dt;
     if((py>0&&ny<=0)||(py<0&&ny>=0)) zNet=z;
     x+=vx*dt; py=y; y=ny;
-    if(nz<=0&&vz<0) return {x:x,y:y,t:t+dt,zNet:zNet};
+    if(nz<=BALL_R&&vz<0) return {x:x,y:y,t:t+dt,zNet:zNet};
     z=nz;
   }
   return null;
+}
+/* 着地点ではなく「実際に打てる場所」を予測する。羽根つきボールでも
+   バウンド後にかなり転がるので、着地点に立っていると球に置いていかれる。
+   一度弾んだあと、打ちごろの高さに下りてくる位置を返す。 */
+function planHit(p,v){
+  let x=p.x,y=p.y,z=p.z,vx=v.x,vy=v.y,vz=v.z;
+  const dt=1/240; let bounced=false, land=null;
+  for(let t=0;t<6;t+=dt){
+    const sp=Math.hypot(vx,vy,vz), k=DRAG*sp;
+    vx-=k*vx*dt; vy-=k*vy*dt; vz-=(k*vz+G)*dt;
+    x+=vx*dt; y+=vy*dt; const nz=z+vz*dt;
+    if(nz<=0&&vz<0){
+      z=0; vz=-vz*REST; vx*=FRIC; vy*=FRIC;
+      if(vz<0.22) vz*=0.7;
+      if(!bounced){ bounced=true; land={x,y,t:t+dt}; }
+      else return {x,y,t:t+dt,land};          /* 二度目の着地までが勝負 */
+    } else z=nz;
+    /* 弾んだあと、打ちやすい高さまで下りてきたところ */
+    if(bounced&&vz<0&&z<0.62&&z>0.30) return {x,y,t:t+dt,land};
+  }
+  return land?{x,y,t:6,land}:null;
 }
 function solveShot(p,tx,ty,T){
   let v={x:(tx-p.x)/T, y:(ty-p.y)/T, z:(-p.z)/T+0.5*G*T};
@@ -464,10 +530,10 @@ const S={
   ball:{x:0,y:3,z:0,vx:0,vy:0,vz:0,live:false,tr:[]},
   bounces:0, hitBy:null, wasServe:false, receiveOk:false,
   volley:{P:false,A:false},
-  P:{x:1.0,y:4.3,sw:0,swDir:0,lock:true},
-  A:{x:-1.0,y:-4.3,sw:0,swDir:0},
+  P:{x:1.0,y:4.3,sw:0,swDir:0,lock:true,hitAt:null},
+  A:{x:-1.0,y:-4.3,sw:0,swDir:0,hitAt:null},
   ai:{tx:0,ty:-2.6,err:0,react:0,plan:null}, fx:0, fxWho:'P',
-  land:null, netFlash:0, shake:0
+  land:null, hitSpot:null, netFlash:0, shake:0, hold:0, strike:null
 };
 const LV=[
   {name:'初級', spd:2.55, err:0.85, wild:0.34, vol:0.10, T:1.02},
@@ -621,6 +687,10 @@ function showPad(){
     (padCount>1 ? ' ほか'+(padCount-1)+'台 接続中' : ' 接続中') : '';
   el.style.display = padName ? '' : 'none';
 }
+addEventListener('blur', ()=>{ if(typeof clearInputs==='function') clearInputs(); });
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden && typeof clearInputs==='function') clearInputs();
+});
 addEventListener('gamepadconnected', ()=>{ pollPad(); });
 addEventListener('gamepaddisconnected', ()=>{ pollPad(); });
 
@@ -665,16 +735,35 @@ function serveSide(){
   return ((S.pts.P+S.pts.A)%5)%2===0 ? 1 : -1;
 }
 function setupServe(){
+  S.P._buf=0; S.A._buf=0; S.P._srvBuf=0; S.A._srvBuf=0;
   const sd=serveSide();
   S.phase='serve'; S.timer=0;
+  S.hold=0; S.strike=null;
+  S.P.serveSide=1; S.A.serveSide=1;
+  /* 直前のラリーの姿勢を持ち越さない */
+  for(const q of [S.P,S.A]){
+    q._crouch=null; q._bodyT=null; q._leanK=null; q._sx=null; q._sy=null;
+    q._lean3=null; q._hintR=null; q._hintL=null; q._hPos=null; q._hT=null;
+    q._aimPt=null; q._aimZ=null; q._prep=0; q._forward=0; q._poseT=null;
+    q._tossT=null; q._tossFrom=null; q._srvR=null; q._srvT=null; q._tossWanted=false;
+    /* 肘の曲げ面も持ち越さない。前のポイントで打った球の向きが残ると、
+       同じサーブの構えでも肘の位置が変わってしまう。 */
+    q._planeR=null; q._planeL=null; q._planeT=null;
+    q.sw=0; q.hitAt=null; q._impactRig=null; q._impLag=0;
+  }
   S.ball.live=false; S.ball.tr.length=0;
   S.bounces=0; S.hitBy=null; S.wasServe=true; S.receiveOk=false;
-  S.volley.P=false; S.volley.A=false; S.land=null;
+  S.volley.P=false; S.volley.A=false; S.land=null; S.hitSpot=null;
   /* サーバー・レシーバーとも両者コートの外（ベースラインの後ろ）の所定位置 */
   S.P.x=sd*1.00; S.P.y=4.34; S.P.lock=false;
   S.A.x=-sd*1.00; S.A.y=-4.34;
-  if(S.server==='P'){ S.ball.x=S.P.x; S.ball.y=S.P.y-0.16; S.ball.z=1.16; }
-  else{ S.ball.x=S.A.x; S.ball.y=S.A.y+0.16; S.ball.z=1.16; }
+  S.P._srvR=null; S.A._srvR=null; S.P._srvT=null; S.A._srvT=null;
+  S.P._tossWanted=false; S.A._tossWanted=false;
+  /* 走行状態の記録は「所定位置へ戻したあと」。先に記録すると、位置リセット
+     そのものを猛ダッシュとみなして、足が勝手に動いて見える。 */
+  for(const q of [S.P,S.A]){ q._oldX=q.x; q._oldY=q.y; q._run=0; q._step=0; }
+  if(S.server==='P'){ S.ball.x=S.P.x+0.26*(S.P.serveSide||1); S.ball.y=S.P.y-0.28; S.ball.z=1.06; }
+  else{ S.ball.x=S.A.x-0.26*(S.A.serveSide||1); S.ball.y=S.A.y+0.28; S.ball.z=1.06; }
   S.ball.vx=S.ball.vy=S.ball.vz=0;
   if(S.lastServer && S.lastServer!==S.server){
     say('サービス交替', nameOf(S.server)+'のサービスです',1300);
@@ -683,11 +772,19 @@ function setupServe(){
   board();
 }
 function dropServe(){
+  /* 離球を決めたこの更新ステップで、左手の保持位置を確定しておく。
+     描画時に保存した座標を使うと、描画間隔のぶんだけ球とずれる。 */
+  {const p=S.server==='P'?S.P:S.A;
+   p._poseT=null; shotRig(p,poseState(p));}
   S.phase='drop'; S.ball.live=true; S.timer=0;
   S.ball.vx=0; S.ball.vy=0; S.ball.vz=0;
+  const p=S.server==='P'?S.P:S.A;
+  p.prepSide=p.serveSide||1;              /* 落とした側の手で打つ */
+  p._tossT=S.t;                           /* ここから左腕を下ろし始める */
   sTap();
 }
 function hitServe(who,quality){
+  if(S.strike) return;
   const sd = (who===S.server) ? serveSide() : 1;
   const from = who==='P'?S.P:S.A;
   const sgn = who==='P'?-1:1;                 // 進行方向
@@ -710,14 +807,12 @@ function hitServe(who,quality){
   }
   const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
   const v=shotOver(p,tx,ty,0.95+(1-quality)*0.1);
-  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
-  S.hitBy=who; S.bounces=0; S.wasServe=true; S.receiveOk=false;
-  S.volley[who]=false;
-  from.sw=0.26; from.swDir=Math.sign(v.x)||1;
-  S.phase='rally'; sHit(); S.shake=2.5;
-  updLand();
+  if(!armStrike(who,from,v,'serve',p,{wasServe:true,fx:'serve',who,isVolley:false})) return;
+  from.swDir=Math.sign(v.x)||1;
+  S.phase='rally';
 }
 function hitRally(who,quality){
+  if(S.strike) return;                       /* 予約中は二重打球しない */
   const from = who==='P'?S.P:S.A;
   const other = who==='P'?'A':'P';
   const sgn = who==='P'?-1:1;
@@ -733,7 +828,10 @@ function hitRally(who,quality){
     point(other,'ノーバウンド','サービスはワンバウンドさせてから打ちます');
     return;
   }
-  S.volley[who]=isVolley;
+  /* ノーバウンド打球の記録は、ここでは変えない。
+     予約が拒否されたり空振りに終わったりしたときに、打っていないのに
+     「ノーバウンドを打った」ことになり、次の打球が連続ノーバウンドの
+     反則と誤判定されるため。記録は接触が確定する releaseStrike で行う。 */
 
   let tx=0, ty=sgn*2.55, T=0.86, flaw=0, putaway=false;
   const KKr = (who==='P') ? K : K2;
@@ -742,7 +840,9 @@ function hitRally(who,quality){
   if(who==='P' || S.mode==='2p'){
     const atNet = (who==='P') ? (S.P.y<1.60) : (S.A.y>-1.60);
     const dist  = (who==='P') ? Math.max(0,S.P.y-0.55) : Math.max(0,-S.A.y-0.55);
-    if(KK.left) tx=-1.30; else if(KK.right) tx=1.30; else tx=(Math.random()*2-1)*0.45;
+    /* 狙う左右位置はすべてコート半幅 HALF_W を基準にする。
+       コート幅を変えたときに、ここだけ旧寸法が残るのを防ぐ。 */
+    if(KK.left) tx=-HALF_W*0.65; else if(KK.right) tx=HALF_W*0.65; else tx=(Math.random()*2-1)*HALF_W*0.22;
     if(KK.up){ ty=sgn*3.20; T=0.70; }
     else if(KK.down){ ty=sgn*3.35; T=1.28; }
     let e=(1-quality)*1.45;
@@ -751,7 +851,7 @@ function hitRally(who,quality){
       T=0.50+dist*0.09;
       ty=sgn*(1.45+Math.random()*0.95);
       if(KK.up){ ty=sgn*3.05; T=0.63; }       /* 深く突き刺す */
-      if(KK.left) tx=-1.62; else if(KK.right) tx=1.62;
+      if(KK.left) tx=-HALF_W*0.81; else if(KK.right) tx=HALF_W*0.81;
       e*=0.55;                                /* 距離が近いぶん正確 */
     }
     tx+=(Math.random()*2-1)*e; ty+=sgn*(Math.random()*2-1)*e;
@@ -759,39 +859,68 @@ function hitRally(who,quality){
   }else{
     const L=LV[S.level];
     const away=-Math.sign(S.P.x)||(Math.random()<0.5?1:-1);
-    tx=away*(0.72+Math.random()*1.16);
+    tx=away*HALF_W*(0.36+Math.random()*0.58);
     ty=sgn*(2.0+Math.random()*1.72);
     T=L.T+(Math.random()*0.18-0.09);
-    if(S.A.y>-1.7 && isVolley){ T=L.T-0.16; tx=away*(1.25+Math.random()*0.72); }  /* 詰めてのボレー */
+    if(S.A.y>-1.7 && isVolley){ T=L.T-0.16; tx=away*HALF_W*(0.58+Math.random()*0.28); }  /* 詰めてのボレー（ラインまで余裕を残す） */
     else if(Math.random()<0.16){ ty=sgn*(0.85+Math.random()*0.5); T=L.T+0.14; }   /* 前に落とす */
     tx+=(Math.random()*2-1)*L.err*0.85;
     ty+=sgn*(Math.random()*2-1)*L.err*1.05;
     const w=Math.random();                               /* アンフォーストエラー */
     if(w<L.wild*0.40){ flaw=1; ty=sgn*(4.35+Math.random()*0.85); }
     else if(w<L.wild*0.74){ flaw=2; }
-    else if(w<L.wild){ flaw=3; tx=(Math.sign(tx)||1)*(2.30+Math.random()*0.5); }
+    else if(w<L.wild){ flaw=3; tx=(Math.sign(tx)||1)*(HALF_W+0.30+Math.random()*0.5); }
   }
-  tx=Math.max(-2.9,Math.min(2.9,tx));
+  tx=Math.max(-(HALF_W+0.9),Math.min(HALF_W+0.9,tx));
   const p={x:S.ball.x,y:S.ball.y,z:S.ball.z};
   const v = flaw===2 ? solveShot(p,tx,ty,T) : shotOver(p,tx,ty,T);
   if(flaw===2) v.z*=0.52;                                /* ネットを越えない */
-  S.ball.vx=v.x; S.ball.vy=v.y; S.ball.vz=v.z;
-  S.hitBy=who; S.bounces=0; S.wasServe=false; S.receiveOk=false;
-  from.sw=0.24; from.swDir=Math.sign(v.x)||1;
-  if(putaway){ beep(520,0.10,'square',0.14); S.shake=5.0; S.fx=0.45; S.fxWho=who; }
-  else { sHit(); S.shake=isVolley?3.5:2.2; }
-  updLand();
+  if(!armStrike(who,from,v,isVolley?'volley':'rally',p,
+       {fx:putaway?'putaway':(isVolley?'volley':'rally'),who,isVolley})) return;
+  from.swDir=Math.sign(v.x)||1;
+}
+/* バウンド前に迎え撃てる点を探す。ノーバウンド（ボレー）に出るかどうかの
+   判断に使う。planHit（バウンド後に打てる点）とは別物。 */
+function planVolley(p,v,from,spd){
+  let x=p.x,y=p.y,z=p.z,vx=v.x,vy=v.y,vz=v.z;
+  const dt=1/240;
+  for(let t=0;t<4;t+=dt){
+    const sp=Math.hypot(vx,vy,vz), k=DRAG*sp;
+    vx-=k*vx*dt; vy-=k*vy*dt; vz-=(k*vz+G)*dt;
+    x+=vx*dt; y+=vy*dt; z+=vz*dt;
+    if(z<=0) return null;                       /* バウンドしてしまった */
+    if(Math.abs(x)>HALF_W+0.7) return null;
+    if(y>-0.70 || y<-3.40) continue;            /* 自陣のコート内だけ */
+    if(z<0.50 || z>1.55) continue;              /* 胸から腰の高さで捉える */
+    /* 間に合う最も早い（＝最も前の）点を選ぶ。間に合わない点は飛ばす。 */
+    const need=Math.hypot(x+0.26-from.x, y-from.y);
+    if(need < spd*Math.max(0,(t+dt)-0.10)) return {x,y,t:t+dt};
+  }
+  return null;
 }
 function updLand(){
-  const r=simTraj({x:S.ball.x,y:S.ball.y,z:S.ball.z},{x:S.ball.vx,y:S.ball.vy,z:S.ball.vz});
+  const P={x:S.ball.x,y:S.ball.y,z:S.ball.z}, V={x:S.ball.vx,y:S.ball.vy,z:S.ball.vz};
+  const r=simTraj(P,V);
   S.land = r ? {x:r.x,y:r.y} : null;
-  S.ai.plan = r ? {x:r.x,y:r.y,t:r.t} : null;
+  /* AIは着地点ではなく、そこから転がった先の「打てる場所」へ動く */
+  const h=planHit(P,V);
+  S.ai.plan = h ? {x:h.x,y:h.y,t:h.t} : (r?{x:r.x,y:r.y,t:r.t}:null);
+  /* 画面にも「打ちごろになる位置」を出す。着地点から離れているときだけ。 */
+  S.hitSpot = null;   /* 打ちごろ位置の目印は出さない（2バウンド目と紛らわしい） */
   S.ai.err = (Math.random()*2-1)*LV[S.level].err*0.55;
   S.ai.react = 0.10+Math.random()*0.13;
+  /* ボレーに出るかどうかは、球ごとに一度だけ決める。毎フレーム抽選すると
+     前に出かけては戻るだけで、結局ボレーにならない。 */
+  S.ai.vol=null;
+  if(S.mode!=='2p' && S.hitBy==='P' && !S.volley.A && !(S.wasServe && !S.receiveOk)){
+    const L=LV[S.level];
+    if(Math.random()<L.vol) S.ai.vol=planVolley(P,V,S.A,L.spd);
+  }
 }
 function point(who,label,why){
   if(S.phase==='dead') return;
-  S.phase='dead'; S.ball.live=false; S.timer=0; S.land=null; S.retry=false;
+  S.phase='dead'; S.ball.live=false; S.timer=0; S.land=null; S.hitSpot=null; S.retry=false;
+  S.hold=0; S.strike=null;
   S.pts[who]++;
   const win = who==='P';
   if(S.mode==='2p'){ say(nameOf(who)+'の得点', (label?label+'　':'')+(why||''), 1750); sWin(); }
@@ -813,7 +942,7 @@ function point(who,label,why){
   board();
 }
 function letCall(){
-  S.phase='dead'; S.ball.live=false; S.timer=-0.35; S.land=null;
+  S.phase='dead'; S.ball.live=false; S.timer=-0.35; S.land=null; S.hitSpot=null;
   say('レット','ネットイン　サービスをやり直します',1400); sNet();
   S.retry=true;
 }
@@ -840,26 +969,35 @@ function finish(who){
   $('vPick').style.display = (S.mode==='2p') ? 'none' : '';
   $('vGo').textContent='もう一度';
   $('vGo').addEventListener('click',function(){ $('vScores').style.display='none'; },{once:true});
+  clearInputs();
   $('vHint').textContent = (S.mode==='2p') ? 'あそびかたを変えて再戦できます。' : '強さを変えて挑戦できます。';
-  v.classList.remove('hide');
+  showMenu(true);
 }
 
 /* ══ 更新 ══════════════════════════════════════════ */
-const ZONE={y0:4.06, y1:4.88, x0:0.10, x1:1.92};   /* サービス／レシーブ所定位置 */
+const ZONE={y0:4.06, y1:4.88, x0:0.10, x1:HALF_W-0.08};   /* サービス／レシーブ所定位置 */
+/* 打つ瞬間は足を止める。打ちながら走り続けると、打点だけがその場に残って
+   体だけが先へ行き、ラケットを置き去りにしたように見える。 */
+function planted(p){
+  if(!(p.sw>0)) return 1;
+  const u=1-p.sw/SW_DUR;
+  return u<0.55 ? 0.22 : 0.22+(u-0.55)/0.45*0.78;
+}
 function movePlayer(dt){
   const p=S.P;
   if(p.lock) return;
   let dx=(K.right?1:0)-(K.left?1:0), dy=(K.down?1:0)-(K.up?1:0);
   if(dx||dy){ const m=Math.hypot(dx,dy); dx/=m; dy/=m; }
-  p.x+=dx*PSPEED*dt; p.y+=dy*PSPEED*dt;
+  p.x+=dx*PSPEED*planted(p)*dt; p.y+=dy*PSPEED*planted(p)*dt;
   if(S.phase==='serve'||S.phase==='drop'){
     const sd=serveSide();
     p.y=Math.max(ZONE.y0,Math.min(ZONE.y1,p.y));
     p.x = sd>0 ? Math.max(ZONE.x0,Math.min(ZONE.x1,p.x))
                : Math.max(-ZONE.x1,Math.min(-ZONE.x0,p.x));
-    if(S.server==='P'&&S.phase==='serve'){ S.ball.x=p.x; S.ball.y=p.y-0.16; }
+    if(S.server==='P'&&S.phase==='serve'){
+      S.ball.x=p.x+0.26*(p.serveSide||1); S.ball.y=p.y-0.28; S.ball.z=1.06; }
   }else{
-    p.x=Math.max(-2.85,Math.min(2.85,p.x));
+    p.x=Math.max(-(HALF_W+0.85),Math.min(HALF_W+0.85,p.x));
     p.y=Math.max(0.50,Math.min(4.95,p.y));
   }
 }
@@ -875,9 +1013,10 @@ function movePlayer2(dt){
     a.y=Math.max(-ZONE.y1,Math.min(-ZONE.y0,a.y));
     a.x = sd>0 ? Math.max(ZONE.x0,Math.min(ZONE.x1,a.x))
                : Math.max(-ZONE.x1,Math.min(-ZONE.x0,a.x));
-    if(S.server==='A'&&S.phase==='serve'){ S.ball.x=a.x; S.ball.y=a.y+0.16; }
+    if(S.server==='A'&&S.phase==='serve'){
+      S.ball.x=a.x-0.26*(a.serveSide||1); S.ball.y=a.y+0.28; S.ball.z=1.06; }
   }else{
-    a.x=Math.max(-2.85,Math.min(2.85,a.x));
+    a.x=Math.max(-(HALF_W+0.85),Math.min(HALF_W+0.85,a.x));
     a.y=Math.max(-4.95,Math.min(-0.50,a.y));
   }
 }
@@ -890,29 +1029,51 @@ function holdServePos(){
   S.A.y=Math.max(-ZONE.y1,Math.min(-ZONE.y0,S.A.y));
   S.A.x = sa>0 ? Math.max(ZONE.x0,Math.min(ZONE.x1,S.A.x))
                : Math.max(-ZONE.x1,Math.min(-ZONE.x0,S.A.x));
-  /* サーバーの手元にボールを置いたままにする */
+  /* サーバーの手元にボールを置いたままにする。右利きなので、既定では
+     左手でボールを体の右側へ運び、そこへ落としてフォアで打つ。
+     トスの瞬間に◀を押していればバックハンド側（体の左）へ落とす。 */
   if(S.phase==='serve'){
-    if(S.server==='P'){ S.ball.x=S.P.x; S.ball.y=S.P.y-0.16; }
-    else              { S.ball.x=S.A.x; S.ball.y=S.A.y+0.16; }
+    const p=S.server==='P'?S.P:S.A, R=S.server==='P'?1:-1, F=-R;
+    const KK=serveKeys(S.server);
+    if(KK.right) p.serveSide=1; else if(KK.left) p.serveSide=-1;
+    if(!p.serveSide) p.serveSide=1;
+    p.prepSide=p.serveSide;
+    /* 左右を変えたとき、ボールは左手と一緒に連続して移る。
+       即座に反対側へ置き換えると、ボールも左腕も36cm瞬間移動してしまう。 */
+    const tgt=0.26*p.serveSide;
+    const dtS=clamp(S.t-(p._srvT==null?S.t-1/120:p._srvT),0,.05);
+    p._srvT=S.t;
+    if(p._srvR==null) p._srvR=tgt;
+    else{
+      const d=tgt-p._srvR, m=1.1*dtS;        /* 持ち替えは毎秒1.1mまで */
+      p._srvR = Math.abs(d)<=m ? tgt : p._srvR+Math.sign(d)*m;
+    }
+    S.ball.x = p.x + R*p._srvR;
+    S.ball.y = p.y + F*0.28;
+    S.ball.z = 1.06;
   }
+}
+/* サーブの左右選択。ふたりモードの右画面は左右が反転して見えるので合わせる */
+function serveKeys(who){
+  const raw = who==='P' ? K : K2;
+  if(who==='A' && isSplit()) return {left:raw.right,right:raw.left};
+  return {left:raw.left,right:raw.right};
 }
 function tryPlayer2Hit(){
   const b=S.ball;
-  if(!b.live) return;
+  if(!b.live||S.strike) return;
   if(S.phase==='serve'){ dropServe(); return; }
   if(S.phase==='drop' && S.server==='A'){
     if(S.bounces===1 && b.z>0.03){
       const q=Math.max(0.30, 1-Math.abs(b.z-0.36)/0.55);
       hitServe('A',Math.min(1,q));
-    }else{ S.A.sw=0.24; }
+    }
     return;
   }
   if(S.phase!=='rally') return;
   if(S.hitBy==='A') return;
-  if(b.y>-0.06) return;                     /* 自分のサイドのみ */
-  const q=reachQuality(S.A,b);
-  S.A.sw=Math.max(S.A.sw,0.20);
-  if(q<0) return;
+  const q=(b.y>-0.06)?-1:reachQuality(S.A,b);
+  if(q<0){ startStroke(S.A,'swing',null); return; }
   hitRally('A',q);
 }
 function moveAI(dt){
@@ -922,61 +1083,98 @@ function moveAI(dt){
   if(b.live && (b.vy<0 || b.y<0) && S.ai.plan && S.hitBy!=='A'){
     if(S.ai.react>0){ S.ai.react-=dt; }
     else{
-      tx=S.ai.plan.x+S.ai.err; ty=S.ai.plan.y+S.ai.err*0.55;
-      /* ネット前に落ちる球はやや前で構える */
-      if(ty>-1.2) ty=Math.min(ty,-0.85);
-      if(!S.volley.A && Math.random()<0.002+L.vol*0.004 && b.y<-0.4 && b.z>0.5) ty=Math.max(ty,-1.25);
+      /* 球の正面に立たず、やや脇に構える。こうすると球が利き手側に来て
+         フォアで打てる。真正面に立つと毎球が窮屈なバックになる。 */
+      if(S.ai.vol && !S.volley.A){
+        /* ボレーに出ると決めた球：バウンド前の迎撃点へ詰める */
+        /* 迎撃点の少し手前に立つ。真上に立つと球が体の真横に来て、
+           体より後ろの球になってしまい打てない。 */
+        tx=S.ai.vol.x+S.ai.err*0.4+0.26; ty=S.ai.vol.y-0.34;
+      }else{
+        tx=S.ai.plan.x+S.ai.err+0.26; ty=S.ai.plan.y+S.ai.err*0.55;
+        /* ネット前に落ちる球はやや前で構える */
+        if(ty>-1.2) ty=Math.min(ty,-0.85);
+      }
     }
   }
-  tx=Math.max(-2.6,Math.min(2.6,tx)); ty=Math.max(-4.85,Math.min(-0.52,ty));
+  tx=Math.max(-(HALF_W+0.6),Math.min(HALF_W+0.6,tx)); ty=Math.max(-4.85,Math.min(-0.52,ty));
   S.ai.tx=tx; S.ai.ty=ty;
   const dx=tx-a.x, dy=ty-a.y, d=Math.hypot(dx,dy);
   if(d>0.02){
-    const st=Math.min(d, L.spd*dt);
+    const st=Math.min(d, L.spd*planted(a)*dt);
     a.x+=dx/d*st; a.y+=dy/d*st;
   }
 }
 function reachQuality(p,b){
-  const d=Math.hypot(b.x-p.x, b.y-p.y);
-  if(d>REACH || b.z>1.92 || b.z<0.015) return -1;
-  const zq = b.z<0.28 ? b.z/0.28 : (b.z>1.35 ? Math.max(0,(1.92-b.z)/0.57) : 1);
-  const dq = 1-Math.pow(d/REACH,1.7);
+  const R=p===S.P?1:-1, F=-R;
+  const r=(b.x-p.x)*R, f=(b.y-p.y)*F;
+  /* 届く範囲は円ではなく楕円。利き手側は腕を伸ばせるので広く、
+     逆（バックハンド）側は体が邪魔になるので狭い。 */
+  /* 利き手側は広く、逆側は狭い。後ろ側も狭い（のけぞって打たないため）。 */
+  /* 低い球ほど横には届かない。腕を下げたまま体の外へは伸ばせないので、
+     ここを広く取ると「判定は当たり、画面は空振り」になる。 */
+  const low = clamp((0.54-b.z)/0.30,0,1);
+  const rx = r>=0 ? REACH*(1.24-0.16*low) : REACH*(0.66-0.20*low);
+  const ry = f>=0 ? REACH*1.00 : REACH*(r>=0?0.50:0.34);
+  /* 体より後ろへ回り込んだ球は打てない。打てることにすると、背中側へ
+     腕を伸ばすしかなくなり、こちらから見てラケットが足元に降りてくる。 */
+  /* 体の真横をわずかに過ぎた球までは打てる。手は体の前に置いたまま、
+     ラケットヘッド（22.5cm）の長さで拾う。これ以上後ろは腕が背中側へ
+     回り込むので打てない。 */
+  /* 後ろへ許す量は高さで変える。低い球を体の横や後ろで拾おうとすると、
+     手を体の前に残したままではラケットが届かない（判定は当たり、
+     画面は空振りになる）。 */
+  if(f < -0.12*clamp((b.z-0.30)/0.34,0,1)) return -1;
+  const d = Math.hypot(r/rx, f/ry);
+  /* 床すれすれの球は打てない。人が腰を落としても腕はそこまで届かないため、
+     打てることにするとラケットが宙を切る絵になる。 */
+  if(d>1 || b.z>1.92 || b.z<0.24) return -1;
+  const zq = b.z<0.42 ? (b.z-0.18)/0.24 : (b.z>1.35 ? Math.max(0,(1.92-b.z)/0.57) : 1);
+  const dq = 1-Math.pow(d,1.7);
   return Math.max(0.12, Math.min(1, 0.42+0.58*dq*Math.max(0.35,zq)));
 }
 function tryPlayerHit(){
   const b=S.ball;
-  if(!b.live) return;
+  if(!b.live||S.strike) return;
   if(S.phase==='serve'){ dropServe(); return; }
-  if(S.phase==='drop' && S.server==='P'){
-    if(S.bounces===1 && b.z>0.03){
-      const q=Math.max(0.30, 1-Math.abs(b.z-0.36)/0.55);
-      hitServe('P',Math.min(1,q));
-    }else{ S.P.sw=0.24; }
-    return;
-  }
+  /* 落下中（サーブ）の入力は tick の drop 分岐だけで扱う。
+     ここに同じ処理を二重に持たない。 */
+  if(S.phase==='drop') return;
   if(S.phase!=='rally') return;
   if(S.hitBy==='P') return;                 // 相手が打つまで再打球不可
-  if(b.y<0.06) return;                      // 自分のサイドのみ
-  const q=reachQuality(S.P,b);
-  S.P.sw=Math.max(S.P.sw,0.20);
-  if(q<0) return;
+  /* 押した瞬間に必ず振り出す。待たせると「押したのに何も起きない」ので、
+     もう一度押してしまい二度振りになる。まだ届いていなければ
+     「当たるかもしれない振り」として始め、振っている間に届けば当たる。 */
+  const q=(b.y<0.06)?-1:reachQuality(S.P,b);
+  if(q<0){ startStroke(S.P,'swing',null); return; }
   hitRally('P',q);
 }
 function tryAIHit(){
   const b=S.ball, L=LV[S.level];
+  if(S.strike) return;
   if(!b.live || S.phase!=='rally' || S.hitBy==='A' || b.y>-0.06) return;
   const q=reachQuality(S.A,b);
   if(q<0) return;
   if(S.bounces===0){
     if(S.volley.A) return;                                     // 連続禁止を守る
     if(S.wasServe && !S.receiveOk) return;                     // レシーブは待つ
-    if(!(b.z>0.42 && b.z<1.65 && S.A.y>-2.1 && Math.random()<L.vol)) return;
+    /* 出ると決めた球はためらわずに打つ。決めていない球は、たまたま
+       打てる位置に来たときだけまれに手を出す。 */
+    if(!(b.z>0.42 && b.z<1.65 && S.A.y>(S.ai.vol?-3.3:-2.1))) return;
+    if(!S.ai.vol && Math.random()>=L.vol*0.25) return;
   }
   hitRally('A',Math.min(1,q*(0.72+L.spd*0.07)));
 }
 function physics(dt){
   const b=S.ball;
   if(!b.live) return;
+  /* ラケットが打点に届くまでのごく短い間（最大55ms）、ボールを止めて待つ。
+     これで「ボールだけ先に飛んで、あとからラケットが追いつく」のをなくす。 */
+  if(S.hold>0){
+    S.hold-=dt;
+    if(S.hold<=0){ S.hold=0; releaseStrike(); }
+    return;
+  }
   const py=b.y;
   const sp=Math.hypot(b.vx,b.vy,b.vz), k=DRAG*sp;
   b.vx-=k*b.vx*dt; b.vy-=k*b.vy*dt; b.vz-=(k*b.vz+G)*dt;
@@ -1007,13 +1205,13 @@ function physics(dt){
   b.x=nx; b.y=ny; b.z=nz;
 
   /* バウンド */
-  if(b.z<=0 && b.vz<0){
-    b.z=0;
+  if(b.z<=BALL_R && b.vz<0){
+    b.z=BALL_R;
     const inX=Math.abs(b.x)<=HALF_W+0.02, inY=Math.abs(b.y)<=HALF_L+0.02;
     const inCourt=inX&&inY;
     sBnc();
     b.vz=-b.vz*REST; b.vx*=FRIC; b.vy*=FRIC;
-    if(b.vz<0.35){ b.vz*=0.5; }
+    if(b.vz<0.22){ b.vz*=0.7; }
     S.bounces++;
 
     if(S.phase==='drop') return;   /* トスの弾みは判定しない */
@@ -1085,7 +1283,7 @@ function drawCourt(){
   /* 板目 */
   ctx.save(); ctx.clip();
   ctx.globalAlpha=0.13; ctx.strokeStyle='#6b4626'; ctx.lineWidth=1;
-  for(let i=-9;i<=9;i++){
+  for(let i=-7;i<=7;i++){
     const x=i*0.45, p1=pj(x,HALF_L,0), p2=pj(x,-HALF_L,0);
     ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
   }
@@ -1121,6 +1319,17 @@ function drawCourt(){
     ctx.lineWidth=2.2; ctx.setLineDash([5,4]);
     ctx.beginPath(); ctx.ellipse(p.x,p.y,r,r*0.34,0,0,Math.PI*2); ctx.stroke();
     ctx.setLineDash([]);
+    /* 羽根つきボールは弾んでからも転がるので、着地点に立っていても届かない。
+       実際に打ちごろになる位置を小さな丸で示し、線でつなぐ。 */
+    const h=S.hitSpot;
+    if(h){
+      const q=pj(h.x,h.y,0), rr=0.19*q.s;
+      ctx.strokeStyle='rgba(255,226,120,.85)'; ctx.lineWidth=1.6;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.ellipse(q.x,q.y,rr,rr*0.34,0,0,Math.PI*2); ctx.stroke();
+    }
   }
 }
 function drawNet(){
@@ -1157,78 +1366,860 @@ function drawShadow(x,y,r){
   ctx.fillStyle='rgba(40,26,12,.30)';
   ctx.beginPath(); ctx.ellipse(p.x,p.y,r*p.s,r*p.s*0.33,0,0,Math.PI*2); ctx.fill();
 }
-function drawPerson(p,near){
-  const s=pj(p.x,p.y,0).s;
-  drawShadow(p.x,p.y,0.30);
-  const foot=pj(p.x,p.y,0), hip=pj(p.x,p.y,0.86), sho=pj(p.x,p.y,1.42), head=pj(p.x,p.y,1.63);
-  const isP = (p===S.P);                    /* 1P=朱 2P=青（どの画面でも同じ） */
-  const body = isP ? '#e2472a' : '#2f6fa8';
-  const dark = isP ? '#a92f18' : '#1d4e79';
-  const skin = '#f0d4b2';
-  /* 脚 */
-  ctx.strokeStyle='#1b2c3e'; ctx.lineWidth=Math.max(3,0.088*s); ctx.lineCap='round';
-  const sp=0.13*s;
-  ctx.beginPath(); ctx.moveTo(hip.x-sp*0.5,hip.y); ctx.lineTo(foot.x-sp,foot.y);
-  ctx.moveTo(hip.x+sp*0.5,hip.y); ctx.lineTo(foot.x+sp,foot.y); ctx.stroke();
-  /* 胴 */
-  ctx.fillStyle=body;
-  ctx.beginPath();
-  ctx.moveTo(sho.x-0.20*s,sho.y); ctx.lineTo(sho.x+0.20*s,sho.y);
-  ctx.lineTo(hip.x+0.15*s,hip.y); ctx.lineTo(hip.x-0.15*s,hip.y); ctx.closePath(); ctx.fill();
-  ctx.fillStyle=dark; ctx.fillRect(hip.x-0.15*s,hip.y-0.03*s,0.30*s,0.06*s);
-  /* 頭 */
-  ctx.fillStyle=skin;
-  ctx.beginPath(); ctx.arc(head.x,head.y,0.115*s,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#241a16';
-  ctx.beginPath(); ctx.arc(head.x,head.y-0.028*s,0.118*s,Math.PI*1.06,Math.PI*1.94); ctx.fill();
-  /* 腕とラケット */
-  const t=Math.max(0,p.sw)/0.26;
-  const swing = Math.sin(Math.min(1,1-t)*Math.PI);
-  /* 利き手は「世界座標」で人物ごとに固定する。
-     こうすると視点を反転しても同じ人物が同じ手で持ち、左右の画面が正しい鏡像になる。
-     dirW … 世界座標での腕の向き（1P=+x側 2P=-x側／両者とも右利き）
-     dirS … 画面座標での向き（視点の反転を掛けたもの）
-     faceY… その人物が向いている向き（ラケットは体の前に構える）      */
-  const dirW  = isP ? 1 : -1;
-  const dirS  = dirW * V.flip;
-  const faceY = isP ? -1 : 1;
-  const rx = p.x + dirW*(0.38+0.30*swing);
-  const rz = 0.95 + 0.40*swing;
-  const ry = p.y + faceY*(0.12+0.08*swing);
-  const rp = pj(rx, ry, rz);
-  ctx.strokeStyle=skin; ctx.lineWidth=Math.max(2.4,0.062*s);
-  const eb=pj(p.x+dirW*(0.24+0.14*swing), p.y+faceY*0.05, 1.06+0.20*swing);  /* 肘 */
-  ctx.lineJoin='round';
-  ctx.beginPath(); ctx.moveTo(sho.x+dirS*0.17*s,sho.y+0.05*s);
-  ctx.lineTo(eb.x,eb.y); ctx.lineTo(rp.x,rp.y); ctx.stroke();
-  /* 木製ラケット（グリップ込み38cm）：原点が手＝グリップを握る */
-  const rl=0.25*rp.s, lw=Math.max(1,0.013*rp.s);
-  ctx.save(); ctx.translate(rp.x,rp.y); ctx.rotate(dirS*(0.5-swing*1.5));
-  ctx.strokeStyle='#7b5326'; ctx.lineWidth=lw;
-  /* グリップ（手の上下に伸びる）*/
-  ctx.fillStyle='#8a5f2e';
-  ctx.fillRect(-rl*0.080, -rl*0.32, rl*0.16, rl*0.62);
-  ctx.strokeRect(-rl*0.080, -rl*0.32, rl*0.16, rl*0.62);
-  /* 打面（手より先） */
-  ctx.fillStyle='#c99a5f';
-  ctx.beginPath(); ctx.ellipse(0, -rl*0.90, rl*0.44, rl*0.58, 0, 0, Math.PI*2);
-  ctx.fill(); ctx.stroke();
+/* ══ 人物モーション v5f：身体の前に保持する右利きのラケット ══
+   テイクバックと前進を「肘・手首をねじるIK」ではなく、
+   右利きの構え・引き・打点・振り抜きの４つの基本姿勢で表現する。
+   当たった瞬間には現在の姿勢を記録し、その位置から振り抜く。
+   判定・球の反発・スコアにはこの描画処理の値を渡さない。 */
+const SW_DUR=0.32;
+/* 「まだ当たりうる振り」の区間。振り出しから前半 7 割まで。
+   空振りと確定した腕（whiff）や、戻りの動作では当たらない。 */
+function swingLive(p){
+  if(!(p.sw>0.02)) return false;
+  if(p.strokeKind==='whiff') return false;
+  return (1-p.sw/SW_DUR) < 0.70;
+}
+/* 早押し救済：届かないうちに押した入力を短時間だけ保持し、
+   届いた瞬間に一度だけ消費する（swとは独立）。 */
+const BUF=0.19;
+const UPPER_ARM=0.32, FOREARM=0.29, RACKET_HEAD_OFFSET=0.225;
+/* 実寸（日本エスキーテニス連盟）：ラケット 全長38cm×幅17cm の木製、
+   ボールは直径4cm・20g の羽根つきスポンジ球。 */
+const RACKET_LEN=0.38, RACKET_W=0.17, BALL_R=0.02;
+/* 直径4cmの球は8mのコート越しではほとんど見えないので、描画だけ1.6倍に
+   する。物理・判定・ラケットの寸法はすべて実寸のまま。 */
+const BALL_DRAW=1.6;
+/* 腿と脛。立位で腰0.89m・膝0.47m・足首0.045mになる長さ */
+const THIGH=0.43, SHIN=0.43;
+/* 体の可動限界。これを超えてまでボールに合わせにいかない */
+const MAX_CROUCH=0.38, MAX_LEAN=0.61, MAX_STEP=0.46;   /* 傾きは約35度 */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function lerp3(a,b,k){ return {x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k,z:a.z+(b.z-a.z)*k}; }
+function smooth(k){ k=clamp(k,0,1); return k*k*(3-2*k); }
+function vec(a,b){ return {x:b.x-a.x,y:b.y-a.y,z:b.z-a.z}; }
+function len3(a){ return Math.hypot(a.x,a.y,a.z); }
+function norm(a){ const n=len3(a)||1; return {x:a.x/n,y:a.y/n,z:a.z/n}; }
+function add3(a,b,k=1){return {x:a.x+b.x*k,y:a.y+b.y*k,z:a.z+b.z*k};}
+function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z;}
+function local3(p,r,f,z,yaw=0){
+  /* r=選手本人の右側、f=ネット側。世界座標で P/A の向きは対面する。 */
+  const R=p===S.P?1:-1, F=-R;
+  const c=Math.cos(yaw), si=Math.sin(yaw);
+  return {x:p.x+R*(r*c+f*si),y:p.y+F*(f*c-r*si),z};
+}
+function localFromWorld(p,q){ const R=p===S.P?1:-1,F=-R;
+  return {r:(q.x-p.x)*R,f:(q.y-p.y)*F,z:q.z}; }
+function strokeType(p,c){
+  if(!c) return p.prepSide||1;
+  const t=localFromWorld(p,c);
+  /* 利き手側と正面はフォア。バックに回すのは、はっきり逆側へ来た球だけ。
+     切り替えの境目をずらして、正面付近での持ち替えのちらつきを防ぐ。 */
+  return (p.prepSide||1)>0 ? (t.r<-.26?-1:1) : (t.r>-.06?1:-1);
+}
+/* 描画だけの軌道予測。物理計算や衝突判定は変更しない。 */
+function previewBall(t){
+  const b=S.ball;
+  let x=b.x,y=b.y,z=b.z,vx=b.vx,vy=b.vy,vz=b.vz;
+  const n=Math.max(1,Math.ceil(t*120)),dt=t/n;
+  for(let i=0;i<n;i++){
+    const k=DRAG*Math.hypot(vx,vy,vz);
+    vx-=k*vx*dt; vy-=k*vy*dt; vz-=(k*vz+G)*dt;
+    x+=vx*dt; y+=vy*dt; z+=vz*dt;
+    if(z<0&&vz<0){z=0;vz=-vz*REST;vx*=FRIC;vy*=FRIC;}
+  }
+  return {x,y,z};
+}
+function estimateIncoming(p){
+  const b=S.ball, id=p===S.P?'P':'A';
+  if(S.phase!=='rally'||!b.live||S.hitBy===id) return null;
+  const F=p===S.P?-1:1;
+  if(b.vy*F>=-0.15) return null;
+  const flight=clamp((p.y-b.y)/(b.vy||1),0,2);
+  const q=previewBall(clamp(flight-.10,0,.75));
+  return {time:flight,side:strokeType(p,q),aim:localFromWorld(p,q),pt:q};
+}
+/* 「構え→引き→前進」の２つの補間係数だけを用いる。
+   予測打点は高さを少し変えるだけで、腕を打球位置にワープさせない。 */
+function poseState(p){
+  if(p._poseT!==S.t){
+    const oldT=p._poseT;
+    const dt=oldT==null?1/60:clamp(S.t-oldT,0,.05);
+    const dx=p.x-(p._oldX==null?p.x:p._oldX),dy=p.y-(p._oldY==null?p.y:p._oldY);
+    p._oldX=p.x;p._oldY=p.y;p._poseT=S.t;
+    const speed=clamp(Math.hypot(dx,dy)/Math.max(dt,1e-5)/3.6,0,1);
+    p._run=(p._run||0)*Math.exp(-dt*8)+speed*(1-Math.exp(-dt*8));
+    p._step=(p._step||0)+dt*(4.4+7*(p._run||0));
+    const incoming=estimateIncoming(p);
+    const prepTarget=incoming?smooth((1.04-incoming.time)/.50):0;
+    /* 打てる間合いに入ったら、押される前にラケットを打点へ置いておく。
+       実際に打てる位置にボールがあるなら、ラケットもそこにあるのが自然で、
+       打った瞬間に腕がワープしなくなる。 */
+    const me=(p===S.P?'P':'A');
+    const inReach=S.phase==='rally'&&S.ball.live&&S.hitBy!==me
+                  &&reachQuality(p,S.ball)>=0;
+    /* サーブも同じ。落とした球が弾んでくる間にラケットを下ろして待つ。 */
+    const serving=S.phase==='drop'&&S.server===me&&S.bounces>=1;
+    /* 一度空振りしたら、その球に対してはもう自動で腕を伸ばさない。
+       伸ばすと、押していないのにもう一度振ったように見える（二度振り）。
+       次の球になれば（incoming が切り替われば）ひとりでに解ける。 */
+    if(!incoming) p._missed=false;
+    const hush=!!p._missed && !serving;
+    const fwdTarget=hush?0:((inReach||serving)?(serving?1:0.62)
+                          :(incoming?smooth((.32-incoming.time)/.29):0));
+    const kPrep=1-Math.exp(-dt*(prepTarget>(p._prep||0)?11:13));
+    const kFwd=1-Math.exp(-dt*(fwdTarget>(p._forward||0)?((inReach||serving)?46:20):13));
+    p._prep=(p._prep||0)+(prepTarget-(p._prep||0))*kPrep;
+    p._forward=(p._forward||0)+(fwdTarget-(p._forward||0))*kFwd;
+    if(incoming&&!serving){
+      /* テイクバック中の急な持ち替えを防ぐ */
+      if((p._prep||0)<.48 || incoming.side===p.prepSide) p.prepSide=incoming.side;
+      const az=clamp(incoming.aim.z,.35,1.55),k=1-Math.exp(-dt*11);
+      p._aimZ=(p._aimZ==null?az:p._aimZ+(az-p._aimZ)*k);
+      /* 予測打点もなめらかに追う。構えの段階からラケットを打点へ寄せるので、
+         打った瞬間にラケットが飛ぶように見えない。 */
+      /* 遠いうちは予測打点へ、目前に来たら実際のボールへ。打つ直前には
+         ラケットがすでにボール上にあるので、打った瞬間に腕が跳ばない。 */
+      const near=clamp((.24-incoming.time)/.24,0,1);
+      const b=S.ball, raw={x:incoming.pt.x+(b.x-incoming.pt.x)*near,
+                           y:incoming.pt.y+(b.y-incoming.pt.y)*near,
+                           z:incoming.pt.z+(b.z-incoming.pt.z)*near};
+      /* 体の後ろや届かない遠方は狙わない。通り過ぎた球を追って腕が背中側へ
+         回り込み、のけぞって見えるのを防ぐ。 */
+      const t=reachableAim(p,raw);
+      const kk=1-Math.exp(-dt*(11+46*near));
+      p._aimPt = p._aimPt
+        ? {x:p._aimPt.x+(t.x-p._aimPt.x)*kk, y:p._aimPt.y+(t.y-p._aimPt.y)*kk,
+           z:p._aimPt.z+(t.z-p._aimPt.z)*kk}
+        : {x:t.x,y:t.y,z:t.z};
+      /* なめらかにした後も、必ず体を基準に収め直す。狙う点はワールド座標なので、
+         走っている間に体だけが先へ行き、点が背中側へ取り残される。 */
+      p._aimPt=reachableAim(p,p._aimPt);
+    } else if(serving){
+      const b=S.ball, t={x:b.x,y:b.y,z:Math.max(.26,b.z)};
+      const kk=1-Math.exp(-dt*110);
+      p._aimPt = p._aimPt
+        ? {x:p._aimPt.x+(t.x-p._aimPt.x)*kk, y:p._aimPt.y+(t.y-p._aimPt.y)*kk,
+           z:p._aimPt.z+(t.z-p._aimPt.z)*kk}
+        : {x:t.x,y:t.y,z:t.z};
+      p._aimZ=t.z;
+    } else if(!p.sw) p._aimPt=null;
+    if(!p.prepSide)p.prepSide=1;
+  }
+  if(p._aimPt && p.sw>0 && !(S.phase==='serve'||S.phase==='drop')) p._aimPt=reachableAim(p,p._aimPt);
+  const u=p.sw>0?clamp(1-p.sw/SW_DUR,0,1):-1;
+  const hitting=u>=0;
+  return {u,hitting,side:hitting?(p.strokeSide||p.prepSide||1):(p.prepSide||1),
+    kind:hitting?(p.strokeKind||'rally'):'rally',
+    prep:hitting?0:(p._prep||0),forward:hitting?0:(p._forward||0),
+    aimZ:p._aimZ==null?1.0:p._aimZ,run:p._run||0,step:p._step||0};
+}
+/* 狙う点を、人が無理なく振れる範囲に収める（本人の右・前・高さで制限） */
+function reachableAim(p,q){
+  const R=p===S.P?1:-1, F=-R;
+  const r=clamp((q.x-p.x)*R,-0.58,0.92);
+  const f=clamp((q.y-p.y)*F,-0.10,0.78);
+  return {x:p.x+R*r, y:p.y+F*f, z:clamp(q.z,0.12,1.95)};
+}
+/* プレイヤーの向きとは無関係な「本人の右・前・高さ」の座標で作る。
+   打面がほぼ水平に見えるよう、ラケットの柄と面の高度差は小さくする。 */
+/* v7: 左右を「選手本人の右・左」で固定。P=背中側の低い構え、A=正面側の腹部の構え。
+   どちらも右利きであり、視点反転時も同じワールド座標を使う。 */
+/* どの経路で作った姿勢でも、最後に必ず通す安全弁。
+   ラケットを持つ手が体の後方20cmより後ろへ出ないようにする。
+   打面（＝打点）は動かさず、柄の長さを保ったまま手の位置だけを
+   球面上で選び直すので、ボールへの当たりは変わらない。 */
+function pinHand(p,r){
+  if(!r||!r.hand||!r.face) return r;
+  const R=p===S.P?1:-1, F=-R;
+  const hf=(r.hand.y-p.y)*F;
+  if(hf>=0.06) return r;
+  const Lr=len3(vec(r.hand,r.face));
+  if(Lr<1e-6) return r;
+  const ff=(r.face.y-p.y)*F;
+  let ur=(r.hand.x-r.face.x)*R/Lr, uf=(r.hand.y-r.face.y)*F/Lr, uz=(r.hand.z-r.face.z)/Lr;
+  const lim=(0.06-ff)/Lr;
+  if(lim>1){
+    /* 打面そのものが背中側：ラケットごと前へ運ぶ。もうボールはそこにない。 */
+    const sh=0.06-hf, d={x:0,y:F*sh,z:0};
+    return {...r, hand:add3(r.hand,d,1), face:add3(r.face,d,1), elbow:add3(r.elbow,d,1)};
+  }
+  const na=Math.max(lim,-1), rest=Math.sqrt(Math.max(0,1-na*na));
+  const m=Math.hypot(ur,uz);
+  if(m>1e-6){ ur=ur/m*rest; uz=uz/m*rest; } else { ur=rest; uz=0; }
+  uf=na;
+  const nh={x:r.face.x+R*ur*Lr, y:r.face.y+F*uf*Lr, z:r.face.z+uz*Lr};
+  const d=vec(r.hand,nh);
+  return {...r, hand:nh, elbow:add3(r.elbow,d,0.6)};
+}
+function shotRig(p,st){ return pinHand(p,shotRigRaw(p,st)); }
+function shotRigRaw(p,st){
+  const side=st.side, fore=side>0;
+  const height=clamp((st.aimZ-1.02)*.28,-.11,.14);
+  /* 先の写真の手前：右手は腰の右横、短いラケットのヘッドは手首より下。
+     奥：顔の見える正面側はラケットを腹部の前で軽く保持。 */
+  /* 構えは両選手で同一。右利きの3Dフォームを一つだけ持ち、背面に見えるか
+     正面に見えるかは投影と前後関係だけで決める。選手の識別で形を変えない
+     （ふたりモードの反転画面で、背中を向けた選手が正面用の構えを取る
+     という食い違いが起きる）。 */
+  const ready={
+    elbow:local3(p,.345,.075,1.07), hand:local3(p,.39,.115,.83),
+    face:local3(p,.50,.215,.60),
+    freeElbow:local3(p,-.34,.065,1.07),freeHand:local3(p,-.38,.095,.81),
+    yaw:0,hipYaw:0,power:0
+  };
+  /* テイクバックを大きくしない。手は常に自分の胸の前または右脇。 */
+  const take=fore ? {
+    elbow:local3(p,.395,.055,1.055),hand:local3(p,.49,.065,.855+height*.15),
+    face:local3(p,.64,.11,.645+height*.15),
+    freeElbow:local3(p,-.34,.075,1.065),freeHand:local3(p,-.38,.11,.89),
+    yaw:.095,hipYaw:.035,power:.08
+  }:{
+    elbow:local3(p,.335,.12,1.055),hand:local3(p,.16,.29,.96+height*.15),
+    face:local3(p,-.035,.39,1.015+height*.15),
+    freeElbow:local3(p,-.33,.075,1.08),freeHand:local3(p,-.22,.19,1.01),
+    yaw:-.10,hipYaw:-.04,power:.08
+  };
+  const contact=fore ? {
+    elbow:local3(p,.425,.22,1.065),hand:local3(p,.56,.40,1.015+height),
+    face:local3(p,.76,.55,1.055+height),
+    freeElbow:local3(p,-.34,.09,1.06),freeHand:local3(p,-.38,.15,.96),
+    yaw:.04,hipYaw:.02,power:.26
+  }:{
+    elbow:local3(p,.18,.25,1.075),hand:local3(p,-.01,.48,1.02+height),
+    face:local3(p,-.21,.61,1.065+height),
+    freeElbow:local3(p,-.33,.09,1.08),freeHand:local3(p,-.36,.16,.99),
+    yaw:-.035,hipYaw:-.02,power:.26
+  };
+  const follow=fore ? {
+    elbow:local3(p,.315,.285,1.17),hand:local3(p,.13,.48,1.21+height*.20),
+    face:local3(p,-.05,.62,1.285+height*.20),
+    freeElbow:local3(p,-.34,.08,1.07),freeHand:local3(p,-.38,.11,.90),
+    yaw:-.065,hipYaw:-.03,power:.28
+  }:{
+    elbow:local3(p,.10,.32,1.155),hand:local3(p,-.10,.52,1.20+height*.20),
+    face:local3(p,-.31,.64,1.26+height*.20),
+    freeElbow:local3(p,-.33,.09,1.07),freeHand:local3(p,-.38,.13,.92),
+    yaw:.055,hipYaw:.03,power:.28
+  };
+  /* サーブ専用の打点。下から前へ送り出すアンダーハンドの形。 */
+  const svContact = fore ? {
+    elbow:local3(p,.44,.21,1.04),hand:local3(p,.44,.35,.66),
+    face:local3(p,.43,.51,.57),
+    freeElbow:ready.freeElbow,freeHand:ready.freeHand,
+    yaw:.02,hipYaw:.01,power:.22
+  } : {
+    elbow:local3(p,.27,.23,1.05),hand:local3(p,.07,.37,.66),
+    face:local3(p,-.09,.52,.58),
+    freeElbow:ready.freeElbow,freeHand:ready.freeHand,
+    yaw:-.02,hipYaw:-.01,power:.22
+  };
+  /* サーブ専用の振り抜き。アンダーハンドで下から前へ送り出した腕を
+     そのまま前へ伸ばす。ここでラリー用のフォアの振り抜き（手が1.21m）を
+     使うと、サーブを打ったあとにもう一度フォアを振ったように見える。 */
+  const svFollow = fore ? {
+    elbow:local3(p,.39,.25,1.04),hand:local3(p,.36,.46,.86),
+    face:local3(p,.30,.62,.84),
+    freeElbow:ready.freeElbow,freeHand:ready.freeHand,
+    yaw:-.03,hipYaw:-.015,power:.20
+  } : {
+    elbow:local3(p,.21,.26,1.05),hand:local3(p,-.03,.47,.85),
+    face:local3(p,-.20,.62,.83),
+    freeElbow:ready.freeElbow,freeHand:ready.freeHand,
+    yaw:.03,hipYaw:.015,power:.20
+  };
+  /* 背面側の非利き腕は写真どおり体側に自然に下げる。
+     バックハンドでも両肘を上げた不自然なロボット姿勢にしない。 */
+  for(const pose of [take,contact,follow]){
+    pose.freeElbow=ready.freeElbow;
+    pose.freeHand=ready.freeHand;
+  }
+  function mix(a,b,k){
+    const o={};
+    for(const name of ['elbow','hand','face','freeElbow','freeHand']) o[name]=lerp3(a[name],b[name],k);
+    for(const name of ['yaw','hipYaw','power','aimed','freeAimed'])o[name]=(a[name]||0)+((b[name]||0)-(a[name]||0))*k;
+    return o;
+  }
+  if(st.hitting){
+    const from=p._impactRig||contact;
+    /* 打点をボールに合わせる。キーフレームの腕の向きはそのまま使い、
+       手の位置だけを「ラケット面が実際のボールに重なる場所」へ置き直す。
+       振り出し→インパクト→フォローの順に通るので、瞬間移動にはならない。 */
+    /* ボールの向きが変わる瞬間（u=0）に、ラケット面が必ずボール上にある。
+       構えの段階から予測打点へ寄せてあるので、ここでの移動量は予測のずれ分だけ。
+       以後はフォロースルー、そして構えへ戻る。 */
+    /* サーブ（と、サーブを待つ間の振り）は、低い位置で前へ送り出す形を使う。
+       ラリーのフォアの形を使うと、打ったあとにもう一度振ったように見える。 */
+    const svy=(st.kind==='serve')||((S.phase==='drop'||S.phase==='serve')&&st.kind==='swing');
+    const aim=aimContact(p,svy?svContact:contact,p.hitAt);
+    const fol=svy?svFollow:follow;
+    const quick=st.kind==='volley'?.42:(svy?.72:.61);
+    /* 振り出し位置から打点まで、ボールを止めてある時間ちょうどで到達する。
+       描画上の接触とボールの反射が同じ瞬間に起こるので、瞬間移動しない。 */
+    const tImp=clamp((p._impLag||0)/SW_DUR,0,.42);
+    if(tImp>.001&&st.u<tImp) return trackHand(p,mix(from,aim,st.u/tImp));   /* 等速で寄せる */
+    if(st.u<quick) return trackHand(p,mix(aim,fol,smooth((st.u-tImp)/(quick-tImp))));
+    const back=(st.u-quick)/(1-quick);
+    /* サーブは振り抜いた形をわずかに保ってから構えへ戻す。
+       急に戻すと、もう一度振ったように見える。 */
+    return trackHand(p,mix(fol,ready,smooth(svy?back*back:back)));
+  }
+  if((S.phase==='serve'||S.phase==='drop')&&S.server===(p===S.P?'P':'A')){
+    /* 右利き：左手でボールを運び、打つ側（既定は体の右）へ落とす。
+       構えている間、左手はボールの位置にある。 */
+    const ss=p.serveSide||1;
+    const restHand=local3(p,.26*ss,.16,.62);   /* 下ろしきった左手 */
+    /* 構え中は左手がボールそのものを持つ。離したあとは、持っていた位置から
+       0.22秒かけて下ろす。位相の切替で腕が飛ばないようにするため。 */
+    let holdHand, holdK;
+    if(S.phase==='serve'){
+      holdHand={x:S.ball.x,y:S.ball.y,z:S.ball.z};
+      p._tossFrom=holdHand; p._tossT=null; holdK=1;
+    }else{
+      if(p._tossT==null&&p._tossFrom) p._tossT=S.t;
+      const k=(p._tossT==null)?1:clamp((S.t-p._tossT)/0.22,0,1);
+      const a0=p._tossFrom||restHand, e=smooth(k);
+      holdHand={x:a0.x+(restHand.x-a0.x)*e, y:a0.y+(restHand.y-a0.y)*e,
+                z:a0.z+(restHand.z-a0.z)*e};
+      holdK=1-e;      /* 世界座標から体基準へも、同じ時間でなめらかに戻す */
+    }
+    /* ラケットを持つ右手は腰の横に低く下ろす。左手とはっきり離すことで、
+       ボールを落とすのが左手であることが見てわかるようにする。 */
+    /* フォアとバックで別の構えを持つ。右手は同じ右手なので、バックは
+       鏡像ではなく「右腕を体の左前へ運んだ片手バックの形」にする。
+       こうしないと、右に構えたラケットを接触の直前に反対側へ
+       1m近く横断させることになる。 */
+    const sr = ss>0 ? {
+      elbow:local3(p,.43,.11,1.05),hand:local3(p,.46,.16,.80),
+      face:local3(p,.53,.21,.72),
+      freeElbow:local3(p,-.10,.14,1.07),freeHand:holdHand,
+      yaw:.07,hipYaw:.03,power:.08
+    } : {
+      elbow:local3(p,.28,.13,1.06),hand:local3(p,.01,.18,.86),
+      face:local3(p,-.16,.23,.80),
+      freeElbow:local3(p,-.10,.14,1.07),freeHand:holdHand,
+      yaw:-.12,hipYaw:-.05,power:.08
+    };
+    /* 落とすと同時に引く。引く先は打点より「後ろ」＝ネットから遠い側。
+       こうすれば、そこから打点までの振りが必ず前向きになる。
+       足の後ろには入れない（足を通り抜けて振り出したように見えるため）。 */
+    const svTake = ss>0 ? {
+      elbow:local3(p,.42,.06,1.05),hand:local3(p,.45,.09,.78),
+      face:local3(p,.52,.12,.69),
+      freeElbow:local3(p,-.10,.14,1.07),freeHand:holdHand,
+      yaw:.15,hipYaw:.06,power:.10
+    } : {
+      elbow:local3(p,.28,.08,1.06),hand:local3(p,.00,.10,.84),
+      face:local3(p,-.17,.13,.77),
+      freeElbow:local3(p,-.10,.14,1.07),freeHand:holdHand,
+      yaw:-.20,hipYaw:-.08,power:.10
+    };
+    /* 構え →（落とすと同時に）引く → 弾んできたら引いたまま待つ。
+       前へ振るのは入力で始まる一回だけ。
+       引きは離球の瞬間から時間でなめらかに進める。段階を切り替えると
+       その瞬間にラケットが飛ぶ。 */
+    const tk = (S.phase!=='drop') ? 0
+             : (p._tossT==null ? 0 : clamp((S.t-p._tossT)/0.26,0,1));
+    const base = mix(mix(ready,sr,smooth(.88)),svTake,smooth(tk));
+    /* 左手だけは構えの混合に埋もれさせず、最終位置をそのまま使う。
+       そうしないと手がボールまで届かず、持っているように見えない。 */
+    base.freeHand=holdHand;
+    base.freeElbow=mix2p(local3(p,-.16,.12,1.06),holdHand,.34);
+    /* 左手はボールという世界座標そのものを指すので、体のぶんだけ
+       ずらす補正をかけない（かけると手がボールから離れる）。 */
+    base.freeAimed=holdK;
+    return limitHand(p,base);
+  }
+  const pulled=mix(ready,take,smooth(st.prep));
+  /* 前進の終点は予測打点に合わせた形。打つ前からラケットが打点へ向かう。 */
+  return limitHand(p,mix(pulled,aimContact(p,contact,p._aimPt),smooth(st.forward)));
+}
+/* インパクトの姿勢を、記録しておいた打点（p.hitAt）に合わせて作り直す。
+   腕の向き・肘の曲げ方・体の回転はキーフレームのまま、手だけを動かすので、
+   フォームを崩さずにラケット面がボールに当たる。 */
+const mix2p=(a,b,k)=>({x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k,z:a.z+(b.z-a.z)*k});
+function aimContact(p,contact,target){
+  if(!target) return contact;
+  let dir=norm(vec(contact.hand,contact.face));
+  /* 低い球はラケットヘッドを下げて拾う。打点が低くても手は23cm上に残るので、
+     どの球でも腰を落とし込む不自然な動きにならない。 */
+  const lowK=clamp((.82-target.z)/.52,0,1);
+  if(lowK>0) dir=norm({x:dir.x*(1-lowK*.82),y:dir.y*(1-lowK*.82),z:dir.z-lowK*2.6});
+  /* ボールはラケット面の「向こう側」に当たる。面の中心を打点より
+     4cm手前（自分側）へ置くと、背後からはボールが面に隠れて見える。 */
+  const R=p===S.P?1:-1, F=-R;
+  const tgt={x:target.x, y:target.y-F*0.045, z:target.z};
+  let hand=add3(tgt,dir,-RACKET_HEAD_OFFSET);
+  /* 腕を体の後ろ（画面手前側）へ引っ張らない。
+     後ろの球は、腕を引くのではなくラケットの向きを変えて拾う。
+     手を体の前側へ戻したうえで、打点から柄の長さの球面に投げ戻すので、
+     ラケット面は打点に残ったまま腕だけが自然な位置に来る。 */
+  {
+    /* 手は必ず「打点から柄の長さだけ離れた球面上」にある。その球面の上で、
+       体の後方14cmより後ろに出ない点のうち、本来の向きに最も近いものを選ぶ。
+       （以前のように球面へ放射状に投げ直すと、せっかくの制限が解けてしまう） */
+    const sd=p.strokeSide||p.prepSide||1, Lr=RACKET_HEAD_OFFSET;
+    const tr=(tgt.x-p.x)*R, tf=(tgt.y-p.y)*F;
+    let ur=(hand.x-tgt.x)*R/Lr, uf=(hand.y-tgt.y)*F/Lr, uz=(hand.z-tgt.z)/Lr;
+    {const n0=Math.hypot(ur,uf,uz)||1; ur/=n0; uf/=n0; uz/=n0;}
+    /* 軸ごとに下限（上限）を課し、残りの成分は向きを保ったまま詰め直す */
+    const capMin=(a,b,c,lim)=>{            /* a を lim 以上にする。[a,b,c] を返す */
+      if(a>=lim||lim>1) return null;
+      const na=Math.max(lim,-1), rest=Math.sqrt(Math.max(0,1-na*na));
+      const m=Math.hypot(b,c);
+      return m>1e-6 ? [na,b/m*rest,c/m*rest] : [na,rest,0];
+    };
+    /* 後ろ寄りになるときだけ、フォアで体の左、バックで体の右へ回し込まない */
+    if(uf*Lr+tf < 0.14){
+      const q = sd>0 ? capMin(ur,uf,uz,(0.02-tr)/Lr)
+                     : (ur*Lr+tr>0.34 ? capMin(-ur,uf,uz,-(0.34-tr)/Lr) : null);
+      if(q){ ur=sd>0?q[0]:-q[0]; uf=q[1]; uz=q[2]; }
+    }
+    /* 前後の制限は最後にかける。これで14cmが必ず守られる */
+    const q2=capMin(uf,ur,uz,(0.06-tf)/Lr);
+    if(q2){ uf=q2[0]; ur=q2[1]; uz=q2[2]; }
+    hand={x:tgt.x+R*ur*Lr, y:tgt.y+F*uf*Lr, z:tgt.z+uz*Lr};
+    dir=norm(vec(hand,tgt));
+  }
+  const o={...contact};
+  o.hand=hand; o.aimed=1;
+  o.face=add3(hand,dir,RACKET_HEAD_OFFSET);   /* ＝ 打点のわずか手前 */
+  /* 肘も手と同じだけ動かして当たりをつける。実際の肘は描画時にIKで解く。 */
+  const d=vec(contact.hand,hand);
+  o.elbow=add3(contact.elbow,d,.55);
+  return o;
+}
+/* 打球時に姿勢を保存する。ラケットを「球に合わせて飛ばす」瞬間移動が起こらない。 */
+/* 打球は「予約 → 接触 → 反射」を一度だけ通す。予約中は新しい打球を受け付けない。
+   ラケットの現在位置は、スイングを始める前の姿勢で測る（始めてしまうと
+   その時点の姿勢が打点そのものになり、必要な待ち時間が常に0になる）。 */
+function armStrike(who,from,v,kind,atBall,opt){
+  if(S.strike) return false;
+  /* 前のスイングがまだ打点に達していないうちは、新しい打球を始めない。
+     始めると姿勢が振り出しに巻き戻って見える。 */
+  if(from.sw>0 && (1-from.sw/SW_DUR) < clamp((from._impLag||0)/SW_DUR,0,.42)) return false;
+  const st=poseState(from), rig=shotRig(from,st);
+  const gap=len3(vec(solvePose(from,st,rig).racketFace,atBall));
+  /* ラケットは手・肘・向きが同時に変わるので、打面は直線距離より長い道を通る。
+     余裕をみた速度で見積もり、動く場合は最低25msかけて寄せる（1フレームで
+     飛ばさないため）。ボールを止めるのは最大75msまで。 */
+  /* 打点が目の前でも、姿勢そのものは必ず数フレームかけて切り替える。
+     即座に切り替えると、打面は合っていても肘・頭が飛んで見える。 */
+  const mid=(from.strokeKind==='swing' && from.sw>0.02);
+  const lag=mid?clamp(Math.max(0.018,gap/9),0,0.060):clamp(Math.max(0.025,gap/6),0,0.075);
+  startStroke(from,kind,atBall);
+  from._impLag=lag;
+  S.strike={who,v:{x:v.x,y:v.y,z:v.z},fx:opt&&opt.fx,
+            isVolley:!!(opt&&opt.isVolley),
+            wasServe:!!(opt&&opt.wasServe),receiveOk:!!(opt&&opt.receiveOk)};
+  if(lag<=0.001) releaseStrike(); else S.hold=lag;
+  return true;
+}
+function releaseStrike(){
+  const q=S.strike; S.strike=null; S.hold=0;
+  if(!q) return;
+  S.ball.vx=q.v.x; S.ball.vy=q.v.y; S.ball.vz=q.v.z;
+  S.hitBy=q.who; S.bounces=0;
+  /* ラケットがボールに触れたこの瞬間に、はじめてノーバウンド打球を記録する。 */
+  S.volley[q.who]=q.isVolley;
+  S.wasServe=q.wasServe; S.receiveOk=q.receiveOk;
+  /* 音と画面の揺れは、打面がボールに触れたこの瞬間に一度だけ。 */
+  if(q.fx==='putaway'){ beep(520,0.10,'square',0.14); S.shake=5.0; S.fx=0.45; S.fxWho=q.who; }
+  else if(q.fx==='volley'){ sHit(); S.shake=3.5; }
+  else if(q.fx==='serve'){ sHit(); S.shake=2.5; }
+  else if(q.fx){ sHit(); S.shake=2.2; }
+  updLand();
+}
+/* 構えている間、手の移動を毎秒7mまでに抑える。フォアとバックの持ち替えで
+   ラケットが体の反対側へ一瞬で飛ぶのを防ぐ。打球中は呼ばないので、
+   振り出しの起点も接触位置もこの制限後の姿勢と食い違わない。 */
+/* 打球中は制限せず、現在地だけ覚えておく。スイングが終わった次のフレームで
+   手が次の球へ一気に飛ばないようにするため。 */
+function trackHand(p,r){ p._hPos={...r.hand}; p._hT=S.t; return r; }
+function limitHand(p,r){
+  if(p._hT!==S.t){
+    const hdt=clamp(S.t-(p._hT==null?S.t-1/120:p._hT),0,.05);
+    p._hT=S.t;
+    if(!p._hPos) p._hPos={...r.hand};
+    else{
+      const d=vec(p._hPos,r.hand), L=len3(d), m=7*hdt;
+      p._hPos=(L>m&&L>1e-6)
+        ? {x:p._hPos.x+d.x/L*m,y:p._hPos.y+d.y/L*m,z:p._hPos.z+d.z/L*m}
+        : {...r.hand};
+    }
+  }
+  if(!p._hPos){ p._hPos={...r.hand}; return r; }
+  const off=vec(r.hand,p._hPos);
+  if(len3(off)<1e-6) return r;
+  return {...r, hand:add3(r.hand,off,1), face:add3(r.face,off,1),
+          elbow:add3(r.elbow,off,1)};
+}
+/* 振り切っても当たらなかったら、そこで空振りと確定させる。
+   以後その腕では当たらず、自動で打点へ伸び直すこともしない。 */
+function settleSwing(p){
+  if(p.strokeKind==='swing' && (1-p.sw/SW_DUR)>=0.70){ p.strokeKind='whiff'; p._missed=true; }
+}
+function startStroke(p,kind,where){
+  /* すでに振っている最中に当たったときは、振り直さない。
+     振り直すと一度の入力で二度振ったように見える。今の振りの続きとして
+     打点だけを定める。 */
+  const midSwing = (p.strokeKind==='swing' && p.sw>0.02 && kind!=='whiff' && kind!=='swing');
+  if(midSwing){
+    p.strokeSide=where?strokeType(p,where):(p.strokeSide||p.prepSide||1);
+    p.strokeKind=kind;
+    p.hitAt=where?{x:where.x,y:where.y,z:where.z}:null;
+    p._missed=false;
+    return;
+  }
+  /* 空振りも、今の姿勢から振り始める。いきなり振り切った形へ飛ばさない
+     （打ち損じたときに腕と体が不自然に跳ねる原因だった）。 */
+  p._impLag=(kind==='whiff'||kind==='swing')?0.055:0;                                /* 前の打球の待ち時間を持ち越さない */
+  /* 空振りのあとしばらくは、腕を自動で打点へ伸ばさない。伸ばすと、
+     押していないのにもう一度振ったように見える（二度振り）。 */
+  p._missed=(kind==='whiff');   /* 'swing' はまだ当たりうるので「外した」ではない */
+  const old=shotRig(p,poseState(p));
+  p._impactRig={};
+  for(const name of ['elbow','hand','face','freeElbow','freeHand'])p._impactRig[name]={...old[name]};
+  for(const name of ['yaw','hipYaw','power','aimed'])p._impactRig[name]=old[name];
+  p.strokeSide=where?strokeType(p,where):(p.prepSide||1);
+  p.strokeKind=kind;
+  p.hitAt=where?{x:where.x,y:where.y,z:where.z}:null;
+  p.sw=SW_DUR;
+}
+/* 肘・手首の長さを保存する二本骨IK。肘は自然に下・外側に曲げる */
+/* 二本骨IK。肘の曲げ面は「前フレームに確定した肘」から引き継ぐ。
+   ヒントの向きが腕の軸とほぼ平行になると投影が短くなって不安定になるため、
+   そのときは前フレームの面をそのまま使い、符号の反転も禁止する。
+   こうしないと肘が1フレームで反対側へ飛ぶ。 */
+function solveArm(shoulder,desiredHand,outAxis,upper=UPPER_ARM,lower=FOREARM,prevElbow){
+  let hand={...desiredHand};
+  const delta=vec(shoulder,hand), d=len3(delta), max=upper+lower-0.018;
+  if(d>max) hand=add3(shoulder,norm(delta),max);
+  const v=vec(shoulder,hand), n=norm(v), dist=clamp(len3(v),0.03,max);
+  const forward=(upper*upper-lower*lower+dist*dist)/(2*dist);
+  const offset=Math.sqrt(Math.max(0,upper*upper-forward*forward));
+  const flat=w=>{const q=dot(w,n);return {x:w.x-q*n.x,y:w.y-q*n.y,z:w.z-q*n.z};};
+  let bend=flat(outAxis);
+  const prev=prevElbow?flat(vec(shoulder,prevElbow)):null;
+  const prevOK=prev&&len3(prev)>.02;
+  if(prevOK){
+    if(len3(bend)<.18) bend=prev;                      /* ヒントが頼りにならない */
+    else if(dot(bend,prev)<0) bend=prev;               /* 面の裏返しを禁止 */
+  }
+  if(len3(bend)<.04){
+    bend=prevOK?prev:flat({x:-n.y,y:n.x,z:-.4});
+    if(len3(bend)<.04) bend=flat({x:-n.y,y:n.x,z:-.4});
+  }
+  const elbow=add3(add3(shoulder,n,forward),norm(bend),offset);
+  return {hand,elbow};
+}
+function stroke(ctxPts,col,width){
+  ctx.strokeStyle=col;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();for(let i=0;i<ctxPts.length;i++){
+    const a=pj(ctxPts[i].x,ctxPts[i].y,ctxPts[i].z);
+    if(!i)ctx.moveTo(a.x,a.y);else ctx.lineTo(a.x,a.y);
+  }ctx.stroke();
+}
+/* 全長約38cmの木製ラケット。手は打面中心ではなく、柄の末端から約5cmの位置を握る。
+   ラケットの実寸をワールド座標で作り、背面/正面の見え方を投影に任せる。 */
+function drawRacket(hand,face,s){
+  const dir=norm(vec(hand,face));
+  const butt=add3(hand,dir,-.052);
+  const gripTop=add3(hand,dir,.115);
+  const throat=add3(hand,dir,.16);
+  const head=add3(hand,dir,.225);
+  /* 柄尻 -5.2cm 〜 打面先端 +32.8cm ＝ 全長38.0cm、打面の幅 17.0cm。
+     日本エスキーテニス連盟の規格（木製・38cm×17cm）に合わせてある。 */
+  const H=pj(hand.x,hand.y,hand.z),B=pj(butt.x,butt.y,butt.z),
+    T=pj(throat.x,throat.y,throat.z), Q=pj(head.x,head.y,head.z);
+  /* 先に木の軸、次に握りを描く。握りの手は軸上に重ねる。 */
+  ctx.lineCap='round';
+  ctx.strokeStyle='#77502a';ctx.lineWidth=Math.max(2,.030*s);
+  ctx.beginPath();ctx.moveTo(B.x,B.y);ctx.lineTo(T.x,T.y);ctx.stroke();
+  const gp=pj(gripTop.x,gripTop.y,gripTop.z);
+  ctx.strokeStyle='#40342a';ctx.lineWidth=Math.max(2.2,.035*s);
+  ctx.beginPath();ctx.moveTo(B.x,B.y);ctx.lineTo(gp.x,gp.y);ctx.stroke();
+  const angle=Math.atan2(Q.y-H.y,Q.x-H.x)+Math.PI/2;
+  const sx=Math.max(2.5,(RACKET_W/2)*Q.s), sy=Math.max(3.6,.103*Q.s);
+  ctx.save();ctx.translate(Q.x,Q.y);ctx.rotate(angle);
+  ctx.fillStyle='#d3a26c';ctx.strokeStyle='#74451f';ctx.lineWidth=Math.max(1.2,.014*s);
+  ctx.beginPath();ctx.ellipse(0,0,sx,sy,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.strokeStyle='rgba(101,61,30,.28)';ctx.lineWidth=Math.max(.5,.006*s);
+  for(let k=-1;k<=1;k++){
+    ctx.beginPath();ctx.moveTo(k*sx*.36,-sy*.76);ctx.lineTo(k*sx*.36,sy*.76);ctx.stroke();
+  }
   ctx.restore();
-  /* 握りこぶし（グリップの上に重ねる） */
-  ctx.fillStyle=skin;
-  ctx.beginPath(); ctx.arc(rp.x, rp.y, Math.max(2,0.055*rp.s), 0, Math.PI*2); ctx.fill();
+  /* 指がグリップを握る小さな横断線。円形の掌で打面を覆わない。 */
+  const hRad=Math.max(2.6,.043*s);
+  ctx.fillStyle='#e9c4a0';ctx.beginPath();ctx.ellipse(H.x,H.y,hRad*.93,hRad*1.1,
+    Math.atan2(Q.y-H.y,Q.x-H.x)+Math.PI/2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(128,80,55,.58)';ctx.lineWidth=Math.max(.6,.007*s);
+  ctx.beginPath();ctx.moveTo(H.x-hRad*.68,H.y);ctx.lineTo(H.x+hRad*.68,H.y);ctx.stroke();
+}
+/* 胴・腕の姿勢を一箇所で解く。描画も打球判定もこの同じ結果を見るので、
+   「判定は当たりなのに絵では届いていない」という食い違いが起きない。 */
+function solvePose(p,st,rig0){
+  const isP=p===S.P;
+  const R=isP?1:-1,F=-R;
+  const side=st.side;
+  const rig=rig0;
+  /* --- 体の動きは「目標」と「現在値」を分け、実時間で速度を制限する ---
+     こうしないと、腕が届く限界を超えかけた瞬間に頭・腰・肩が一気に動き、
+     打ち損じのときに体が折れ曲がったように見える。 */
+  const pw=.022*rig.power;
+  const standShoulderZ=1.38-.032-pw;
+  const armMax=UPPER_ARM+FOREARM-.04;
+  const toward=(cur,tgt,rate,dt)=>{const d=tgt-cur,m=rate*dt;
+    return Math.abs(d)<=m?tgt:cur+Math.sign(d)*m;};
+  /* 1フレームに1回だけ、実際に経過したゲーム時間で更新する */
+  const fresh = p._bodyT!==S.t;
+  const bdt = fresh ? clamp(S.t-(p._bodyT==null?S.t-1/120:p._bodyT),0,.05) : 0;
+  if(fresh) p._bodyT=S.t;
+  /* ① しゃがみ：腕を下ろして届かない高さの分だけ、毎秒1.8mまでで沈む */
+  const crouchT=clamp((standShoulderZ-rig.hand.z)-.50,0,MAX_CROUCH);
+  if(p._crouch==null) p._crouch=crouchT;
+  else if(fresh) p._crouch=toward(p._crouch,crouchT,1.8,bdt);
+  const low=p._crouch;
+  const dip=.032+low+pw;
+  const frontLean=.043+.014*rig.power;
+  /* しゃがむときは腰も肩も同じだけ下げる。差をつけると胴が縮んで見える。 */
+  const hipMid=local3(p,0,0,.89-dip,rig.hipYaw);
+  const torsoMid=local3(p,0,frontLean,1.30-dip,rig.yaw);
+  const shoulders={L:local3(p,-.205,frontLean,1.38-dip,rig.yaw),
+                   R:local3(p,.205,frontLean,1.38-dip,rig.yaw)};
+  const hipL=local3(p,-.135,0,.88-dip,rig.hipYaw);
+  const hipR=local3(p,.135,0,.88-dip,rig.hipYaw);
+  const head=local3(p,0,frontLean+.015,1.59-dip,rig.yaw);
+  /* ② 上体の傾き：股関節を支点に、前・横・下だけへ最大MAX_LEAN。
+        角度の変化も毎秒6割までに制限する。 */
+  const pivot={x:hipMid.x,y:hipMid.y,z:hipMid.z};
+  const torsoLen=len3(vec(pivot,shoulders.R));
+  const dUp=norm(vec(pivot,shoulders.R));
+  let dTo=norm(vec(pivot,rig.hand));
+  if(dTo.y*F<0) dTo=norm({x:dTo.x,y:0,z:dTo.z});
+  if(dTo.z>dUp.z) dTo=norm({x:dTo.x,y:dTo.y,z:dUp.z});
+  /* 傾ける向きも急反転させない。フォア⇄バックの持ち替えで上体が
+     左右へ振り回されて見えるのを防ぐ。 */
+  if(p._lean3==null) p._lean3={...dTo};
+  else if(fresh){
+    const d=vec(p._lean3,dTo), L=len3(d), m=4.5*bdt;
+    p._lean3 = (L>m&&L>1e-6)
+      ? norm({x:p._lean3.x+d.x/L*m,y:p._lean3.y+d.y/L*m,z:p._lean3.z+d.z/L*m})
+      : {...dTo};
+  }
+  dTo=p._lean3;
+  const ang=Math.acos(clamp(dot(dUp,dTo),-1,1));
+  const want=clamp((len3(vec(shoulders.R,rig.hand))-armMax)/.30,0,1);
+  const kLeanT=ang>1e-4?Math.min(1,(MAX_LEAN*want)/ang):0;
+  if(p._leanK==null) p._leanK=kLeanT;
+  else if(fresh) p._leanK=toward(p._leanK,kLeanT,6,bdt);
+  const kLean=p._leanK;
+  const dLean=norm({x:dUp.x+(dTo.x-dUp.x)*kLean,y:dUp.y+(dTo.y-dUp.y)*kLean,
+                    z:dUp.z+(dTo.z-dUp.z)*kLean});
+  const cross3=(a,b)=>({x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x});
+  const ax=cross3(dUp,dLean), axl=len3(ax);
+  let rot=a=>a;
+  if(axl>1e-6){
+    const k={x:ax.x/axl,y:ax.y/axl,z:ax.z/axl};
+    const th=Math.asin(Math.min(1,axl)), c=Math.cos(th), sn=Math.sin(th);
+    rot=a=>{ const v=vec(pivot,a), kv=cross3(k,v), kd=dot(k,v);
+      return {x:pivot.x+v.x*c+kv.x*sn+k.x*kd*(1-c),
+              y:pivot.y+v.y*c+kv.y*sn+k.y*kd*(1-c),
+              z:pivot.z+v.z*c+kv.z*sn+k.z*kd*(1-c)}; };
+  }
+  /* ③ 踏み込み：残りを足で詰める。歩く速さ（毎秒3.5m）を超えない。 */
+  const leaned=rot(shoulders.R);
+  const toHand=norm(vec(leaned,rig.hand));
+  const stepT=Math.min(MAX_STEP,Math.max(0,len3(vec(leaned,rig.hand))-armMax));
+  const sxT=toHand.x*stepT, syT=toHand.y*stepT;
+  if(p._sx==null){ p._sx=sxT; p._sy=syT; }
+  else if(fresh){ p._sx=toward(p._sx,sxT,3.5,bdt); p._sy=toward(p._sy,syT,3.5,bdt); }
+  const SX=p._sx, SY=p._sy;
+  const bodyXf=a=>{ const r=rot(a); r.x+=SX; r.y+=SY; return r; };
+  for(const a of [shoulders.L,shoulders.R,torsoMid,head]){
+    const r=bodyXf(a); a.x=r.x; a.y=r.y; a.z=r.z; }
+  for(const a of [hipMid,hipL,hipR]){ a.x+=SX; a.y+=SY; }
+  /* 腕のキーフレームは直立時の高さで書かれている。腰を落として上体を傾けたら
+     腕も一緒に動かす。ただし打点に合わせた手だけは世界座標なのでそのまま。 */
+  const dFree=vec(local3(p,-.205,frontLean,1.348,rig.yaw),shoulders.L);
+  const kF=1-(rig.freeAimed||0);
+  const freeElbow=add3(rig.freeElbow,dFree,kF), freeHand=add3(rig.freeHand,dFree,kF);
+  const dSwing=vec(local3(p,.205,frontLean,1.348,rig.yaw),shoulders.R);
+  const kS=1-(rig.aimed||0);
+  const rigHand=add3(rig.hand,dSwing,kS), rigFace=add3(rig.face,dSwing,kS),
+        rigElbow=add3(rig.elbow,dSwing,kS);
+  const bendHint=(sh,elb,hand,fallback)=>{
+    const n=norm(vec(sh,hand)), e=vec(sh,elb);
+    const q=dot(e,n), perp={x:e.x-q*n.x,y:e.y-q*n.y,z:e.z-q*n.z};
+    return len3(perp)>.03?perp:fallback;
+  };
+  /* 肘の曲げ向きを時間方向になめらかに。IKの折れ方が裏返って
+     肘が一瞬で反対側へ飛ぶのを防ぐ。 */
+  const smoothHint=(key,v)=>{
+    const u=norm(v);
+    if(p[key]==null){ p[key]={...u}; return u; }
+    if(fresh){
+      const d=vec(p[key],u), L=len3(d), m=5*bdt;
+      p[key]=(L>m&&L>1e-6)?norm({x:p[key].x+d.x/L*m,y:p[key].y+d.y/L*m,z:p[key].z+d.z/L*m})
+                          :{...u};
+    }
+    return p[key];
+  };
+  /* 肘の曲げ面を、腕の軸に直交させたまま毎秒7ラジアンまでで回す。
+     面を二択で切り替えるのではなく連続的に回すので、肘が裏返らない。 */
+  const freshP=(p._planeT!==S.t);
+  const dtp=clamp(S.t-(p._planeT==null?S.t-1/120:p._planeT),0,.05);
+  const planeFor=(key,sh,hand,hintV)=>{
+    const n=norm(vec(sh,hand));
+    const flat=w=>{const q=dot(w,n);return {x:w.x-q*n.x,y:w.y-q*n.y,z:w.z-q*n.z};};
+    let tgt=flat(hintV);
+    if(len3(tgt)<1e-4) tgt=flat({x:-n.y,y:n.x,z:-.4});
+    if(len3(tgt)<1e-4) tgt={x:0,y:0,z:-1}; else tgt=norm(tgt);
+    let cur=p[key]?flat(p[key]):null;
+    cur=(cur&&len3(cur)>1e-4)?norm(cur):null;
+    let out=tgt;
+    if(cur){
+      const a=Math.acos(clamp(dot(cur,tgt),-1,1)), maxA=7*dtp;
+      out=(a<=maxA||a<1e-6)?tgt
+        :norm({x:cur.x+(tgt.x-cur.x)*(maxA/a),y:cur.y+(tgt.y-cur.y)*(maxA/a),
+               z:cur.z+(tgt.z-cur.z)*(maxA/a)});
+    }
+    if(freshP) p[key]={...out};
+    return out;
+  };
+  const planeR=planeFor('_planeR',shoulders.R,rigHand,
+    bendHint(shoulders.R,rigElbow,rigHand,{x:R*.22,y:F*-.34,z:-.56}));
+  const planeL=planeFor('_planeL',shoulders.L,freeHand,
+    bendHint(shoulders.L,freeElbow,freeHand,{x:-R*.22,y:F*-.34,z:-.56}));
+  if(freshP) p._planeT=S.t;
+  const armR=solveArm(shoulders.R,rigHand,planeR);
+  const armL=solveArm(shoulders.L,freeHand,planeL);
+  const faceDir=norm(vec(rigHand,rigFace));
+  return {hipMid,hipL,hipR,torsoMid,shoulders,head,bodyXf,SX,SY,dip,frontLean,side,
+          armR,armL,faceDir,racketFace:add3(armR.hand,faceDir,RACKET_HEAD_OFFSET)};
+}
+function drawPerson(p,near){
+  const isP=p===S.P, body=isP?'#e2472a':'#2f6fa8';
+  const dark=isP?'#992e19':'#1a456c', skin='#ecc59f', pants='#223046';
+  const st=poseState(p), rig=shotRig(p,st);
+  const R=isP?1:-1,F=-R;
+  const side=st.side;
+  const P3=solvePose(p,st,rig);
+  const {hipMid,hipL,hipR,torsoMid,shoulders,head,bodyXf,SX,SY,dip,frontLean,armR,armL}=P3;
+  const racketFace=P3.racketFace;
+  const s=pj(p.x,p.y,0).s;
+  drawShadow(p.x+SX,p.y+SY,0.33);
+  /* 足首を別々に配置し、膝関節を曲げる。走行時は交互の着地 */
+  for(const sign of [-1,1]){
+    const step=st.run*Math.sin(st.step+(sign===1?0:Math.PI));
+    const foot=local3(p,sign*(0.21+0.025*rig.power),
+                       -0.065+step*0.17+(sign===side?0.10*rig.power:0),0.045);
+    foot.x+=SX*.42; foot.y+=SY*.42;
+    /* 腿と脛も伸び縮みさせない。腰を落とすほど膝が前へ出る二本骨IK。 */
+    const hip=sign<0?hipL:hipR;
+    const knee=solveArm(hip,foot,
+      {x:R*(sign*0.10),y:F*(0.62+Math.max(0,step)*0.20),z:-0.16},THIGH,SHIN).elbow;
+    stroke([hip,knee,foot],pants,Math.max(3,0.093*s));
+    const toe=local3(p,sign*0.21,0.11+step*0.17,0.035);
+    toe.x+=SX*.42; toe.y+=SY*.42;
+    stroke([foot,toe],'#101b29',Math.max(2,0.095*s));
+  }
+  const rightS=shoulders.R, leftS=shoulders.L;
+  const rightArm=()=>{
+    stroke([rightS,armR.elbow,armR.hand],skin,Math.max(2.8,.072*s));
+    drawRacket(armR.hand,racketFace,s);
+  };
+  const freeArm=()=>{
+    stroke([leftS,armL.elbow,armL.hand],skin,Math.max(2.6,.066*s));
+  };
+  /* 背面視点では腕・ラケットのうち胴体と重なる部分は背中の向こうに置く。
+     外側には肩から自然につながる腕だけが見えるよう、後で胴体外を再描画する。 */
+  if(near){rightArm();freeArm();}
+  /* 胴体は正面・背中を持つ立体板。向きと腰の回転が投影に表れる */
+  const soL=pj(shoulders.L.x,shoulders.L.y,shoulders.L.z);
+  const soR=pj(shoulders.R.x,shoulders.R.y,shoulders.R.z);
+  const hiL=pj(hipL.x,hipL.y,hipL.z),hiR=pj(hipR.x,hipR.y,hipR.z);
+  ctx.fillStyle=body;ctx.beginPath();
+  ctx.moveTo(soL.x,soL.y);ctx.lineTo(soR.x,soR.y);
+  ctx.lineTo(hiR.x,hiR.y);ctx.lineTo(hiL.x,hiL.y);ctx.closePath();ctx.fill();
+  ctx.strokeStyle=dark;ctx.lineWidth=Math.max(1,.018*s);ctx.stroke();
+  /* 襟で前後を示す。背中は襟が閉じた帯、正面は首が覗くV字の開き。
+     以前の背番号は細い縦棒に見え、前立てやファスナーと紛らわしかった */
+  const mix2=(a,b,k)=>({x:a.x+(b.x-a.x)*k, y:a.y+(b.y-a.y)*k});
+  const topMid=mix2(soL,soR,.5), botMid=mix2(hiL,hiR,.5);
+  const colL=mix2(topMid,soL,.46), colR=mix2(topMid,soR,.46);
+  if(near){
+    /* 背面：襟は閉じた帯。肩ヨークの縫い目を一本入れて背中と分かるようにする */
+    const bL=mix2(colL,mix2(hiL,hiR,0),.11), bR=mix2(colR,mix2(hiR,hiL,0),.11);
+    ctx.fillStyle=dark;ctx.beginPath();
+    ctx.moveTo(colL.x,colL.y);ctx.lineTo(colR.x,colR.y);
+    ctx.lineTo(bR.x,bR.y);ctx.lineTo(bL.x,bL.y);ctx.closePath();ctx.fill();
+    const yL=mix2(soL,hiL,.21), yR=mix2(soR,hiR,.21);
+    ctx.strokeStyle=dark;ctx.lineWidth=Math.max(1,.015*s);
+    ctx.beginPath();ctx.moveTo(yL.x,yL.y);ctx.lineTo(yR.x,yR.y);ctx.stroke();
+  }else{
+    /* 正面：襟が開き、首元の肌が覗く */
+    const vB=mix2(topMid,botMid,.21);
+    ctx.fillStyle=skin;ctx.beginPath();
+    ctx.moveTo(colL.x,colL.y);ctx.lineTo(colR.x,colR.y);ctx.lineTo(vB.x,vB.y);
+    ctx.closePath();ctx.fill();
+    ctx.strokeStyle=dark;ctx.lineWidth=Math.max(1,.014*s);ctx.stroke();
+  }
+  if(near){
+    ctx.save();ctx.beginPath();
+    ctx.rect(V.x0-20,-20,V.w+40,V.h+40);
+    ctx.moveTo(soL.x,soL.y);ctx.lineTo(soR.x,soR.y);
+    ctx.lineTo(hiR.x,hiR.y);ctx.lineTo(hiL.x,hiL.y);ctx.closePath();
+    ctx.clip('evenodd');
+    rightArm(); freeArm();
+    ctx.restore();
+  }else{
+    rightArm();freeArm();
+  }
+  /* 首と頭。細線1本では浮いて見えるので、襟元から首を面でつなぐ */
+  const neckBase=bodyXf(local3(p,0,frontLean+.002,1.43-dip,rig.yaw));
+  const neckTop=bodyXf(local3(p,0,frontLean+.012,1.52-dip,rig.yaw));
+  const neckL=bodyXf(local3(p,-.07,frontLean+.004,1.43-dip,rig.yaw));
+  const neckR=bodyXf(local3(p,.07,frontLean+.004,1.43-dip,rig.yaw));
+  const neckTL=bodyXf(local3(p,-.045,frontLean+.010,1.515-dip,rig.yaw));
+  const neckTR=bodyXf(local3(p,.045,frontLean+.010,1.515-dip,rig.yaw));
+  const nbL=pj(neckL.x,neckL.y,neckL.z), nbR=pj(neckR.x,neckR.y,neckR.z);
+  const ntL=pj(neckTL.x,neckTL.y,neckTL.z), ntR=pj(neckTR.x,neckTR.y,neckTR.z);
+  ctx.fillStyle=skin; ctx.beginPath();
+  ctx.moveTo(nbL.x,nbL.y); ctx.lineTo(nbR.x,nbR.y);
+  ctx.lineTo(ntR.x,ntR.y); ctx.lineTo(ntL.x,ntL.y); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(120,80,58,.22)'; ctx.lineWidth=Math.max(.8,.012*s); ctx.stroke();
+  stroke([neckBase,neckTop],skin,Math.max(2.4,.11*s));
+  const h=pj(head.x,head.y,head.z), hr=Math.max(4.1,.112*h.s);
+  ctx.fillStyle=skin;ctx.beginPath();ctx.arc(h.x,h.y,hr,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#2a211e';ctx.beginPath();
+  ctx.arc(h.x,h.y-hr*0.19,hr*1.02,Math.PI*1.04,Math.PI*1.96);ctx.fill();
+  if(near){
+    /* 後頭部：髪で全面を覆う。肌の縁が残ると顔の輪郭に見えてしまう。
+       下端にうなじだけを覗かせ、頭頂に光を置いて丸みを出す */
+    ctx.fillStyle='#29211e';ctx.beginPath();ctx.arc(h.x,h.y-hr*.03,hr*1.01,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(236,197,159,.50)';ctx.beginPath();
+    ctx.ellipse(h.x,h.y+hr*.80,hr*.30,hr*.17,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.07)';ctx.beginPath();
+    ctx.ellipse(h.x-hr*.30,h.y-hr*.38,hr*.40,hr*.24,-0.4,0,Math.PI*2);ctx.fill();
+  }else if(hr>4.5){
+    ctx.fillStyle='#33251e';
+    ctx.beginPath();ctx.arc(h.x-hr*.37,h.y+hr*.08,Math.max(.8,hr*.095),0,Math.PI*2);
+    ctx.arc(h.x+hr*.37,h.y+hr*.08,Math.max(.8,hr*.095),0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#af8968';ctx.lineWidth=Math.max(.7,hr*.07);
+    ctx.beginPath();ctx.moveTo(h.x,h.y+hr*.07);ctx.lineTo(h.x,h.y+hr*.40);ctx.stroke();
+  }
 }
 function drawBall(){
   const b=S.ball;
   if(!b.live && S.phase!=='serve' && S.phase!=='drop') return;
-  drawShadow(b.x,b.y,0.075+b.z*0.022);
+  drawShadow(b.x,b.y,0.052+b.z*0.018);
   /* 軌跡 */
   for(let i=0;i<b.tr.length;i++){
     const q=b.tr[i], p=pj(q.x,q.y,q.z), a=(i/b.tr.length)*0.30;
     ctx.fillStyle='rgba(255,240,225,'+a.toFixed(3)+')';
     ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(1,0.02*p.s),0,Math.PI*2); ctx.fill();
   }
-  const p=pj(b.x,b.y,b.z), r=Math.max(3.2,0.045*p.s);
+  const p=pj(b.x,b.y,b.z), r=Math.max(3.0,BALL_R*BALL_DRAW*p.s);
   /* 羽根 */
   const ang=Math.atan2(-b.vz,Math.hypot(b.vx,b.vy))*0.5;
   ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(ang);
@@ -1338,8 +2329,10 @@ function frame(ts){
   if(S.paused){ hitEdge=hitEdge2=false; draw(); return; }
   acc+=dt;
   const step=1/120;
-  while(acc>=step){ tick(step); acc-=step; }
-  hitEdge=false; hitEdge2=false;   /* 押した瞬間の判定は毎フレーム消す */
+  let ran=false;
+  while(acc>=step){ tick(step); acc-=step; ran=true; }
+  /* ゲーム更新が入力を受け取ったあとに消す（高リフレッシュレートでの取りこぼし防止） */
+  if(ran){ hitEdge=false; hitEdge2=false; }
   draw();
   /* テロップ */
   if(S.msgT>0){ S.msgT-=dt*1000; if(S.msgT<=0) $('call').classList.remove('on'); }
@@ -1360,13 +2353,18 @@ function tick(dt){
     movePlayer(dt);
     if(two) movePlayer2(dt);
     holdServePos();
+    /* 持ち替えの途中でトスを押されたら、移し終えてから一度だけ落とす。
+       そうしないとボールだけ先に反対側へ行き、左手が取り残される。 */
+    const sp=S.server==='P'?S.P:S.A;
+    const settled=Math.abs((sp._srvR==null?0:sp._srvR)-0.26*(sp.serveSide||1))<0.02;
     if(S.server==='P'){
-      if(hitEdge){ dropServe(); }
+      if(hitEdge) sp._tossWanted=true;
     }else if(two){
-      if(hitEdge2){ dropServe(); }
+      if(hitEdge2) sp._tossWanted=true;
     }else{
-      if(S.timer>0.75) dropServe();
+      if(S.timer>0.75) sp._tossWanted=true;
     }
+    if(sp._tossWanted&&settled){ sp._tossWanted=false; dropServe(); }
     return;
   }
   if(S.phase==='drop'){
@@ -1376,20 +2374,36 @@ function tick(dt){
     movePlayer(dt);
     if(two) movePlayer2(dt);
     holdServePos();
-    const canHit = S.bounces===1 && S.ball.z>0.03;
+    /* ラケットが実際に届く高さになってから打てる。以前は3cmで、
+       早押しが残っていると床すれすれの球を打ったことになっていた。 */
+    const canHit = S.bounces===1 && S.ball.z>0.26;
+    settleSwing(S.P); settleSwing(S.A);
+    /* ラリーと同じ扱い。弾んでくる前に押しても空振りにせず、
+       その一振りの途中で打ちごろになれば当たる（＝二度振らない）。 */
     if(S.server==='P'){
-      if((hitEdge||S.P.sw>0.02) && canHit){
+      /* 弾む直前の早押しを少しだけ覚えておく。振りは出さないので
+         二度振りにはならず、打ちごろになった瞬間に一度だけ振る。 */
+      if(hitEdge && !canHit) S.P._srvBuf=0.25;
+      if(S.P._srvBuf>0) S.P._srvBuf-=dt;
+      if((hitEdge||swingLive(S.P)||S.P._srvBuf>0) && canHit && !S.strike){
+        S.P._srvBuf=0;
         const q=Math.max(0.30,1-Math.abs(S.ball.z-0.36)/0.55);
-        S.P.sw=0.24; hitServe('P',Math.min(1,q));
-      }else if(hitEdge){ S.P.sw=0.24; }   /* 早押しは少しの間受け付ける */
+        hitServe('P',Math.min(1,q));
+      }
+      /* 弾んでくる前の早押しは何もしない。ここで振ると、弾んでから
+         もう一度振ることになり、サーブで二度振って見える。
+         画面には「ワンバウンドを待つ」の表示が出ている。 */
     }else if(two){
-      if((hitEdge2||S.A.sw>0.02) && canHit){
+      if(hitEdge2 && !canHit) S.A._srvBuf=0.25;
+      if(S.A._srvBuf>0) S.A._srvBuf-=dt;
+      if((hitEdge2||swingLive(S.A)||S.A._srvBuf>0) && canHit && !S.strike){
+        S.A._srvBuf=0;
         const q=Math.max(0.30,1-Math.abs(S.ball.z-0.36)/0.55);
-        S.A.sw=0.24; hitServe('A',Math.min(1,q));
-      }else if(hitEdge2){ S.A.sw=0.24; }
+        hitServe('A',Math.min(1,q));
+      }
     }else{
       if(S.bounces===1 && S.ball.z>0.24 && S.ball.vz<0){
-        S.A.sw=0.24; hitServe('A',0.78+Math.random()*0.2);
+        hitServe('A',0.78+Math.random()*0.2);
       }
     }
     if(S.bounces>=2 && S.phase==='drop'){ faultRetry(); }
@@ -1401,15 +2415,17 @@ function tick(dt){
     if(two) movePlayer2(dt); else moveAI(dt);
     physics(dt);
     if(S.phase!=='rally') return;
+    settleSwing(S.P); settleSwing(S.A);
     if(hitEdge) tryPlayerHit();
-    else if(S.P.sw>0.02 && S.hitBy!=='P'){       /* 振り抜き中の当たり判定 */
+    else if(swingLive(S.P) && S.hitBy!=='P' && !S.strike){
+      /* 振っている間の当たり判定。振り終えた腕や、戻りの動作では当たらない。 */
       const b=S.ball;
       if(b.y>0.06){ const q=reachQuality(S.P,b); if(q>=0) hitRally('P',q); }
     }
     if(S.phase!=='rally') return;
     if(two){
       if(hitEdge2) tryPlayer2Hit();
-      else if(S.A.sw>0.02 && S.hitBy!=='A'){
+      else if(swingLive(S.A) && S.hitBy!=='A' && !S.strike){
         const b=S.ball;
         if(b.y<-0.06){ const q=reachQuality(S.A,b); if(q>=0) hitRally('A',q); }
       }
@@ -1426,7 +2442,7 @@ function tick(dt){
         S.setNo++; S.pts.P=0; S.pts.A=0;
         S.server = (S.setNo===2) ? (S.firstServer==='P'?'A':'P') : pd.who;
         board();
-        say('第'+S.setNo+'セット','サイドチェンジ　サービスは'+nameOf(S.server),2300);
+        say('第'+S.setNo+'セット','サービスは'+nameOf(S.server),2300);
         S.phase='interval'; S.timer=0; return;
       }
       if(S.retry){ S.retry=false; setupServe(); } else newRally();
@@ -1444,6 +2460,7 @@ document.querySelectorAll('[data-mode]').forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll('[data-mode]').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); S.mode=b.dataset.mode;
+    clearInputs();
     $('vPick').style.display = (S.mode==='2p') ? 'none' : '';
     $('tips2p').style.display = (S.mode==='2p') ? '' : 'none';
     $('vHint').textContent = (S.mode==='2p')
@@ -1460,11 +2477,32 @@ document.querySelectorAll('[data-lv]').forEach(b=>{
     $('tgGuide').classList.toggle('on',S.guide);
   };
 });
+function clearInputs(){
+  ['up','down','left','right','hit'].forEach(k=>{
+    K[k]=KB[k]=PAD[k]=K2[k]=KB2[k]=PD2[k]=false; paint(k,false);
+  });
+  hitEdge=false; hitEdge2=false;
+  document.querySelectorAll('.key.dn,.hit.dn').forEach(el=>el.classList.remove('dn'));
+}
+function showMenu(on){
+  $('veil').classList.toggle('hide',!on);
+  document.querySelector('.stage').classList.toggle('menu',on);
+}
 $('vGo').onclick=()=>{
-  $('veil').classList.add('hide');
+  showMenu(false);
   S.pts.P=0;S.pts.A=0;S.sets.P=0;S.sets.A=0;S.setNo=1;S.setLog=[];
   S.server = Math.random()<0.5?'P':'A'; S.firstServer=S.server;
-  S.retry=false;
+  S.retry=false; S.pending=null; S.lastServer=null;
+  /* 前の試合の状態を残さない */
+  S.paused=false; $('tgPause').classList.remove('on'); $('tgPause').textContent='一時停止';
+  S.P.sw=0; S.A.sw=0; S.P.hitAt=S.A.hitAt=null;
+  for(const p of [S.P,S.A]){p._poseT=null;p._prep=0;p._forward=0;
+    p._aimZ=null;p._run=0;p._step=0;p._impactRig=null;
+    p.prepSide=1;p.strokeSide=1;p.strokeKind='rally';}
+  S.fx=0; S.shake=0; S.netFlash=0; S.msgT=0;
+  S.volley.P=false; S.volley.A=false; S.land=null; S.hitSpot=null; S.ball.tr.length=0;
+  $('call').classList.remove('on'); $('warn').classList.remove('on');
+  clearInputs();
   board(); setupServe();
   say('第1セット', nameOf(S.server)+'のサービスです',1600);
   if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
@@ -1475,6 +2513,7 @@ $('tgPause').onclick=e=>{ S.paused=!S.paused; e.target.classList.toggle('on',S.p
   e.target.textContent=S.paused?'再開':'一時停止'; };
 
 board(); feathers($('fP'),0); feathers($('fA'),0);
+showMenu(true);
 requestAnimationFrame(frame);
 })();
 </script>
